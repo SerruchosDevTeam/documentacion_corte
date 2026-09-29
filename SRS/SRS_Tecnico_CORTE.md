@@ -5,7 +5,7 @@
 *Asistente de organización espacial de la cámara de frío de Cervecería Cuello Negro SpA*
 
 **Código del proyecto:** CORTE (INFO282 · Grupo 2)
-**Versión del documento:** 0.2
+**Versión del documento:** 0.3
 **Estado:** En revisión
 **Fecha:** 29/09/2026
 **Responsables:** Serruchos Dev Team (Product Owner: Giorgio Carlin)
@@ -139,6 +139,7 @@ Las marcas **H-xx** remiten a los hallazgos del levantamiento de casos de uso (R
 |---|---|---|---|
 | 0.1 | 28/09/2026 | Serruchos Dev Team | Borrador inicial por ingeniería inversa de `NEXO-C.O.R.T.E@86ee1c9`, `frontend_corte@20bb26f`, `backend_corte@6c280aa` y `documentacion_corte@211e708` |
 | 0.2 | 29/09/2026 | Giorgio Carlin (PO) y Serruchos Dev Team | Incorpora las 34 decisiones del PO sobre las preguntas abiertas y los hallazgos (§0.5): ingreso por el patio, dos alertas, lotes con varios pallets, cantidades por envase, Kombucha y Petainer, matriz de permisos editable, política de contraseñas, anulación de ingresos y motivo de ruptura FIFO. Quedan 6 preguntas abiertas (§85) |
+| 0.3 | 29/09/2026 | Serruchos Dev Team | RF-AUT-05 pasa a **Implementado** (`frontend_corte@a7f46a0`, rama `fix/redireccion-login`): la sesión se restaura desde el JWT al recargar y una guardia central protege todas las rutas (se cierra la observación de RF-AUT-04 sobre pantallas sin guarda, H-12 y DT-014). `GET /api/actividad` ya no se consulta sin sesión (`frontend_corte@30df2db`) |
 | 1.0 | | | Versión aprobada por el cliente |
 
 ## 0.2 Estado del documento
@@ -1152,7 +1153,7 @@ En empate, gana la primera posición recorrida.
 | RF-AUT-02 | Funcional | Cerrar sesión | Must | Implementado | Frontend | CU-21 |
 | RF-AUT-03 | Funcional | Recuperar la contraseña con ayuda del Jefe | Should | Propuesto | Full-stack | CU-01 (el botón existe, sin acción) · DPO-021 |
 | RF-AUT-04 | Funcional | Control de acceso por rol en la interfaz y la API | Must | Parcial | Full-stack | HU-1.1, HU-1.3 · DPO-016 |
-| RF-AUT-05 | Funcional | Mantener la sesión al recargar la página | Should | Propuesto | Frontend | Manual US-04 |
+| RF-AUT-05 | Funcional | Mantener la sesión al recargar la página | Should | Implementado | Frontend | Manual US-04 |
 | RF-AUT-06 | Funcional | Obligar a cambiar la contraseña inicial en el primer acceso | Must | Propuesto | Full-stack | DPO-020 |
 | RF-USR-01 | Funcional | Listar y buscar usuarios | Must | Implementado | Full-stack | HU-1.2 · CU-02 |
 | RF-USR-02 | Funcional | Crear usuario | Must | Implementado | Full-stack | HU-1.2 · CU-02 |
@@ -1304,7 +1305,7 @@ En empate, gana la primera posición recorrida.
 2. La ruta interna de Next.js `/api/auth/login` comprueba que vengan ambos datos y los reenvía a `POST /api/auth/login` (API-001).
 3. El backend busca un usuario **activo** que coincida y compara la contraseña con bcrypt.
 4. Traduce el tipo de usuario a un rol (§29.2) y emite un JWT con `idUsuario`, `rut`, `correo` y `rol`, válido por 8 h por defecto.
-5. El frontend guarda el token, fija el rol y el RUT en memoria y redirige al Panel principal.
+5. El frontend guarda el token en `localStorage`, fija el rol y el RUT en memoria y redirige al Panel principal. Recién entonces se consultan los datos que exigen sesión, como `GET /api/actividad`.
 
 **Salidas:**
 - Token de sesión, rol y datos básicos del usuario (nunca la contraseña).
@@ -1322,7 +1323,7 @@ En empate, gana la primera posición recorrida.
 - No hay límite de intentos (RNF-SEG-007).
 - El token queda en `localStorage` (RNF-SEG-011).
 - Un tipo de usuario no mapeado recibe `JEFE_PLANTA` por defecto (H-11). Debe quedar sin acceso.
-- La sesión se pierde al recargar la página (RF-AUT-05).
+- Al recargar la página, la sesión se restaura desde el token guardado (RF-AUT-05).
 - Si el usuario entra con la contraseña inicial o con una restablecida, debe cambiarla antes de operar (RF-AUT-06).
 
 ### RF-AUT-02 — Cerrar sesión
@@ -1373,15 +1374,39 @@ En empate, gana la primera posición recorrida.
 
 **Observaciones (qué falta):**
 - El menú lateral tiene un selector "Perfil" que cambia el rol solo en el navegador (H-10).
-- Varias pantallas no tienen guarda de ruta: Cámara, Alertas, Inventario, Patio, Bodega 2 y Mi perfil.
+- ~~Varias pantallas no tienen guarda de ruta: Cámara, Alertas, Inventario, Patio, Bodega 2 y Mi perfil.~~ Resuelto en la versión 0.3: `AppShell` exige sesión en todas las rutas salvo `/login` (RF-AUT-05). Esas pantallas están abiertas a todos los cargos, así que no requieren guarda por rol; las exclusivas del Jefe (Usuarios, Configuración, Lista de ingresos, Ingresos y despachos) mantienen `useRequireRole`.
 - El backend no exige sesión para `GET /api/warehouses/main/grid`, `POST /api/pallets` ni `GET /api/pallets/lista`.
 
 ### RF-AUT-05 — Mantener la sesión al recargar la página
 
-**Descripción:** al cargar la aplicación con un token vigente, el sistema deberá restaurar la sesión consultando `GET /api/auth/me`. Si el token expiró, deberá llevar al usuario al login.
-**Prioridad:** Should · **Estado:** Propuesto
-**Motivo:** hoy, al recargar, desaparecen el menú y las ventanas globales; así lo documenta el manual US-04 (REF-09).
-**Criterios de aceptación:** CA-RF-AUT-05-01
+**Descripción:** al cargar la aplicación con un token vigente, el sistema deberá restaurar la sesión (rol, RUT y menú) sin pedir de nuevo las credenciales. Si no hay token o expiró, deberá llevar al usuario al login.
+**Objetivo relacionado:** OBJ-008 · **Actor principal:** ACT-001…ACT-004
+**Prioridad:** Should · **Estado:** Implementado (`frontend_corte@a7f46a0`)
+**Motivo:** antes, al recargar (F5), se perdían el menú, el rol y las ventanas globales, y las pantallas sin guarda (por ejemplo, Inventario) quedaban abiertas sin sesión; así lo documentaba el manual US-04 (REF-09). En producción esto se veía como "después del login quedo en Inventario sin menú".
+
+**Precondiciones:** el navegador tiene `corte_token` en `localStorage` (lo guarda RF-AUT-01).
+**Entradas:** el JWT guardado. Su *payload* trae `rut`, `rol` y `exp`.
+
+**Proceso:**
+1. Al montar la aplicación, `AppProvider` lee `corte_token` y decodifica su *payload* (sin verificar la firma: la verifica el backend en cada solicitud).
+2. Si el token expiró (`exp`) o el rol no es uno de los cuatro de la aplicación, borra el token y deja la sesión cerrada.
+3. Si es válido, restaura el rol y el RUT en memoria y marca la sesión como iniciada.
+4. Al terminar, activa `sessionReady`. Mientras es `false`, no se muestran pantallas protegidas ni se redirige, para no expulsar al usuario antes de restaurar la sesión.
+5. Con `sessionReady` activo, la guardia central de `AppShell` decide:
+   - sin sesión, en cualquier ruta distinta de `/login` → redirige a `/login`;
+   - con sesión, en `/login` → redirige al Panel principal (`/dashboard`).
+6. `useRequireRole` espera también a `sessionReady` antes de aplicar la guarda por rol (RF-AUT-04).
+7. `GET /api/actividad`, que exige JWT, solo se consulta con la sesión iniciada. Así se evitan los 401 repetidos en la pantalla de login.
+
+**Salidas:** la misma pantalla que el usuario tenía abierta, con su menú y su rol; o la pantalla de login.
+**Postcondiciones:** la sesión dura lo mismo que el token (8 h por defecto, §30).
+**Dependencias:** RF-AUT-01, RF-AUT-04
+**Casos de uso relacionados:** UC-001
+**Criterios de aceptación:** CA-RF-AUT-05-01, CA-RF-AUT-05-02, CA-RF-AUT-05-03
+
+**Observaciones:**
+- La especificación original proponía consultar `GET /api/auth/me` (API-002). Se optó por decodificar el JWT en el navegador porque ya trae el rol y no agrega una solicitud al cargar. En consecuencia, si el Jefe desactiva al usuario o le cambia el cargo, el cambio se ve recién cuando el token expira o cuando una solicitud responde 401 o 403. Usar API-002 al cargar sigue siendo la mejora recomendada (§30, RN-020).
+- Si el token expira **durante** la sesión, la pantalla sigue mostrando el error de la API sin redirigir (§30; caso 7 de §15).
 
 ### RF-AUT-06 — Obligar a cambiar la contraseña inicial en el primer acceso
 
@@ -3597,7 +3622,7 @@ flowchart TD
 | 15 | Cámara llena | Aparece "Cámara llena" y **Confirmar** se deshabilita | Igual | ERR-038 |
 | 16 | Pallet con otro estado que conserva su posición (datos del seed) | La grilla muestra la posición libre, pero el backend la considera ocupada: puede haber errores de apilado o duplicados | Una sola fuente de verdad sobre la ocupación | H-09, DT-010 |
 | 17 | Se pierde el Wi-Fi dentro de la cámara | La operación falla y no se reintenta | Avisar y permitir reintentar sin duplicar. El PO confirmó que hay buena señal, así que no se requiere modo sin conexión (DPO-029) | RNF-CON-002, RSK-001 |
-| 18 | Recarga de la página | Se pierden el menú y la sesión en memoria | Restaurar la sesión | RF-AUT-05 |
+| 18 | Recarga de la página | La sesión se restaura desde el JWT guardado; si expiró, se va al login | Igual | RF-AUT-05 |
 | 19 | Salir con cambios de reorganización pendientes | Hay aviso al navegar por enlaces internos, pero no al cerrar la pestaña ni al recargar | Advertir también en ese caso (`beforeunload`) | RF-CAM-01 |
 | 20 | Desactivar al último Jefe activo | Se bloquea con 409 | Igual | ERR-016 |
 | 21 | Se ejecuta el seed contra producción | Se **borran todos los datos** | Bloquearlo en producción | RSK-012 |
@@ -4532,7 +4557,7 @@ Reúne los compose de producción (`docker-compose.yml`, que construye en el ser
 |---|---|
 | Método y ruta | `GET /api/auth/me` |
 | Autenticación | Bearer JWT |
-| Requisitos | RF-AUT-05 (propuesto). El frontend aún no lo usa |
+| Requisitos | RF-AUT-05. El frontend aún no lo usa: restaura la sesión decodificando el JWT (ver observaciones de RF-AUT-05) |
 
 **Response 200:**
 
@@ -5220,7 +5245,7 @@ El Jefe no puede quitarse a sí mismo (ni al cargo Jefe de planta) la administra
 | Usuario desactivado | Su token sigue sirviendo en los endpoints que no verifican el estado: grilla, lista de ingresos, alta de pallets e historial | Verificar el estado en todos los endpoints, o revocar el token al desactivar |
 | Contraseña inicial o restablecida | No se exige cambiarla | Mientras no la cambie, el backend solo acepta el cambio de contraseña y responde ERR-045 al resto (RF-AUT-06) |
 | Cambio de permisos de un cargo | No aplica (la matriz es fija) | Aplicarlo en la siguiente solicitud, sin esperar a que expire el token (RF-USR-05) |
-| Sesión en el frontend | Rol y "sesión iniciada" en memoria de React: se pierden al recargar (H-12) | Restaurarla con API-002 (RF-AUT-05) |
+| Sesión en el frontend | Se restaura al recargar decodificando el JWT de `localStorage`; una guardia central exige sesión en todas las rutas (RF-AUT-05). H-12 resuelto en la versión 0.3 | Validar el token con API-002 al cargar, para reflejar desactivaciones y cambios de cargo sin esperar a que expire |
 
 ---
 
@@ -6358,7 +6383,7 @@ Las decisiones se reconstruyeron a partir del código y de la documentación. Cu
 **Decisión:** SWR para los datos del servidor y `AppProvider` (Context) para la sesión, el rol y las ventanas globales.
 **Motivo:** tener caché y revalidación con poco código *(inferido)*.
 **Alternativas consideradas:** Redux o React Query *(inferido)*.
-**Consecuencias:** las vistas se sincronizan automáticamente, pero la sesión vive en memoria y se pierde al recargar (RF-AUT-05).
+**Consecuencias:** las vistas se sincronizan automáticamente. La sesión vive en memoria, pero se restaura desde el JWT al recargar (RF-AUT-05).
 
 ## DEC-005 — Reglas FIFO, zonas y sugerencia de ubicación en el cliente
 
@@ -6580,7 +6605,9 @@ MAJOR.MINOR.PATCH
 | CA-RF-AUT-04-01 | Un usuario Ayudante | Intenta abrir `/usuarios` o `/config`, o llamar a sus APIs | La pantalla lo redirige y la API responde 403 | Sí |
 | CA-RF-AUT-04-02 | Un usuario que no es Jefe | Cambia su rol en el navegador o llama sin token a `POST /api/pallets` | No obtiene permisos adicionales y la API responde 401 o 403 | No |
 | CA-RF-AUT-04-03 | Un Ayudante Operativo | Intenta despachar un pallet | La interfaz no muestra **Despachar** y la API responde 403 (DPO-016) | No (hoy puede despachar) |
-| CA-RF-AUT-05-01 | Una sesión con token vigente | Recarga la página | Sigue autenticado, con el mismo rol y el mismo menú | No |
+| CA-RF-AUT-05-01 | Una sesión con token vigente | Recarga la página | Sigue autenticado, con el mismo rol y el mismo menú | Sí |
+| CA-RF-AUT-05-02 | Un navegador sin token o con token expirado | Abre directamente una ruta interna, como `/inventario` | Es redirigido a `/login` sin ver la pantalla | Sí |
+| CA-RF-AUT-05-03 | Una sesión con token vigente | Abre `/login` | Es redirigido al Panel principal | Sí |
 | CA-RF-AUT-06-01 | Un usuario recién creado o con la contraseña restablecida | Ingresa con los últimos 5 dígitos de su RUT | Solo ve la pantalla de cambio de contraseña; la API responde ERR-045 a otras operaciones hasta que define una que cumple RN-019 | No |
 | CA-RF-USR-01-01 | Existen usuarios activos e inactivos | El Jefe filtra por "Inactivo" y busca por apellido | Ve solo los inactivos que coinciden | Sí |
 | CA-RF-USR-02-01 | Un RUT válido no registrado y los datos obligatorios completos | El Jefe pulsa **Crear usuario** | La cuenta queda activa, aparece en la lista y puede ingresar con los últimos 5 dígitos del RUT | Sí |
@@ -6691,7 +6718,7 @@ La tabla resume los casos de prueba asociados a los requisitos. La columna **Aut
 | TC-020 | RNF-SEG-002, 003, 009 | Una cuenta de cada rol | Llamar a cada endpoint sin token y con cada rol | 401 o 403 según la matriz objetivo de §29.4 | No |
 | TC-021 | RNF-SEG-004, RNF-SEG-005 | Producción | Escaneo de TLS; verificar que `JWT_SECRET` esté definido | TLS 1.2 o superior y secreto propio | No |
 | TC-022 | RF-GD-03 / CA-RF-GD-03-01 | Matriz de §9.10 | Ejecutar los flujos principales en cada dispositivo | Sin errores visuales | No (se propone Playwright) |
-| TC-023 | RF-AUT-05 / CA-RF-AUT-05-01 | Sesión iniciada | Recargar la página | La sesión se mantiene | Hoy falla |
+| TC-023 | RF-AUT-05 / CA-RF-AUT-05-01 a 03 | Sesión iniciada; luego, sin token | Recargar en `/inventario` y `/usuarios`; abrir `/login`; cerrar sesión y abrir `/inventario` | Mantiene la sesión y la ruta; `/login` lleva al Panel principal; sin token lleva a `/login` | Pasa (prueba manual con el build de producción, 29/09/2026) |
 | TC-024 | RN-001 a RN-005, RN-014 | — | Ejecutar `apilado.test.ts` | Termina con "apilado OK" | Sí: `frontend/src/lib/apilado.test.ts` |
 | TC-025 | RF-ING-07 / CA-RF-ING-07-01, 02, CA-RF-FIFO-05-01 | Pallets en el patio, uno con el plazo vencido | 1) Ubicar con la sugerencia. 2) Ubicar dos a la vez en la misma torre. 3) Ubicar el del plazo vencido | 1) `EN_CAMARA` en el primer nivel libre. 2) Uno falla con una nueva sugerencia. 3) Se ubica y queda la marca de exceso | No |
 | TC-026 | RN-027, RN-028 / CA-RF-OPT-01-05, 06 | Kombucha y Petainer activos (Sprint 2) | Ubicar Kombucha; ubicar Petainer en A4 (torre de 4), en B4 y en C4; intentar apilar sobre un Petainer | Kombucha solo en D2; Petainer en N5 de A4, N4 de B4 y como máximo N2 en C4; nada sobre el Petainer | No |
@@ -6959,7 +6986,7 @@ Se describen desde el punto de vista del usuario y de TI del cliente, para la ve
 | DT-011 | La CI no ejecuta pruebas; las imágenes solo tienen `latest` | Regresiones y sin vuelta atrás | §71, §74 | Alta |
 | DT-012 | Documentación desactualizada: README y arquitectura del frontend (backend simulado), `INSTALACION.md` (endpoints inexistentes y `NEXT_PUBLIC_API_URL` sin `/api`), README raíz (`actualizar_repos.sh`), `.env.example` raíz (plantilla genérica), diagramas de BD y E/R | Onboarding erróneo | Actualizar con cada entrega (RNF-MAN-003) | Media |
 | DT-013 | Fechas sin hora y mezcla de UTC y hora local | FIFO erróneo | §59. Con DPO-001 y DPO-004, el plazo pasa a contarse desde el registro en el patio (con hora) y la fecha de envasado queda como fecha de calendario | Alta |
-| DT-014 | La sesión vive en memoria | Mala experiencia al recargar | RF-AUT-05 | Media |
+| DT-014 | ~~La sesión vive en memoria~~ Resuelta en la versión 0.3 | — | RF-AUT-05 | — |
 | DT-015 | Mensajes de validación de Zod en inglés | Mensajes confusos | Personalizar los mensajes | Baja |
 | DT-016 | Tablas `auditoria`, `alerta`, `permiso` y `tipo_usuario_permiso` sin uso | Modelo engañoso | Implementar RF-AUD-01, RF-NTF-02 y RF-USR-05, o eliminarlas | Media |
 | DT-017 | Formatos regionales mezclados (`es-ES` y `es-CL`) | Inconsistencia visual | §60 | Baja |
