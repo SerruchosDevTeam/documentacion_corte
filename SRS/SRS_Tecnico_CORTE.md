@@ -139,7 +139,7 @@ Las marcas **H-xx** remiten a los hallazgos del levantamiento de casos de uso (R
 |---|---|---|---|
 | 0.1 | 28/09/2026 | Serruchos Dev Team | Borrador inicial por ingeniería inversa de `NEXO-C.O.R.T.E@86ee1c9`, `frontend_corte@20bb26f`, `backend_corte@6c280aa` y `documentacion_corte@211e708` |
 | 0.2 | 29/09/2026 | Giorgio Carlin (PO) y Serruchos Dev Team | Incorpora las 34 decisiones del PO sobre las preguntas abiertas y los hallazgos (§0.5): ingreso por el patio, dos alertas, lotes con varios pallets, cantidades por envase, Kombucha y Petainer, matriz de permisos editable, política de contraseñas, anulación de ingresos y motivo de ruptura FIFO. Quedan 6 preguntas abiertas (§85) |
-| 0.3 | 29/09/2026 | Serruchos Dev Team | RF-AUT-05 pasa a **Implementado** (`frontend_corte@a7f46a0`, rama `fix/redireccion-login`): la sesión se restaura desde el JWT al recargar y una guardia central protege todas las rutas (se cierra la observación de RF-AUT-04 sobre pantallas sin guarda, H-12 y DT-014). `GET /api/actividad` ya no se consulta sin sesión (`frontend_corte@30df2db`) |
+| 0.3 | 29/09/2026 | Serruchos Dev Team | RF-AUT-05 pasa a **Implementado** (`frontend_corte@a7f46a0`, rama `fix/redireccion-login`): la sesión se restaura desde el JWT al recargar y una guardia central protege todas las rutas (se cierra la observación de RF-AUT-04 sobre pantallas sin guarda, H-12 y DT-014). `GET /api/actividad` ya no se consulta sin sesión (`frontend_corte@30df2db`). RNF-SEG-004 pasa a **Parcial**: producción corre en `https://corte-cuellonegro.inf.uach.cl` con TLS 1.2+; faltan HSTS y cerrar el dominio anterior por HTTP |
 | 1.0 | | | Versión aprobada por el cliente |
 
 ## 0.2 Estado del documento
@@ -1236,7 +1236,7 @@ En empate, gana la primera posición recorrida.
 | RNF-SEG-001 | Seguridad | Contraseñas con hash bcrypt (costo ≥ 12) | Must | Implementado | Backend |
 | RNF-SEG-002 | Seguridad | JWT obligatorio en todos los endpoints salvo login y salud | Must | Parcial | Backend |
 | RNF-SEG-003 | Seguridad | Autorización por rol verificada en el backend | Must | Parcial | Backend |
-| RNF-SEG-004 | Seguridad | HTTPS obligatorio en producción | Must | Propuesto | DevOps |
+| RNF-SEG-004 | Seguridad | HTTPS obligatorio en producción | Must | Parcial | DevOps |
 | RNF-SEG-005 | Seguridad | Secretos solo por variables de entorno, sin valores por defecto | Must | Parcial | Backend / DevOps |
 | RNF-SEG-006 | Seguridad | Validación de toda entrada en el servidor con esquemas | Must | Parcial | Backend |
 | RNF-SEG-007 | Seguridad | Límite de intentos de inicio de sesión | Should | Propuesto | Backend |
@@ -2460,7 +2460,7 @@ La ventana de mantenimiento está por definir con el cliente (PA-019).
 | RNF-SEG-001 | Contraseñas guardadas con hash bcrypt, costo ≥ 12 | Revisión de código | Implementado en usuarios y perfil. El seed usa costo 10 | Must |
 | RNF-SEG-002 | Todos los endpoints, salvo login y salud, exigen un JWT válido | Prueba sin token → 401 | Parcial. No lo exigen `GET /api/warehouses/main/grid`, `GET /api/warehouses/{id}/grid`, `POST /api/pallets` ni `GET /api/pallets/lista` | Must |
 | RNF-SEG-003 | El backend verifica el rol en toda operación restringida | Prueba con un rol sin permiso → 403 | Parcial. Se verifica en la BD para usuarios, configuración y reorganización. El ingreso, la lista de ingresos y el historial no tienen control por rol | Must |
-| RNF-SEG-004 | En producción, el tráfico va solo por HTTPS (TLS 1.2 o superior) | Escaneo TLS y redirección de HTTP a HTTPS | Propuesto. Producción usa `http://grupo2.146.83.216.166.nip.io`: credenciales y tokens viajan sin cifrar | Must |
+| RNF-SEG-004 | En producción, el tráfico va solo por HTTPS (TLS 1.2 o superior) | Escaneo TLS y redirección de HTTP a HTTPS | Parcial. Producción usa `https://corte-cuellonegro.inf.uach.cl` con certificado de Let's Encrypt; acepta TLS 1.2 y 1.3, rechaza TLS 1.1 y redirige HTTP a HTTPS (308). Falta: (1) el dominio anterior `http://grupo2.146.83.216.166.nip.io` sigue respondiendo por HTTP sin cifrar; (2) no se envía la cabecera HSTS. Verificado el 29/09/2026 | Must |
 | RNF-SEG-005 | Los secretos solo se leen de variables de entorno, sin valores por defecto en el código | Revisión de código y del `.env` del servidor | Parcial. `JWT_SECRET` no figura en ninguna plantilla `.env` ni en los compose, y el código usa un valor embebido si falta (el valor no se reproduce aquí) | Must |
 | RNF-SEG-006 | Toda entrada se valida en el servidor con un esquema estricto | Pruebas con datos inválidos | Parcial. Hay esquemas Zod en autenticación, usuarios, perfil, configuración y operaciones de pallets. `POST /api/pallets` solo verifica que los campos vengan | Must |
 | RNF-SEG-007 | Limitar los intentos de login: por ejemplo, 5 por minuto por IP y cuenta, con bloqueo temporal | Prueba de fuerza bruta | Propuesto. No hay límite | Should |
@@ -4265,7 +4265,7 @@ flowchart LR
         GA["GitHub Actions<br/>build.yml"]
         GHCR["GHCR<br/>corte-frontend:latest<br/>corte-backend:latest"]
     end
-    NAV -->|"HTTP (sin TLS hoy)"| CADDY
+    NAV -->|"HTTPS (TLS 1.2+)"| CADDY
     CADDY --> FE
     CADDY --> BE
     NAV -.->|"fetch REST JSON + Bearer JWT"| CADDY
@@ -4498,7 +4498,7 @@ Reúne los compose de producción (`docker-compose.yml`, que construye en el ser
 
 | Aspecto | Situación actual | Recomendación |
 |---|---|---|
-| Protocolo | HTTP/1.1. En producción, sin TLS | HTTPS obligatorio (RNF-SEG-004) |
+| Protocolo | HTTP/1.1 y HTTP/2. En producción, HTTPS con TLS 1.2 o 1.3 | HTTPS obligatorio, sin acceso por HTTP (RNF-SEG-004) |
 | Formato | JSON (`Content-Type: application/json`). Cuerpo máximo de 100 KB | Igual |
 | Prefijo | `/api` para todos los recursos. `/health` también responde sin el prefijo | Igual |
 | Versionado | No hay | `/api/v1` en la próxima versión que rompa compatibilidad (§72) |
@@ -5615,7 +5615,7 @@ Si falla cualquier paso de una transacción, Prisma revierte todos los anteriore
 
 **Proveedor:** el curso INFO282.
 **Objetivo:** enrutar el tráfico HTTP a los contenedores `grupo2_*`.
-**Protocolo:** HTTP, sin TLS en el dominio actual.
+**Protocolo:** HTTPS en `https://corte-cuellonegro.inf.uach.cl` (certificado automático de Let's Encrypt; HTTP redirige con 308). El dominio anterior `http://grupo2.146.83.216.166.nip.io` sigue sirviendo por HTTP.
 **Autenticación:** no aplica.
 **Fallback:** ninguno.
 **Estado:** operativo. Su configuración no está en los repositorios.
@@ -5825,7 +5825,7 @@ RUN_DB_TESTS
 | `MYSQL_USER` / `MYSQL_PASSWORD` | BD | Usuario de la aplicación | `corte_user` / — | Sí | **Sí** (clave) |
 | `MYSQL_PORT` | BD (desarrollo) | Puerto publicado | 3306 | No | No |
 | `PORT_BACKEND` / `PORT_FRONTEND` | Producción | Puertos internos que usa Caddy | 4002 / 3002 | Sí | No |
-| `DOMAIN` | Producción | URL pública (CORS y build del frontend) | `http://grupo2.146.83.216.166.nip.io` | Sí | No |
+| `DOMAIN` | Producción | URL pública (CORS). El build del frontend usa `NEXT_PUBLIC_API_URL` = `DOMAIN` + `/api`, definido en `build.yml` | `https://corte-cuellonegro.inf.uach.cl` | Sí | No |
 | `GH_PAT` | CI (secreto de GitHub) | Token para clonar los subrepositorios y publicar en GHCR | — | Sí (en CI) | **Sí** |
 | `SERVER` / `REMOTE_DIR` | `deploy.sh` | Destino del despliegue por SSH | `grupo2@146.83.216.166` / `nexo_corte` | No | No |
 | `RUN_DB_TESTS` | Pruebas | Activa la prueba contra MySQL | 1 | No | No |
@@ -5842,7 +5842,7 @@ RUN_DB_TESTS
 | Prueba local del build | Verificar la imagen del backend | `docker compose up -d --build` en `backend_corte/` | `http://localhost:3001` | Seed | Operativo |
 | Pruebas automáticas | Pruebas unitarias y de integración | `node --import tsx --test tests/*.test.ts`. La prueba contra MySQL se activa con `RUN_DB_TESTS=1` | — | Temporales | Operativo (sin CI) |
 | Staging | Validación previa a producción y UAT | No existe | — | — | Propuesto: mismo stack, datos anonimizados |
-| Producción (taller) | Servicio del proyecto | `deploy.sh` + `docker-compose.server.yml` | `http://grupo2.146.83.216.166.nip.io` | Reales | Operativo hasta enero de 2027 |
+| Producción (taller) | Servicio del proyecto | `deploy.sh` + `docker-compose.server.yml` | `https://corte-cuellonegro.inf.uach.cl` | Reales | Operativo hasta enero de 2027 |
 | Producción definitiva (cliente) | Operación después del convenio | Por definir (PA-009) | Por definir (con HTTPS) | Reales | Pendiente |
 
 ---
@@ -5917,7 +5917,7 @@ Caddy (proxy inverso del servidor del taller, red red_taller_software, HTTP)
 | Almacenamiento | Volumen Docker `grupo2_db_data` | 40 GB SSD, más respaldo externo (§52) |
 | Red | Red Docker externa `red_taller_software`, sin puertos publicados | Red Docker interna; solo el puerto 443 expuesto, con firewall |
 | Contenedores | Docker, con la CLI `docker-compose` (v1) en `deploy.sh` | Docker Engine 24+ con Compose v2 |
-| Proxy y TLS | Caddy del curso, HTTP (dominio nip.io) | Caddy o Nginx propio, con certificado automático (Let's Encrypt) y el dominio del cliente |
+| Proxy y TLS | Caddy del curso, HTTPS con Let's Encrypt (dominio `corte-cuellonegro.inf.uach.cl`) | Caddy o Nginx propio, con certificado automático (Let's Encrypt) y el dominio del cliente |
 | Nube | No | Opcional |
 
 ---
@@ -5978,25 +5978,27 @@ Los valores son una propuesta y deben acordarse con el cliente.
 
 ## 54.2 Cifrado
 
-- **En tránsito:** hoy no hay (HTTP). Se requiere TLS 1.2 o superior de extremo a extremo hasta el proxy.
+- **En tránsito:** TLS 1.2 o 1.3 entre el navegador y el proxy en `https://corte-cuellonegro.inf.uach.cl`. Falta cerrar el acceso HTTP por el dominio anterior (RNF-SEG-004).
 - **En reposo:** MySQL no cifra los datos (configuración por defecto). Se requiere cifrado del disco o del volumen, y respaldos cifrados (§52).
 - **Hash:** bcrypt para las contraseñas.
 
 ## 54.3 HTTPS
 
-- **Actual:** `http://grupo2.146.83.216.166.nip.io`, sin certificado.
+- **Actual (29/09/2026):** `https://corte-cuellonegro.inf.uach.cl`, con certificado automático de Let's Encrypt (vence el 28/12/2026 y lo renueva Caddy).
 - **Requisito en producción:**
-  - dominio del cliente con certificado automático;
-  - redirección de 80 a 443;
-  - HSTS con `max-age` de al menos 6 meses;
-  - `FRONTEND_URL` y `NEXT_PUBLIC_API_URL` con `https://`.
+  - dominio con certificado automático — **cumplido** (en la producción definitiva, el dominio del cliente);
+  - redirección de 80 a 443 — **cumplido** (308);
+  - HSTS con `max-age` de al menos 6 meses — **pendiente** (no se envía la cabecera);
+  - `FRONTEND_URL` y `NEXT_PUBLIC_API_URL` con `https://` — **cumplido** (`NEXT_PUBLIC_API_URL` = `https://corte-cuellonegro.inf.uach.cl/api` en `build.yml`; `DOMAIN` del `.env` del servidor);
+  - dar de baja el dominio anterior `http://grupo2.146.83.216.166.nip.io`, que sigue sirviendo la aplicación por HTTP — **pendiente** (lo configura el Caddy del curso).
+- **Antecedente:** mientras el build usó `NEXT_PUBLIC_API_URL` = `http://grupo2.146.83.216.166.nip.io`, el navegador bloqueaba las llamadas a la API desde la página HTTPS (*Mixed Content*). Se corrigió en `NEXO-C.O.R.T.E@c8ff859`.
 
 ## 54.4 Protección contra ataques
 
 | Amenaza (OWASP) | Situación actual | Acción requerida |
 |---|---|---|
 | Control de acceso roto (A01) | El rol se puede cambiar en el navegador, y hay endpoints sin autenticación | RNF-SEG-002, RNF-SEG-003, RNF-SEG-009 |
-| Fallas criptográficas (A02) | Sin TLS; secreto JWT con valor por defecto | RNF-SEG-004, RNF-SEG-005 |
+| Fallas criptográficas (A02) | TLS en el dominio actual, pero el dominio anterior sigue por HTTP y no hay HSTS; secreto JWT con valor por defecto | RNF-SEG-004, RNF-SEG-005 |
 | Inyección SQL (A03) | Mitigada: Prisma usa consultas parametrizadas | Mantener. No concatenar SQL |
 | XSS (A03) | React escapa el contenido, pero el token está en `localStorage` y no hay CSP | CSP, cookie `HttpOnly` (RNF-SEG-011) |
 | CSRF | Riesgo bajo, porque el token va en una cabecera | Si se pasa a cookies: `SameSite=Strict` y token CSRF |
@@ -6716,7 +6718,7 @@ La tabla resume los casos de prueba asociados a los requisitos. La columna **Aut
 | TC-018 | RF-INV-04 / CA-RF-INV-04-01 | Datos del seed | Combinar filtros | Solo coincidencias | Manual |
 | TC-019 | RNF-PER-001, RNF-PER-002, RNF-CAP-002 | Entorno de pruebas con datos | k6 con 10 usuarios durante 5 min (grilla, despacho e ingreso) | p95 de la grilla ≤ 500 ms, escrituras ≤ 2 s, 0 errores | No |
 | TC-020 | RNF-SEG-002, 003, 009 | Una cuenta de cada rol | Llamar a cada endpoint sin token y con cada rol | 401 o 403 según la matriz objetivo de §29.4 | No |
-| TC-021 | RNF-SEG-004, RNF-SEG-005 | Producción | Escaneo de TLS; verificar que `JWT_SECRET` esté definido | TLS 1.2 o superior y secreto propio | No |
+| TC-021 | RNF-SEG-004, RNF-SEG-005 | Producción | Escaneo de TLS; verificar que `JWT_SECRET` esté definido | TLS 1.2 o superior y secreto propio | Parcial: TLS 1.2/1.3 sí y TLS 1.1 rechazado (29/09/2026); falta HSTS, cerrar el dominio HTTP anterior y verificar `JWT_SECRET` |
 | TC-022 | RF-GD-03 / CA-RF-GD-03-01 | Matriz de §9.10 | Ejecutar los flujos principales en cada dispositivo | Sin errores visuales | No (se propone Playwright) |
 | TC-023 | RF-AUT-05 / CA-RF-AUT-05-01 a 03 | Sesión iniciada; luego, sin token | Recargar en `/inventario` y `/usuarios`; abrir `/login`; cerrar sesión y abrir `/inventario` | Mantiene la sesión y la ruta; `/login` lleva al Panel principal; sin token lleva a `/login` | Pasa (prueba manual con el build de producción, 29/09/2026) |
 | TC-024 | RN-001 a RN-005, RN-014 | — | Ejecutar `apilado.test.ts` | Termina con "apilado OK" | Sí: `frontend/src/lib/apilado.test.ts` |
@@ -6806,7 +6808,7 @@ Los riesgos RSK-001 a RSK-005 provienen del Project Charter; los demás, de este
 | RSK-005 | Se supera el límite legal de apilamiento | Baja | Alto | Validar también en el ingreso desde el backend; UNIQUE por posición; restricción de niveles en la BD |
 | RSK-006 | Escalamiento de privilegios: el rol se cambia en el navegador y hay endpoints sin autenticación | Alta | Alto | RNF-SEG-002, RNF-SEG-003, RNF-SEG-009 |
 | RSK-007 | Tokens falsificables si producción usa el secreto JWT por defecto | Media | Crítico | Definir `JWT_SECRET`, eliminar el valor embebido y rotar el secreto |
-| RSK-008 | Credenciales y tokens expuestos por tráfico sin HTTPS | Alta | Alto | TLS en producción (RNF-SEG-004) |
+| RSK-008 | Credenciales y tokens expuestos por tráfico sin HTTPS | Media | Alto | TLS en producción (RNF-SEG-004): ya activo en el dominio actual; queda el dominio anterior por HTTP |
 | RSK-009 | Pérdida de datos por falta de respaldos o por `prisma db push` | Media | Crítico | Respaldos (§52) y migraciones versionadas (§73) |
 | RSK-010 | El servidor universitario deja de estar disponible en enero de 2027 | Alta (certeza) | Alto | El sistema se traspasa al cliente (DPO-032): definir con su TI la infraestructura y migrar antes de diciembre de 2026 (PA-009) |
 | RSK-011 | Priorización incorrecta (fecha sin hora, criterios distintos, parámetros que no se aplican), con riesgo de mermas | Alta | Alto | Dos alertas separadas (DPO-002), plazo desde el patio (DPO-001), §59, RF-CFG-05 |
@@ -6878,7 +6880,7 @@ El stack está definido: Next.js y React, Express, Prisma, MySQL y Docker Compos
 
 ## RES-003
 
-Hasta enero de 2027, el despliegue se hace en el servidor del taller INFO282: red compartida `red_taller_software`, nombres de contenedor `grupo2_*`, proxy Caddy del curso y dominio nip.io por HTTP.
+Hasta enero de 2027, el despliegue se hace en el servidor del taller INFO282: red compartida `red_taller_software`, nombres de contenedor `grupo2_*`, proxy Caddy del curso y dominio `corte-cuellonegro.inf.uach.cl` por HTTPS (antes, `grupo2.146.83.216.166.nip.io` por HTTP).
 
 ## RES-004
 
