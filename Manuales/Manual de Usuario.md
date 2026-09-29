@@ -2,11 +2,11 @@
 
 **Cervecería Cuello Negro**
 
-**Edición:** 1.3 · **Fecha:** 29 de septiembre de 2026
+**Edición:** 1.4 · **Fecha:** 29 de septiembre de 2026
 
-**Aplicación documentada:** US-02: frontend 0.1.0 (`6ca4992`) y backend 1.0.0 (`152596b`). Base de los capítulos anteriores: frontend 0.1.0 (`3d21cc3`) y backend 1.0.0 (`abb434f`). Sus verificaciones históricas conservan el alcance y la fecha indicados en el anexo.
+**Aplicación documentada:** US-18: frontend 0.1.0 (`952dfde`) y backend 1.0.0 (`bf5a1d7`). US-02: frontend 0.1.0 (`6ca4992`) y backend 1.0.0 (`152596b`). Base de los capítulos anteriores: frontend 0.1.0 (`3d21cc3`) y backend 1.0.0 (`abb434f`). Sus verificaciones históricas conservan el alcance y la fecha indicados en el anexo.
 
-Este manual reúne las instrucciones de uso de la aplicación actual. Comienza por el acceso al sistema y continúa con la gestión de usuarios, roles y permisos, el registro de producción y la consulta del mapa de Bodega 1. Las capturas usan cuentas y datos de ejemplo; no utilices esos datos para registrar producción real.
+Este manual reúne las instrucciones de uso de la aplicación actual. Comienza por el acceso al sistema y continúa con la gestión de usuarios, roles y permisos, el registro de producción, la consulta del mapa de Bodega 1 y el despacho de uno o varios pallets. Las capturas usan cuentas y datos de ejemplo; no utilices esos datos para registrar producción real.
 
 ## Índice
 
@@ -14,11 +14,13 @@ Este manual reúne las instrucciones de uso de la aplicación actual. Comienza p
 2. [Gestionar usuarios, roles y permisos — US-02](#usuarios)
 3. [Registrar un ingreso de producción — US-04](#ingresos)
 4. [Gemelo Digital 2D — Bodega 1 — US-09](#bodega-1)
-5. [Anexo: validaciones y revisión del manual](#validaciones)
+5. [Despachar uno o varios pallets — US-18](#despachos)
+6. [Anexo: validaciones y revisión del manual](#validaciones)
    - [Validación de US-01](#validacion-us-01)
    - [Validación de US-02](#validacion-us-02)
    - [Validación de US-04](#validacion-us-04)
    - [Validación de US-09](#validacion-us-09)
+   - [Validación de US-18](#validacion-us-18)
 
 <a id="acceso"></a>
 
@@ -497,15 +499,183 @@ Aunque la pantalla dice «Vista en tiempo real», no uses esa frase como garant�
 
 ---
 
+<a id="despachos"></a>
+
+## 5. Despachar uno o varios pallets — US-18
+
+Este capítulo explica cómo registrar la salida de pallets de **Lata** y **Barril**, revisar la prioridad de salida y comprobar la actualización de la cámara. Corresponde a [US-18 — Despacho de pallets (1 y varios) (5 SP)](https://trello.com/c/3jhBa3jN), dirigida al **Personal de Reparto** y al **Jefe de Planta**.
+
+### 5.1. Antes de comenzar
+
+Inicia sesión con tu cuenta activa siguiendo el [capítulo de acceso](#acceso). Confirma qué pallets saldrán y ten a mano el camión, cliente o pedido de destino. Comprueba el lote, envase, cantidad y ubicación física antes de registrar la salida.
+
+**Se despacha el pallet completo:** estos formularios no permiten indicar una cantidad parcial de cajas o barriles. Si necesitas dividirlo o enviar pallets a distintos destinos, coordina el procedimiento con el responsable. Cada despacho múltiple utiliza un único destino para todos sus pallets.
+
+> **Estado de salida en esta versión:** el sistema registra **En Camión**, libera la ubicación de cámara y conserva el registro del pallet. No equivale a confirmar entrega al cliente. Aunque la historia solicita `DESPACHADO`, la implementación actual guarda `EN_CAMION`; no busques un cambio automático a Entregado o Despachado.
+
+Las capturas se tomaron de la interfaz local con **datos ficticios y respuestas simuladas**, sin modificar inventario real. El recorrido visual se realizó con Jefe de Planta. Las opciones del Personal de Reparto se contrastaron en código; no se certificó un despacho real con ese perfil.
+
+Utilizaremos estos pallets de demostración, todos inicialmente **En Cámara**:
+
+| Lote | Estilo | Envase | Cantidad mostrada | Posición inicial | Uso en el ejemplo |
+|---|---|---|---:|---|---|
+| 26-901 | Lager | Lata | 48 | A1 · Nivel 1 | Despacho individual a Pedido DEMO-18 · Ruta Sur. |
+| 26-902 | Lager | Lata | 36 | A2 · Nivel 1 | Despacho múltiple a Pedido DEMO-19 · Ruta Norte. |
+| 26-903 | Lager | Lata | 48 | A3 · Nivel 1 | Despacho múltiple; existen Lager más antiguos. |
+| 26-904 | IPA | Barril | 12 | A4 · Nivel 1 | Despacho múltiple junto con las latas. |
+| 26-905 | Stout | Barril | 12 | A4 · Nivel 2 | Permanece en cámara; permite ilustrar la actualización de niveles. |
+
+Las posiciones A4 de los formularios corresponden a la primera columna visible de Zona Barriles; consulta la explicación de zonas del [mapa de Bodega 1](#bodega-1). La interfaz individual y el historial usan la etiqueta «cajas» también para Barril: confirma la unidad operativa con el responsable y no conviertas cantidades por tu cuenta.
+
+**Resultado esperado:** reconoces los pallets autorizados para la salida y su destino. Los códigos, fechas y cantidades de las imágenes solo sirven para explicar el procedimiento.
+
+### 5.2. Localizar pallets y revisar la prioridad
+
+1. En el menú lateral, selecciona **Alertas FIFO**. Si el menú muestra solo iconos, despliega sus nombres con la flecha del borde.
+2. Revisa las pestañas **Todos**, **Crítico**, **Preventivo** y **Óptimo**. Para preparar una salida con varios pallets, comienza en **Todos**.
+3. Identifica cada tarjeta por su **lote**, **estilo**, **posición**, **fecha de envasado** y estado **En Cámara**. Desplázate hacia abajo para ver todos los registros.
+4. Si necesitas comprobar su ubicación, pulsa **Ver en Cámara** y consulta el detalle del pallet. En una torre verifica también el nivel.
+
+**Resultado esperado:** encuentras el pallet correcto y reconoces si hay otros que deberían salir primero. Alertas FIFO muestra únicamente los pallets En Cámara; un pallet ya retirado de esta cámara no debe volver a seleccionarse para la misma salida.
+
+![Figura 5.1. Alertas FIFO con prioridades, despacho individual y botón Seleccionar](imagenes/us-18/01-alertas.png)
+
+*Figura 5.1. Inicio del ejemplo con cinco pallets. Parte del listado queda más abajo; desplázate para verlo completo.*
+
+**Cómo interpretar la prioridad:** FIFO significa dar salida primero a lo más antiguo; FEFO, a lo que vence primero. Alertas FIFO ordena por horas restantes calculadas por la aplicación. Además, al despachar, avisa si quedan pallets del mismo estilo con fecha de envasado anterior. Los indicadores dependen de las fechas y límites de esta versión: contrástalos con la información real del lote. Un color Óptimo no sustituye esa comprobación y un aviso Crítico no es una autorización de despacho.
+
+También puedes abrir el despacho individual desde **Inventario**: busca el lote, filtra **En Cámara** y utiliza **Por Vencimiento** o **Por Fecha** para revisar el orden. En computador, pasa el puntero por la fila y pulsa el icono del camión **Despachar**; en móvil aparece un botón con ese nombre. Otra entrada es **Vista de Cámara → pallet → Registrar Despacho**. Las tres entradas abren el mismo formulario individual.
+
+### 5.3. Despachar un pallet
+
+1. En **Alertas FIFO**, pulsa **Despachar** en la tarjeta del lote que corresponda.
+2. Se abre **Registrar Despacho**, con el subtítulo **Salida de pallet hacia camión**.
+3. Revisa el lote, estilo, cantidad, posición y fecha de envasado. Este formulario no permite cambiarlos. Si elegiste otro pallet, pulsa **Cancelar** y vuelve a seleccionarlo.
+4. Completa **Destino / Pedido**, obligatorio, con el camión, cliente o pedido. Admite hasta **150 caracteres**; un campo vacío o compuesto solo por espacios no habilita el envío.
+5. Para el despacho individual del ejemplo, selecciona **26-901** y escribe **Pedido DEMO-18 · Ruta Sur**.
+6. Pulsa **Confirmar Despacho** una sola vez. Si aparece una advertencia FIFO, sigue la sección siguiente. Durante el guardado se muestra **Guardando…** y no se permite cerrar el formulario.
+7. Espera a que cierre el formulario y aparezca la notificación **Despacho registrado**. Comprueba que el pallet deja de estar disponible en Alertas FIFO y realiza las verificaciones de la [sección de resultados](#resultado-despacho).
+
+**Resultado esperado:** se registra una salida del pallet completo con su destino. No vuelvas a enviarla si la confirmación demora: consulta primero el resultado.
+
+![Figura 5.2. Formulario individual con destino vacío](imagenes/us-18/02-individual.png)
+
+*Figura 5.2. Ejemplo con 26-903: Confirmar Despacho está deshabilitado y se anticipa una advertencia FIFO. Abrir el formulario no registra ninguna salida.*
+
+![Figura 5.3. Pallet 26-901 y destino listos para confirmar](imagenes/us-18/04-destino.png)
+
+*Figura 5.3. Ejemplo individual que respeta el orden de antigüedad de los Lager.*
+
+### 5.4. Atender una advertencia FIFO individual
+
+Si intentas despachar un pallet y quedan otros más antiguos del **mismo estilo** en cámara, aparece **Despacho fuera de orden FIFO**. Por ejemplo, al elegir 26-903 antes de despachar los otros Lager, se muestran 26-901 y 26-902.
+
+1. Lee la lista de lotes anteriores y la **Sugerencia FIFO**.
+2. Para respetar el orden, pulsa **Cancelar** en la advertencia. Esto vuelve al formulario individual; no registra el despacho.
+3. Pulsa **Cancelar** en el formulario para regresar al listado y selecciona el lote sugerido. En el ejemplo, **26-901**.
+4. Si la operación requiere una excepción, revísala con el responsable antes de utilizar **Despachar de todos modos**. Ese botón envía el despacho del pallet elegido; no cambia automáticamente la selección al lote sugerido.
+
+**Resultado esperado:** priorizas el lote anterior o continúas conscientemente con una excepción acordada. La pantalla actual no pide un motivo escrito; no interpretes el botón como registro de una justificación o aprobación formal.
+
+![Figura 5.4. Advertencia de despacho fuera de orden FIFO](imagenes/us-18/03-fifo.png)
+
+*Figura 5.4. Se recomienda 26-901 antes de 26-903. Cancelar permite revisar la selección sin despachar.*
+
+### 5.5. Seleccionar varios pallets
+
+1. En **Alertas FIFO**, elige **Todos** y pulsa **Seleccionar**, arriba a la derecha.
+2. Marca las casillas de los pallets que compartirán destino. Puedes combinar **Lata** y **Barril**.
+3. Revisa el número del botón inferior **Despachar N**. Puedes desmarcar una casilla para retirar ese pallet; con cero seleccionados, el botón permanece deshabilitado.
+4. Antes de continuar, revisa todas las selecciones. Cambiar de pestaña de prioridad no borra las casillas marcadas en las otras pestañas.
+5. Pulsa **Despachar N** para abrir el resumen. Esto todavía no guarda la salida.
+
+**Resultado esperado:** el resumen contiene exactamente los pallets que quieres enviar. No confundas **lotes** con **pallets**: puede haber varios pallets del mismo lote. El encabezado cuenta lotes distintos y el subtítulo indica el total de pallets seleccionados.
+
+![Figura 5.5. Selección de dos pallets desde Alertas FIFO](imagenes/us-18/05-seleccion.png)
+
+*Figura 5.5. 26-903 y 26-904 seleccionados. Esta selección deja fuera al Lager 26-902 y generará una advertencia.*
+
+**Cancelar la selección:** pulsa **Cancelar** en la barra inferior. Saldrás del modo de selección y se quitarán todas las marcas. No se registra ninguna salida.
+
+### 5.6. Revisar y confirmar el despacho múltiple
+
+1. En **¿Seguro que quieres despachar…?**, revisa cada tarjeta: **lote, estilo, Pallet #, envase, cantidad, fila, nivel, fecha de envasado, tiempo restante y estado**. Desplázate dentro del cuadro si no ves todos los datos.
+2. Completa **Destino / Pedido**. Es obligatorio, admite hasta 150 caracteres y se aplicará a todos los pallets de ese envío. Para el ejemplo múltiple, utiliza **Pedido DEMO-19 · Ruta Norte**.
+3. Si aparece **Hay lotes más antiguos del mismo estilo sin seleccionar…**, revisa la selección. Para incluir los anteriores, pulsa **Cancelar**: el cuadro se cierra y se borran las marcas; vuelve a **Seleccionar** y elige los pallets correctos.
+4. En el ejemplo, tras despachar 26-901 individualmente, selecciona **26-902, 26-903 y 26-904**. Así incluyes los dos Lager pendientes y el pallet de barriles IPA, sin omitir un Lager anterior.
+5. Si existe una excepción acordada para dejar pallets anteriores, la casilla del aviso permite reconocerla. Sin marcarla, **Confirmar despacho** queda deshabilitado. No la marques simplemente para saltarte la revisión.
+6. Pulsa **Confirmar despacho** una sola vez y espera **Guardando…**. Al terminar se cierra el cuadro, se limpia la selección y aparece una notificación con el número de pallets despachados y el destino.
+
+**Resultado esperado:** todos los pallets seleccionados salen de la disponibilidad de cámara en la misma operación. El servidor valida el grupo completo antes de guardar: si alguno ya no está disponible, rechaza el despacho y no guarda salidas parciales de ese envío.
+
+![Figura 5.6. Despacho múltiple con advertencia por omitir un lote anterior](imagenes/us-18/06-varios-fifo.png)
+
+*Figura 5.6. La casilla sin marcar mantiene deshabilitada la confirmación aunque el destino esté completo.*
+
+![Figura 5.7. Resumen de tres pallets de lata y barril con destino común](imagenes/us-18/07-varios.png)
+
+*Figura 5.7. Selección corregida: 26-902, 26-903 y 26-904. Las cantidades corresponden a pallets completos.*
+
+<a id="resultado-despacho"></a>
+
+### 5.7. Verificar la salida, el espacio y el historial
+
+1. En **Alertas FIFO**, comprueba que los pallets enviados ya no aparecen entre los disponibles.
+2. En **Vista de Cámara**, verifica que las posiciones de latas retiradas quedan sin esos pallets. Si salieron pallets de una torre de barriles, los restantes se muestran en niveles consecutivos. La actualización del mapa no demuestra por sí sola que se hayan realizado los movimientos físicos.
+3. En el ejemplo completo se despacharon cuatro pallets: 26-901 individualmente y 26-902, 26-903 y 26-904 en grupo. Solo permanece **26-905** en cámara, ahora en el nivel 1 de su posición de barriles. La ocupación del ejemplo queda en **1/45 pallets**.
+4. Si eres **Jefe de Planta**, entra a **Ingresos y Despachos**, selecciona la fecha de la operación y pulsa **Despachos**. Comprueba lote, cantidad mostrada, destino, hora y usuario responsable. En un envío de varios pallets aparece un registro por cada pallet.
+5. Si eres **Personal de Reparto** y no ves ese historial, solicita la comprobación al Jefe de Planta. Esa opción del menú está reservada a dicho perfil.
+6. Para comprobar persistencia, vuelve a consultar la cámara y el historial. Si recargar deja la aplicación sin menú, entra de nuevo desde `/login`. **No repitas el despacho solo para comprobarlo.**
+
+**Resultado esperado:** el mapa y el historial son coherentes con las salidas realizadas. La disponibilidad de cámara disminuye por los pallets retirados; esto no equivale a poner su cantidad en cero ni a borrar sus registros.
+
+![Figura 5.8. Cámara después de las salidas del ejemplo](imagenes/us-18/09-resultado.png)
+
+*Figura 5.8. Resultado ilustrativo con respuestas simuladas: posiciones de lata libres y 26-905 como único pallet restante.*
+
+![Figura 5.9. Historial de los cuatro pallets despachados](imagenes/us-18/10-historial.png)
+
+*Figura 5.9. Registros ficticios de una salida individual y una múltiple, filtrados por Despachos. El texto «Historial real» es una etiqueta de la aplicación; esta captura utiliza datos simulados.*
+
+**Límites de la consulta:** el historial presenta los últimos 100 movimientos, filtrados por fecha; la ausencia de un registro antiguo no prueba que nunca se despachó. Inventario utiliza los datos de la cámara y un pallet cuya posición fue liberada puede dejar de aparecer allí, incluso al elegir En Camión. Usa el historial para verificar la salida y no tomes un contador En Tránsito en cero como prueba de que no hubo despachos.
+
+### 5.8. Resolver problemas y cancelar
+
+| Situación o mensaje | Qué hacer | Resultado esperado |
+|---|---|---|
+| Confirmar Despacho está deshabilitado | Completa Destino / Pedido con texto, no solo espacios. En el envío múltiple, revisa también la selección y el aviso FIFO. | El botón se habilita cuando se cumplen los requisitos. |
+| No aparece Seleccionar | Comprueba que estás en Alertas FIFO y fuera del modo de selección. | Encuentras el acceso al despacho múltiple. |
+| Seleccionar está deshabilitado o no hay tarjetas | Revisa la pestaña Todos y la carga de datos; no asumas que la cámara está vacía ante un problema de conexión. | Distingues falta de pallets disponibles de un fallo de consulta. |
+| El resumen incluye más pallets de los visibles | Cambia a Todos y revisa las marcas; las selecciones persisten al cambiar de pestaña. Puedes cancelar y seleccionarlos nuevamente. | Envías únicamente los pallets correctos. |
+| «Uno de los pallets seleccionados ya salió o no está en cámara… No se despachó ningún pallet» | Cancela el cuadro, actualiza la consulta y vuelve a seleccionar los disponibles. Otra operación puede haber cambiado el inventario. | El envío rechazado no genera salidas parciales. |
+| «La cámara cambió durante la operación. Actualiza los datos y vuelve a intentarlo» | Consulta nuevamente los pallets y el historial antes de repetir. | Trabajas con el estado vigente y evitas duplicados. |
+| «Indica un pallet válido y un destino de hasta 150 caracteres» o «Selecciona pallets distintos…» | Revisa el destino y vuelve a seleccionar desde el listado actual. El límite del envío múltiple es de 200 pallets. | Corriges los datos o divides la operación con el responsable. |
+| «La cuenta no está activa» o token inválido/expirado | Inicia sesión nuevamente si corresponde; si la cuenta está inactiva, solicita revisión al responsable. | Recuperas el acceso con tu propia cuenta autorizada. |
+| «No se encontró la cámara principal» o nivel no configurado | Informa al responsable técnico; no cambies posiciones físicas para evitar el mensaje. | Se revisa la configuración antes de continuar. |
+| Error de conexión, guardado o espera prolongada | Comprueba cámara e historial antes de reenviar. Si no puedes confirmar el resultado, comunica lotes, destino, hora y mensaje al responsable. | Evitas registrar dos veces una salida dudosa. |
+| La cantidad dice «cajas» para Barril o la fecha parece incorrecta | Contrasta la unidad y fecha con el lote real y solicita revisión. | No tomas decisiones basándote únicamente en esa etiqueta o alerta. |
+
+![Figura 5.10. Error de disponibilidad en el despacho múltiple](imagenes/us-18/08-error.png)
+
+*Figura 5.10. Mensaje simulado que reproduce el rechazo del servidor. Cancela y consulta el estado vigente antes de preparar otro envío.*
+
+Antes de enviar, **Cancelar** cierra el formulario individual; en el múltiple también borra la selección. Cancelar la advertencia FIFO individual solo vuelve al formulario. **Después de guardar, Cancelar no deshace el despacho**: no hay una acción de reversión en estos formularios. Si registraste una salida incorrecta, comunica el caso al responsable y evita crear un ingreso duplicado para compensarla.
+
+---
+
+**Control del documento:** procedimientos contrastados con la interfaz y el código del 29-09-2026. Las diez capturas usan respuestas simuladas. Las pruebas de lógica, las diferencias con la historia y la revisión de comprensión pendiente se detallan en [Validación de US-18](#validacion-us-18).
+
+---
+
 <a id="validaciones"></a>
 
-## 5. Anexo: validaciones y revisión del manual
+## 6. Anexo: validaciones y revisión del manual
 
 Este anexo conserva las comprobaciones realizadas, las diferencias observadas y las pautas pendientes de revisión con un compañero. Está dirigido al equipo que mantiene el manual; no es necesario seguirlo para operar la aplicación.
 
 <a id="validacion-us-01"></a>
 
-### 5.1. Validación de US-01
+### 6.1. Validación de US-01
 
 **Fecha de comprobación:** 28-09-2026 · **Edición comprobada:** 1.0
 
@@ -562,7 +732,7 @@ Entregar el capítulo a una persona con una cuenta de prueba asignada. Solicitar
 
 <a id="validacion-us-02"></a>
 
-### 5.2. Validación de US-02
+### 6.2. Validación de US-02
 
 **Historia:** [US-02 — Gestión de usuarios, roles y permisos (3 SP)](https://trello.com/c/6ND3asV2).
 
@@ -622,7 +792,7 @@ En un entorno de prueba con cuentas desechables y al menos un jefe activo, entre
 
 <a id="validacion-us-04"></a>
 
-### 5.3. Validación de US-04
+### 6.3. Validación de US-04
 
 **Fecha de comprobación:** 28-09-2026 · **Edición comprobada:** 1.0
 
@@ -673,7 +843,7 @@ Criterio de aceptación: la persona completa el recorrido sin instrucciones adic
 
 <a id="validacion-us-09"></a>
 
-### 5.4. Validación de US-09
+### 6.4. Validación de US-09
 
 **Historia:** [US-09 — Gemelo Digital 2D — Bodega 1](https://trello.com/c/bUMsBE5E).
 
@@ -707,3 +877,79 @@ Criterio de aceptación: la persona completa el recorrido sin instrucciones adic
 Solicitar que, usando solo el capítulo 4, entre a la cámara, distinga pallets de posiciones ocupadas, identifique las tres zonas, consulte un nivel de una torre y cierre el detalle sin modificar datos. Debe reconocer qué indican los colores y qué debe hacer si el mapa aparece vacío inesperadamente.
 
 **Revisor, fecha y observaciones:** pendientes. Ajustar cualquier paso que requiera ayuda antes de aprobar la revisión de comprensión.
+
+<a id="validacion-us-18"></a>
+
+### 6.5. Validación de US-18
+
+**Historia:** [US-18 — Despacho de pallets (1 y varios) (5 SP)](https://trello.com/c/3jhBa3jN).
+
+**Fecha:** 29-09-2026 · **Edición del manual:** 1.4.
+
+**Código consultado:** frontend 0.1.0 (`952dfde`) y backend 1.0.0 (`bf5a1d7`). Los capítulos anteriores conservan sus comprobaciones históricas; no se han vuelto a certificar en esta edición.
+
+#### Método y evidencia
+
+Se revisaron los formularios individual y múltiple, Alertas FIFO, Inventario, el detalle de pallet, el contexto de la aplicación, el historial y los servicios de despacho. Las capturas usan los componentes del frontend local con respuestas de datos interceptadas en el navegador. La cuenta, los pallets y los movimientos son ficticios; las operaciones solo cambian datos temporales en memoria. No se modificaron inventario, usuarios, posiciones ni movimientos de la base habitual.
+
+| Comprobación | Resultado y alcance |
+|---|---|
+| Entrada por Alertas FIFO con Jefe de Planta | Recorrida en navegador con sesión simulada; figura 5.1. |
+| Formulario individual sin destino | Confirmación deshabilitada; figura 5.2. |
+| Formulario individual completo | Lote 26-901 y Pedido DEMO-18 · Ruta Sur; figura 5.3. Envío y cierre con respuesta simulada. |
+| Advertencia FIFO individual | 26-903 detecta 26-901 y 26-902 anteriores; figura 5.4. Se canceló la advertencia y luego el formulario. |
+| Selección múltiple | Casillas de 26-903 y 26-904 y contador Despachar 2; figura 5.5. |
+| Advertencia por un pallet anterior omitido | Casilla sin marcar y confirmación deshabilitada; figura 5.6. No se envió la excepción. |
+| Mezcla de envases | Resumen de 26-902 y 26-903 en Lata, y 26-904 en Barril, con un destino común; figura 5.7. |
+| Error de disponibilidad | Respuesta 409 simulada, sin modificar los datos de demostración, y mensaje visible; figura 5.10. Se canceló y preparó nuevamente la selección. |
+| Resultado e historial | Un pallet restante en cámara y cuatro registros de despacho simulados; figuras 5.8 y 5.9. No constituyen prueba de persistencia MySQL. |
+| Imágenes | Revisadas para legibilidad, campos, botones y ausencia de contraseñas o datos de cuentas reales. |
+
+#### Pruebas de lógica existentes
+
+La ejecución directa de `tests/pallet-operations.test.ts` falla antes de ejecutar sus casos porque importa `../src/lib/pallet-operations`, archivo inexistente tras el traslado del servicio. Para comprobar la lógica sin modificar el repositorio de la aplicación, se ejecutó una copia temporal del mismo archivo sustituyendo únicamente esa importación por la ruta actual de `src/services/pallet-operations.service.ts`.
+
+Los **cinco casos de esa copia temporal pasaron**, con una base simulada:
+
+| Caso | Resultado |
+|---|---|
+| Despacho individual libera la cámara, compacta la torre y registra una sola salida | Aprobado; verifica estado EN_CAMION, posición y movimiento. |
+| Despacho múltiple confirma todas las salidas y compacta la cámara | Aprobado. |
+| Despacho múltiple inválido no guarda salidas parciales | Aprobado. |
+| Reorganización conserva movimientos repetidos, compacta e inserta niveles | Aprobado; comprobación complementaria del servicio compartido. |
+| Reorganización inválida revierte cambios y rechaza conflictos o permisos insuficientes | Aprobado; no certifica una política exclusiva de roles para despacho. |
+
+Estas pruebas verifican el comportamiento del servicio frente a una base simulada. No se ejecutó la prueba de integración MySQL ni se midió la persistencia real tras recargar. La importación original sigue pendiente de corrección fuera del alcance de este manual.
+
+#### Comparación con Trello y límites
+
+| Criterio o comportamiento | Implementación encontrada |
+|---|---|
+| Despachar uno o varios pallets de lata o barril | Existen formulario individual y selección múltiple en Alertas FIFO. El grupo utiliza un destino común y despacha pallets completos. |
+| Estado final DESPACHADO | Diferencia: el servicio guarda EN_CAMION y la notificación individual muestra En Camión. No hay transición final a DESPACHADO en esta operación. |
+| Descontar stock | El servicio retira la asociación del pallet con su posición; así disminuye la disponibilidad de cámara. No reduce a cero la cantidad del pallet ni prueba un descuento global en todas las bodegas. Inventario se alimenta de la grilla de cámara. |
+| Liberar o actualizar posición | El servicio elimina la posición del pallet despachado y compacta los niveles restantes en la misma transacción. La imagen del resultado es simulada; la lógica se comprobó con los casos indicados. |
+| Priorizar FEFO/FIFO | Alertas ordena por horas restantes calculadas con límites por estilo. Los avisos de despacho comparan fechas de envasado entre pallets del mismo estilo, incluso si tienen distinto envase. No se valida una política FEFO completa basada en vencimientos configurados. |
+| Excepciones FIFO | El individual ofrece Despachar de todos modos y el múltiple una casilla. El servidor no recibe una justificación ni una confirmación FIFO específica y no vuelve a ejecutar esa comparación. No se certifica bloqueo de excepciones desde el servidor. |
+| Personal de Reparto y Jefe de Planta | Ambos tienen acceso al menú Alertas FIFO según el frontend. El servicio exige una cuenta activa para despachar, pero no restringe esa operación exclusivamente a esos dos roles. Solo se recorrió visualmente Jefe de Planta con sesión simulada. |
+| Consistencia de varios pallets | El servicio valida todos los seleccionados y usa una transacción serializable. Un pallet no disponible provoca rechazo del grupo; las pruebas simuladas comprueban ausencia de salidas parciales. |
+| Historial | Registra un movimiento por pallet con destino, cantidad y usuario. Puede registrar además cambios de posición de pallets que quedan en una torre. La vista consulta los últimos 100 movimientos y luego filtra por fecha y tipo. |
+| Validaciones | Destino obligatorio de 1 a 150 caracteres tras quitar espacios extremos; grupo de 1 a 200 identificadores positivos distintos. No hay campo de cantidad parcial. |
+
+Las cifras de tiempo, colores y fechas de las capturas son ilustrativas. Continúan los límites de interpretación de fechas descritos en los capítulos anteriores. No se cambiaron código, políticas, estado de la historia en Trello ni datos operativos como parte de esta documentación.
+
+#### Revisión con un compañero — pendiente
+
+En un entorno de pruebas aislado, preparar pallets de lata y barril, al menos dos del mismo estilo con fechas diferentes y una torre. Entregar el capítulo 5 y solicitar: «Despacha un pallet al destino de prueba; luego selecciona varios con un destino común. Reconoce la advertencia FIFO, cancela una selección incorrecta y verifica las salidas y el espacio restante usando solo el manual».
+
+| Tarea | Resultado |
+|---|---|
+| Localizar lote, envase, cantidad y posición | Pendiente |
+| Registrar un destino y un despacho individual | Pendiente |
+| Interpretar y cancelar una advertencia FIFO | Pendiente |
+| Seleccionar pallets de lata y barril y distinguir pallets de lotes | Pendiente |
+| Corregir la omisión de un lote anterior en el envío múltiple | Pendiente |
+| Verificar mapa, niveles e historial sin repetir el despacho | Pendiente |
+| Explicar En Camión frente a entrega final y cómo actuar ante un error | Pendiente |
+
+**Revisor, fecha y observaciones:** pendientes. Ajustar los pasos que requieran ayuda y repetirlos antes de aprobar la revisión de comprensión.
