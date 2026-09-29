@@ -969,7 +969,7 @@ El detalle **no muestra la posición** del pallet (H-29).
 | KPI 1 (Jefe): "Porcentaje Tipo Cerveza" | Gráfico de dona con el % de cada estilo sobre los pallets "En Cámara" | Nombre + % por estilo. Sin datos: "Sin pallets en cámara para mostrar." |
 | KPI 1 (otros roles): "Capacidad de Cámara" | Pallets "En Cámara" / 45 | "{n}/45 posiciones". Color de advertencia si supera el 85 % |
 | KPI 2: "Alertas Críticas FIFO" | Pallets con menos de 6 h restantes | "Requieren atención" o "Sin alertas activas" |
-| KPI 3: "Stock en Tránsito" | Pallets "En Camión" | "{n} pallet(s) en camión". Siempre da 0 (H-09) |
+| KPI 3: "Stock en Tránsito" | Pallets "En Camión" | "{n} pallet(s) en camión". No cuenta los despachados desde la aplicación (H-09) |
 
 - Grilla compacta de la cámara (CU-09) y la lista "Lotes Para Despachar" (CU-11).
 
@@ -1224,7 +1224,7 @@ Conviene resolverlos o decidirlos antes de cerrar la documentación formal de lo
 | H-06 | `POST /api/pallets` y `GET /api/pallets/lista` no exigen sesión. Además, el servidor no valida la zona, el apilado ni el rango de cantidad del ingreso | `backend_corte/src/routes/pallets.ts` | CU-03, CU-06 |
 | H-07 | Los estilos (4), los envases (2) y los límites FIFO (24 h / 72 h) están escritos en el código del frontend; no se leen de Configuración (`horasMaxFueraACamara`). Por eso, editar una cerveza no cambia las alertas, y "Kombucha" y "Petainer" no se pueden ingresar | `lib/constants.ts`, `lib/fifo.ts`, `NuevoIngresoModal.tsx` | CU-03, CU-11, CU-19 |
 | H-08 | Hay dos criterios de prioridad FIFO. Alertas, Inventario y Detalle usan horas desde el envasado (< 6 h / < 12 h); Lista de ingresos usa días al vencimiento (≤ 7 / ≤ 14 días). Un mismo lote puede verse Crítico en una pantalla y Óptimo en otra | `lib/fifo.ts` vs `pallet.controller.ts` | CU-06, CU-11 |
-| H-09 | La cámara solo trae pallets con posición en la Bodega 1, y los despachados pierden su posición. Por eso, "Stock en Tránsito", "En Tránsito" y "Reservados" siempre dan 0, y los filtros por esos estados quedan vacíos | `warehouse.controller.ts` | CU-08, CU-12, CU-22 |
+| H-09 | La cámara solo trae pallets con posición en la Bodega 1, y los despachados desde la aplicación pierden su posición. Por eso, "Stock en Tránsito", "En Tránsito" y "Reservados" no reflejan esos despachos: solo cuentan pallets que conservan posición con otro estado (como los "En Camión" que carga el seed). Esos pallets, además, siguen ocupando su posición en la BD aunque la grilla la muestre libre | `warehouse.controller.ts` | CU-08, CU-12, CU-22 |
 | H-10 | El selector "Perfil" del menú lateral permite a cualquier usuario cambiar de rol en el navegador y ver los menús y pantallas del Jefe. El backend bloquea usuarios, configuración y reorganización, pero no los ingresos ni la lista de ingresos | `layout/Sidebar.tsx` | Transversal |
 | H-11 | Al iniciar sesión, un tipo de usuario que no está en el mapa recibe `JEFE_PLANTA` por defecto | `backend_corte/src/routes/auth.ts` | CU-01 |
 | H-12 | La sesión vive en la memoria de React: al recargar la página se pierde, aunque el token siga en `localStorage`. Las páginas sin protección se muestran sin menú | `layout/AppProvider.tsx` | CU-01 |
