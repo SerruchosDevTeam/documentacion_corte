@@ -31,7 +31,7 @@
   - *Validación front:* lo que el formulario impide.
   - *Validación back:* lo que rechaza el servidor.
 - **Salidas.** Incluyen los datos que se muestran, los mensajes (toasts y errores) y los cambios de estado en la base de datos.
-- **Hallazgos.** Las marcas **H-xx** remiten a la sección 9, que lista las diferencias entre las HU, el frontend y el backend.
+- **Hallazgos.** Las marcas **H-xx** remiten a la sección 9, que lista las diferencias entre las HU, el frontend y el backend, junto con la decisión del Product Owner sobre cada una (29/09/2026).
 
 ---
 
@@ -125,6 +125,13 @@
 | CU-22 | Ver panel principal | HU-6.3 | Nuevo | `/dashboard` | Implementado |
 | CU-23 | Gestionar mi perfil | — | Nuevo | `/mi-perfil` | Implementado |
 | CU-24 | Consultar inventario por ubicación (Patio / Bodega 2) | — | Nuevo | `/patio`, `/bodega-2` | Implementado (solo consulta) |
+| CU-25 | Ubicar en la cámara un pallet del patio | HU-3.1 (US-04) | Nuevo (DPO-005) | — | No implementado |
+
+**Cambios de alcance decididos por el Product Owner (29/09/2026, SRS §0.5):**
+- Todo pallet se registra primero en el patio y después se ubica en la cámara (DPO-005). Por eso CU-03 pasa a registrar el ingreso en el patio y aparece CU-25; la sugerencia de CU-04 se usa al ubicar.
+- CU-11 muestra dos alertas separadas: Fuera de frío (patio) y Vencimiento (cámara) (DPO-002).
+- CU-12 y CU-15 exigen un motivo si el despacho rompe el orden de salida (DPO-024), y el Ayudante Operativo deja de despachar (DPO-016).
+- CU-14 queda disponible para todos los cargos (DPO-016).
 
 ---
 
@@ -1214,39 +1221,41 @@ Aparecen en la esquina superior derecha, con tema oscuro. La mayoría se definen
 
 Conviene resolverlos o decidirlos antes de cerrar la documentación formal de los casos de uso.
 
-| ID | Hallazgo | Dónde | CU |
-|---|---|---|---|
-| H-01 | La nota de calidad del ingreso se descarta: el frontend envía `notaCalidad`, pero `crearPallet` no la lee | `backend_corte/src/controllers/pallet.controller.ts` | CU-03, CU-05 |
-| H-02 | El Detalle del lote tiene el campo "Nueva Nota de Calidad", pero no un botón para guardar; `onUpdate` nunca se ejecuta. El endpoint `PATCH /api/pallets/{id}` sí existe | `pallets/PalletDetailPanel.tsx` | CU-05, CU-10 |
-| H-03 | Las fotos del pallet no se envían ni se guardan. El campo `pallet.imagen` de la BD no se usa | `pallets/NuevoIngresoModal.tsx` | CU-03 |
-| H-04 | "Ver detalle", "Editar" y "Eliminar" de la lista de ingresos no hacen nada, y no hay endpoints para editar ni eliminar | `ingresos/ListaIngresosView.tsx` | CU-06 |
-| H-05 | El ingreso no crea un `movimiento`, así que nunca aparece como "Ingreso" en el historial; solo se ven los que carga el seed | `pallet.controller.ts` | CU-03, CU-13 |
-| H-06 | `POST /api/pallets` y `GET /api/pallets/lista` no exigen sesión. Además, el servidor no valida la zona, el apilado ni el rango de cantidad del ingreso | `backend_corte/src/routes/pallets.ts` | CU-03, CU-06 |
-| H-07 | Los estilos (4), los envases (2) y los límites FIFO (24 h / 72 h) están escritos en el código del frontend; no se leen de Configuración (`horasMaxFueraACamara`). Por eso, editar una cerveza no cambia las alertas, y "Kombucha" y "Petainer" no se pueden ingresar | `lib/constants.ts`, `lib/fifo.ts`, `NuevoIngresoModal.tsx` | CU-03, CU-11, CU-19 |
-| H-08 | Hay dos criterios de prioridad FIFO. Alertas, Inventario y Detalle usan horas desde el envasado (< 6 h / < 12 h); Lista de ingresos usa días al vencimiento (≤ 7 / ≤ 14 días). Un mismo lote puede verse Crítico en una pantalla y Óptimo en otra | `lib/fifo.ts` vs `pallet.controller.ts` | CU-06, CU-11 |
-| H-09 | La cámara solo trae pallets con posición en la Bodega 1, y los despachados desde la aplicación pierden su posición. Por eso, "Stock en Tránsito", "En Tránsito" y "Reservados" no reflejan esos despachos: solo cuentan pallets que conservan posición con otro estado (como los "En Camión" que carga el seed). Esos pallets, además, siguen ocupando su posición en la BD aunque la grilla la muestre libre | `warehouse.controller.ts` | CU-08, CU-12, CU-22 |
-| H-10 | El selector "Perfil" del menú lateral permite a cualquier usuario cambiar de rol en el navegador y ver los menús y pantallas del Jefe. El backend bloquea usuarios, configuración y reorganización, pero no los ingresos ni la lista de ingresos | `layout/Sidebar.tsx` | Transversal |
-| H-11 | Al iniciar sesión, un tipo de usuario que no está en el mapa recibe `JEFE_PLANTA` por defecto | `backend_corte/src/routes/auth.ts` | CU-01 |
-| H-12 | La sesión vive en la memoria de React: al recargar la página se pierde, aunque el token siga en `localStorage`. Las páginas sin protección se muestran sin menú | `layout/AppProvider.tsx` | CU-01 |
-| H-13 | `fechaEnvasado` se guarda como DATE, sin hora, así que las horas FIFO se cuentan desde las 00:00 UTC. Ejemplo: un Lager ingresado a las 12:00 en Chile (UTC-3) aparece de inmediato con unas 9 h restantes (Preventivo) | BD `lote.fecha_producida` | CU-03, CU-11, CU-15 |
-| H-14 | El selector de tipo de usuario dice "Jefe de plata" (error de tipeo); el backend lo traduce a "Jefe de planta" | `usuarios/UsuarioFields.tsx` | CU-02 |
-| H-15 | Las políticas de contraseña no coinciden: el Jefe puede asignar una de 8 caracteres sin complejidad, mientras el usuario necesita 12 con complejidad. La contraseña inicial es de 5 dígitos | `EditUsuarioView.tsx`, `MiPerfilView.tsx` | CU-02, CU-23 |
-| H-16 | Del RUT solo se valida el formato, no el dígito verificador (módulo 11). Además, la búsqueda de usuarios por RUT no encuentra la "K", porque compara en minúsculas | `backend_corte/src/routes/usuarios.ts`, `UsuariosView.tsx` | CU-02 |
-| H-17 | El ID de lote no valida vacío ni largo (la BD admite 50) ni unicidad; un lote repetido devuelve "Error interno" | `NuevoIngresoModal.tsx` | CU-03 |
-| H-18 | En el ingreso se puede elegir un nivel ya ocupado, pero el backend no desplaza a los pallets que están ahí: pueden quedar dos pallets en el mismo nivel | `NuevoIngresoModal.tsx`, `pallet.controller.ts` | CU-03 |
-| H-19 | Las posiciones se rotulan distinto según la pantalla. La grilla numera la zona Barriles como 1–3 y rotula la zona Extra como "A2/A3"; las tablas, el despacho y las alertas usan A4–C6 y D2/D3; el ingreso muestra la zona Extra como "a" | `CamaraGrid.tsx` | CU-04, CU-09 |
-| H-20 | "¿Olvidaste tu contraseña?" no hace nada | `auth/LoginView.tsx` | CU-01 |
-| H-21 | "Nuevo Ingreso" solo aparece para el Jefe en el Panel principal, pero lo ven todos los roles en la Vista de Cámara | `DashboardView.tsx`, `CamaraView.tsx` | CU-03 |
-| H-22 | En la sugerencia de ubicación, "0 a mover" y las razones son texto fijo. El puntaje no considera la antigüedad del lote | `NuevoIngresoModal.tsx` | CU-04 |
-| H-23 | El historial solo trae los últimos 100 movimientos, así que una fecha antigua puede aparecer "sin movimientos" aunque los tenga | `backend_corte/src/routes/actividad.ts` | CU-13 |
-| H-24 | En Alertas, la etiqueta dice "Tiempo consumido", pero el número son las horas restantes | `alertas/AlertasView.tsx` | CU-11 |
-| H-25 | El toast de la reorganización dice "Lote Reorganización de cámara movido" | `layout/AppProvider.tsx` | CU-14 |
-| H-26 | La matriz de permisos es fija y de solo lectura, y no refleja lo que realmente pasa (por ejemplo, todos los roles pueden despachar). Las tablas `permiso` y `tipo_usuario_permiso` no se usan | `config/ConfigView.tsx` | CU-02 |
-| H-27 | El rol "Calidad" (Encargado de Calidad, Admin según las HU) queda como `OPERARIO`, con los mismos permisos que el Ayudante | `backend_corte/src/routes/auth.ts` | Actores |
-| H-28 | El despacho no pide la cantidad de cajas (HU-5.4): siempre sale el pallet completo. Tampoco se registra el motivo cuando se rompe el orden FIFO | `RegistroDespachoForm.tsx` | CU-12, CU-15 |
-| H-29 | El Detalle del lote no muestra la posición del pallet | `PalletDetailPanel.tsx` | CU-10 |
-| H-30 | Cerrar sesión no invalida el token en el servidor; sigue siendo válido hasta 8 h | `AppProvider.tsx` | CU-21 |
-| H-31 | Al crear o editar un usuario, algunos mensajes de validación del servidor salen en inglés (son los mensajes por defecto de Zod) | `backend_corte/src/routes/usuarios.ts` | CU-02 |
+El 29/09/2026 el Product Owner decidió los hallazgos que tenían más de una solución posible. La última columna indica la decisión (**DPO-xxx**, detallada en el SRS, §0.5) o, si el hallazgo solo admitía una corrección, "Corregir". Este documento sigue describiendo el comportamiento **actual** del frontend; el comportamiento esperado está en el SRS.
+
+| ID | Hallazgo | Dónde | CU | Decisión (29/09/2026) |
+|---|---|---|---|---|
+| H-01 | La nota de calidad del ingreso se descarta: el frontend envía `notaCalidad`, pero `crearPallet` no la lee | `backend_corte/src/controllers/pallet.controller.ts` | CU-03, CU-05 | Corregir: guardar la nota como `nota_calidad` |
+| H-02 | El Detalle del lote tiene el campo "Nueva Nota de Calidad", pero no un botón para guardar; `onUpdate` nunca se ejecuta. El endpoint `PATCH /api/pallets/{id}` sí existe | `pallets/PalletDetailPanel.tsx` | CU-05, CU-10 | Corregir: agregar el botón **Guardar nota** |
+| H-03 | Las fotos del pallet no se envían ni se guardan. El campo `pallet.imagen` de la BD no se usa | `pallets/NuevoIngresoModal.tsx` | CU-03 | DPO-026: las fotos se implementan en el Sprint 2 o después; mientras tanto, se oculta el paso |
+| H-04 | "Ver detalle", "Editar" y "Eliminar" de la lista de ingresos no hacen nada, y no hay endpoints para editar ni eliminar | `ingresos/ListaIngresosView.tsx` | CU-06 | DPO-022: editar y anular con motivo; anulación lógica y permiso propio (por defecto, el Jefe) |
+| H-05 | El ingreso no crea un `movimiento`, así que nunca aparece como "Ingreso" en el historial; solo se ven los que carga el seed | `pallet.controller.ts` | CU-03, CU-13 | Corregir: registrar el movimiento de ingreso con su autor |
+| H-06 | `POST /api/pallets` y `GET /api/pallets/lista` no exigen sesión. Además, el servidor no valida la zona, el apilado ni el rango de cantidad del ingreso | `backend_corte/src/routes/pallets.ts` | CU-03, CU-06 | Corregir: exigir sesión y validar en el servidor |
+| H-07 | Los estilos (4), los envases (2) y los límites FIFO (24 h / 72 h) están escritos en el código del frontend; no se leen de Configuración (`horasMaxFueraACamara`). Por eso, editar una cerveza no cambia las alertas, y "Kombucha" y "Petainer" no se pueden ingresar | `lib/constants.ts`, `lib/fifo.ts`, `NuevoIngresoModal.tsx` | CU-03, CU-11, CU-19 | DPO-010: todo sale de Configuración. DPO-011 y DPO-012: Kombucha (solo en D2) y Petainer en el Sprint 2 |
+| H-08 | Hay dos criterios de prioridad FIFO. Alertas, Inventario y Detalle usan horas desde el envasado (< 6 h / < 12 h); Lista de ingresos usa días al vencimiento (≤ 7 / ≤ 14 días). Un mismo lote puede verse Crítico en una pantalla y Óptimo en otra | `lib/fifo.ts` vs `pallet.controller.ts` | CU-06, CU-11 | DPO-002: dos alertas separadas, Fuera de frío (patio) y Vencimiento (cámara) |
+| H-09 | La cámara solo trae pallets con posición en la Bodega 1, y los despachados desde la aplicación pierden su posición. Por eso, "Stock en Tránsito", "En Tránsito" y "Reservados" no reflejan esos despachos: solo cuentan pallets que conservan posición con otro estado (como los "En Camión" que carga el seed). Esos pallets, además, siguen ocupando su posición en la BD aunque la grilla la muestre libre | `warehouse.controller.ts` | CU-08, CU-12, CU-22 | DPO-025: el ciclo termina en "En camión"; "Stock en tránsito" = despachados del día; sin Reservado ni Entregado |
+| H-10 | El selector "Perfil" del menú lateral permite a cualquier usuario cambiar de rol en el navegador y ver los menús y pantallas del Jefe. El backend bloquea usuarios, configuración y reorganización, pero no los ingresos ni la lista de ingresos | `layout/Sidebar.tsx` | Transversal | Criterio del análisis: se elimina el selector; el rol lo define el servidor |
+| H-11 | Al iniciar sesión, un tipo de usuario que no está en el mapa recibe `JEFE_PLANTA` por defecto | `backend_corte/src/routes/auth.ts` | CU-01 | Criterio del análisis: un tipo desconocido queda sin acceso |
+| H-12 | La sesión vive en la memoria de React: al recargar la página se pierde, aunque el token siga en `localStorage`. Las páginas sin protección se muestran sin menú | `layout/AppProvider.tsx` | CU-01 | Corregir: restaurar la sesión al recargar (RF-AUT-05) |
+| H-13 | `fechaEnvasado` se guarda como DATE, sin hora, así que las horas FIFO se cuentan desde las 00:00 UTC. Ejemplo: un Lager ingresado a las 12:00 en Chile (UTC-3) aparece de inmediato con unas 9 h restantes (Preventivo) | BD `lote.fecha_producida` | CU-03, CU-11, CU-15 | DPO-004: la fecha de envasado es solo fecha (a mano o desde Gestión Cervecera). DPO-001: el plazo corre desde el registro en el patio |
+| H-14 | El selector de tipo de usuario dice "Jefe de plata" (error de tipeo); el backend lo traduce a "Jefe de planta" | `usuarios/UsuarioFields.tsx` | CU-02 | Corregir el texto |
+| H-15 | Las políticas de contraseña no coinciden: el Jefe puede asignar una de 8 caracteres sin complejidad, mientras el usuario necesita 12 con complejidad. La contraseña inicial es de 5 dígitos | `EditUsuarioView.tsx`, `MiPerfilView.tsx` | CU-02, CU-23 | DPO-019 y DPO-020: política única de 12 caracteres con mayúscula, minúscula y número; la inicial obliga a cambiarla |
+| H-16 | Del RUT solo se valida el formato, no el dígito verificador (módulo 11). Además, la búsqueda de usuarios por RUT no encuentra la "K", porque compara en minúsculas | `backend_corte/src/routes/usuarios.ts`, `UsuariosView.tsx` | CU-02 | Corregir: validar el dígito verificador y buscar la "K" sin distinguir mayúsculas |
+| H-17 | El ID de lote no valida vacío ni largo (la BD admite 50) ni unicidad; un lote repetido devuelve "Error interno" | `NuevoIngresoModal.tsx` | CU-03 | DPO-006 y DPO-007: formato `AA-NNN` (año y n° de cocción), a mano o desde Gestión Cervecera; un lote puede tener varios pallets |
+| H-18 | En el ingreso se puede elegir un nivel ya ocupado, pero el backend no desplaza a los pallets que están ahí: pueden quedar dos pallets en el mismo nivel | `NuevoIngresoModal.tsx`, `pallet.controller.ts` | CU-03 | DPO-014: al ubicar, solo el primer nivel libre de la torre |
+| H-19 | Las posiciones se rotulan distinto según la pantalla. La grilla numera la zona Barriles como 1–3 y rotula la zona Extra como "A2/A3"; las tablas, el despacho y las alertas usan A4–C6 y D2/D3; el ingreso muestra la zona Extra como "a" | `CamaraGrid.tsx` | CU-04, CU-09 | DPO-013: nomenclatura oficial A1–D6 |
+| H-20 | "¿Olvidaste tu contraseña?" no hace nada | `auth/LoginView.tsx` | CU-01 | DPO-021: la restablece el Jefe desde Usuarios; sin correo |
+| H-21 | "Nuevo Ingreso" solo aparece para el Jefe en el Panel principal, pero lo ven todos los roles en la Vista de Cámara | `DashboardView.tsx`, `CamaraView.tsx` | CU-03 | DPO-016: todos los cargos registran ingresos |
+| H-22 | En la sugerencia de ubicación, "0 a mover" y las razones son texto fijo. El puntaje no considera la antigüedad del lote | `NuevoIngresoModal.tsx` | CU-04 | DPO-015: no tapar los pallets que vencen antes; razones calculadas |
+| H-23 | El historial solo trae los últimos 100 movimientos, así que una fecha antigua puede aparecer "sin movimientos" aunque los tenga | `backend_corte/src/routes/actividad.ts` | CU-13 | Corregir: paginación en el servidor |
+| H-24 | En Alertas, la etiqueta dice "Tiempo consumido", pero el número son las horas restantes | `alertas/AlertasView.tsx` | CU-11 | Corregir la etiqueta ("Tiempo restante") |
+| H-25 | El toast de la reorganización dice "Lote Reorganización de cámara movido" | `layout/AppProvider.tsx` | CU-14 | Corregir el texto |
+| H-26 | La matriz de permisos es fija y de solo lectura, y no refleja lo que realmente pasa (por ejemplo, todos los roles pueden despachar). Las tablas `permiso` y `tipo_usuario_permiso` no se usan | `config/ConfigView.tsx` | CU-02 | DPO-017: matriz editable por el Jefe; matriz inicial DPO-016 |
+| H-27 | El rol "Calidad" (Encargado de Calidad, Admin según las HU) queda como `OPERARIO`, con los mismos permisos que el Ayudante | `backend_corte/src/routes/auth.ts` | Actores | DPO-018: rol propio; administra la configuración, no los usuarios |
+| H-28 | El despacho no pide la cantidad de cajas (HU-5.4): siempre sale el pallet completo. Tampoco se registra el motivo cuando se rompe el orden FIFO | `RegistroDespachoForm.tsx` | CU-12, CU-15 | DPO-023: en esta versión, siempre el pallet completo. DPO-024: motivo obligatorio al romper el orden |
+| H-29 | El Detalle del lote no muestra la posición del pallet | `PalletDetailPanel.tsx` | CU-10 | Corregir: mostrar la posición |
+| H-30 | Cerrar sesión no invalida el token en el servidor; sigue siendo válido hasta 8 h | `AppProvider.tsx` | CU-21 | Corregir (SRS §30) |
+| H-31 | Al crear o editar un usuario, algunos mensajes de validación del servidor salen en inglés (son los mensajes por defecto de Zod) | `backend_corte/src/routes/usuarios.ts` | CU-02 | Corregir: mensajes en español |
 
 ### Notas técnicas
 
