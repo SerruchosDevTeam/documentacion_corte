@@ -139,7 +139,7 @@ Las marcas **H-xx** remiten a los hallazgos del levantamiento de casos de uso (R
 |---|---|---|---|
 | 0.1 | 28/09/2026 | Serruchos Dev Team | Borrador inicial por ingeniería inversa de `NEXO-C.O.R.T.E@86ee1c9`, `frontend_corte@20bb26f`, `backend_corte@6c280aa` y `documentacion_corte@211e708` |
 | 0.2 | 29/09/2026 | Giorgio Carlin (PO) y Serruchos Dev Team | Incorpora las 34 decisiones del PO sobre las preguntas abiertas y los hallazgos (§0.5): ingreso por el patio, dos alertas, lotes con varios pallets, cantidades por envase, Kombucha y Petainer, matriz de permisos editable, política de contraseñas, anulación de ingresos y motivo de ruptura FIFO. Quedan 6 preguntas abiertas (§85) |
-| 0.3 | 30/09/2026 | Serruchos Dev Team | Verificación de aceptación del PO (30/09/2026, §76.1): US-01, US-02, US-09, US-18 y TECH-02 aceptadas; API-035 (despacho múltiple), CA-RF-DES-01-04, TC-029 y DT-019 a DT-021. RF-AUT-05 pasa a **Implementado** (`frontend_corte@a7f46a0`, rama `fix/redireccion-login`): la sesión se restaura desde el JWT al recargar y una guardia central protege todas las rutas (se cierra la observación de RF-AUT-04 sobre pantallas sin guarda, H-12 y DT-014). `GET /api/actividad` ya no se consulta sin sesión (`frontend_corte@30df2db`). RNF-SEG-004 pasa a **Parcial**: producción corre en `https://corte-cuellonegro.inf.uach.cl` con TLS 1.2+; faltan HSTS y cerrar el dominio anterior por HTTP |
+| 0.3 | 30/09/2026 | Serruchos Dev Team | Verificación de aceptación del PO (30/09/2026, §76.1): US-01, US-02, US-09, US-18 y TECH-02 aceptadas; API-035 (despacho múltiple), CA-RF-DES-01-04, TC-029 y DT-019 a DT-021. Manual de usuario 1.5 y manual de despliegue 1.0 (REF-09). RF-AUT-05 pasa a **Implementado** (`frontend_corte@a7f46a0`, rama `fix/redireccion-login`): la sesión se restaura desde el JWT al recargar y una guardia central protege todas las rutas (se cierra la observación de RF-AUT-04 sobre pantallas sin guarda, H-12 y DT-014). `GET /api/actividad` ya no se consulta sin sesión (`frontend_corte@30df2db`). RNF-SEG-004 pasa a **Parcial**: producción corre en `https://corte-cuellonegro.inf.uach.cl` con TLS 1.2+; faltan HSTS y cerrar el dominio anterior por HTTP |
 | 1.0 | | | Versión aprobada por el cliente |
 
 ## 0.2 Estado del documento
@@ -409,7 +409,7 @@ Definir los requisitos funcionales, técnicos y de calidad necesarios para imple
 | REF-06 | Carta Gantt | `documentacion_corte/Documentos/Carta_Gantt_CORTE.xlsx` | 2026 |
 | REF-07 | Catálogo de diagramas | `documentacion_corte/Diagramas.md` y `documentacion_corte/Diagramas/` | 2026 |
 | REF-08 | Levantamiento de casos de uso desde el frontend | `documentacion_corte/Casos_de_Uso/Levantamiento_Frontend.md` | 28/09/2026; decisiones del PO agregadas el 29/09/2026 |
-| REF-09 | Manual de usuario (US-01, US-02, US-04, US-09 y US-18) y sus validaciones | `documentacion_corte/Manuales/` | 30/09/2026 (rama `main`, `9df1d3f`) |
+| REF-09 | Manual de usuario, edición 1.5 (US-01, US-02, US-04, US-09 y US-18, con sus validaciones) y manual de despliegue, edición 1.0 (arquitectura del backend, contrato de respuestas, build y despliegue) | `documentacion_corte/Manuales/` | 30/09/2026 (rama `docs/manuales-pruebas-qa`) |
 | REF-10 | Guía de instalación y despliegue | `NEXO-C.O.R.T.E/INSTALACION.md` y `README.md` | `86ee1c9` |
 | REF-11 | README del backend | `backend_corte/README.md` | `6c280aa` |
 | REF-12 | Evaluación heurística (HCI) | `frontend_corte/docs/HCI/` | 21/06/2026 |
@@ -7141,8 +7141,9 @@ El 29/09/2026 el PO respondió 18 de las 23 preguntas de la versión 0.1, ademá
 
 ## 86.3 Documentación pendiente
 
-- Manual de administración y manual de despliegue: están vacíos.
-- Manual de usuario: en `main` cubre las US-01, US-02, US-04, US-09 y US-18. La sección de US-01 aún indica que la sesión se pierde al recargar; debe actualizarse por RF-AUT-05. Describe el comportamiento actual: las secciones de ingreso (US-04), permisos (US-02) y detalle del pallet (US-09) deberán actualizarse cuando se implementen las decisiones del PO (DPO-005, DPO-016, DPO-002).
+- Manual de administración: está vacío (US-15).
+- Manual de despliegue: edición 1.0 del 30/09/2026 (TECH-02). Falta la sección de migraciones, seed y diagrama E/R que pide TECH-03.
+- Manual de usuario: la edición 1.5 (30/09/2026) cubre las US-01, US-02, US-04, US-09 y US-18, y ya refleja RF-AUT-05 (la sesión se mantiene al recargar). Las revisiones de comprensión con un compañero siguen pendientes. Describe el comportamiento actual: las secciones de ingreso (US-04), permisos (US-02) y detalle del pallet (US-09) deberán actualizarse cuando se implementen las decisiones del PO (DPO-005, DPO-016, DPO-002).
 - Manual de integración técnica y API (Gantt).
 - Actualizar la Carta Gantt: las tareas del Sprint 1 figuran como "Pendiente", aunque varias ya están implementadas (gemelo digital, detalle y algoritmo base). Hay que agregar las tareas nuevas de las decisiones del PO (§0.5).
 - Actualizar las HU que contradicen las decisiones del PO: Calidad como "Admin" (DPO-018), despacho parcial (HU-5.4, DPO-023) y la recuperación de contraseña por correo (DPO-021).

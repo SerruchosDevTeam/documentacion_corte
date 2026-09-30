@@ -2,9 +2,9 @@
 
 **Cervecería Cuello Negro**
 
-**Edición:** 1.4 · **Fecha:** 29 de septiembre de 2026
+**Edición:** 1.5 · **Fecha:** 30 de septiembre de 2026
 
-**Aplicación documentada:** US-18: frontend 0.1.0 (`952dfde`) y backend 1.0.0 (`bf5a1d7`). US-02: frontend 0.1.0 (`6ca4992`) y backend 1.0.0 (`152596b`). Base de los capítulos anteriores: frontend 0.1.0 (`3d21cc3`) y backend 1.0.0 (`abb434f`). Sus verificaciones históricas conservan el alcance y la fecha indicados en el anexo.
+**Aplicación documentada:** edición 1.5 (historias en Pruebas QA: US-01, US-02, US-09 y US-18): frontend 0.1.0 (`40e33be`) y backend 1.0.0 (`26b32b3`), verificados el 30-09-2026. Versiones anteriores: US-18: frontend 0.1.0 (`952dfde`) y backend 1.0.0 (`bf5a1d7`). US-02: frontend 0.1.0 (`6ca4992`) y backend 1.0.0 (`152596b`). Base de los capítulos anteriores: frontend 0.1.0 (`3d21cc3`) y backend 1.0.0 (`abb434f`). Sus verificaciones históricas conservan el alcance y la fecha indicados en el anexo.
 
 Este manual reúne las instrucciones de uso de la aplicación actual. Comienza por el acceso al sistema y continúa con la gestión de usuarios, roles y permisos, el registro de producción, la consulta del mapa de Bodega 1 y el despacho de uno o varios pallets. Las capturas usan cuentas y datos de ejemplo; no utilices esos datos para registrar producción real.
 
@@ -43,7 +43,9 @@ La pantalla muestra una indicación sobre la contraseña inicial basada en el RU
 3. En **Contraseña**, escribe tu contraseña actual. El campo oculta los caracteres.
 4. Pulsa **Ingresar** una sola vez y espera mientras aparece **Ingresando…**.
 
-**Resultado esperado:** se abre el **Panel principal** y aparece el menú correspondiente al perfil recibido al iniciar sesión. Actualmente todos los perfiles llegan a ese mismo panel; cambian las opciones del menú.
+**Resultado esperado:** se abre el **Panel principal** y aparece el menú correspondiente al perfil recibido al iniciar sesión. Todos los perfiles llegan a ese mismo panel; cambian las opciones del menú y lo que muestra el panel (por ejemplo, el gráfico de estilos y **Nuevo Ingreso** solo aparecen para el Jefe de Planta).
+
+Si ya tienes una sesión abierta en ese navegador y vuelves a la dirección de acceso, la aplicación te lleva directamente al **Panel principal**.
 
 ![Figura 1.1. Pantalla de inicio de sesión sin credenciales](imagenes/us-01/01-inicio.png)
 
@@ -83,25 +85,36 @@ No uses el selector «Perfil» como procedimiento para obtener permisos: en esta
 
 *Figura 1.3. Opciones visibles al entrar con Personal de reparto.*
 
-### 1.4. Cerrar sesión
+### 1.4. Recargar la página y duración de la sesión
+
+- **Recargar (F5) no cierra tu sesión.** Sigues en la misma pantalla, con tu perfil y tu menú.
+- La sesión dura **8 horas** desde que ingresaste. Después, al recargar o abrir la aplicación, aparece **Iniciar sesión**.
+- Si abres una pantalla interna (por ejemplo, Inventario) sin una sesión vigente, la aplicación te lleva a **Iniciar sesión**.
+- Si la sesión expira mientras trabajas, una operación puede mostrar «Token inválido o expirado». Recarga la página e ingresa de nuevo. Antes de repetir la operación, comprueba si se guardó.
+- **La sesión queda guardada en el navegador aunque cierres la pestaña.** En un equipo compartido, usa siempre **Cerrar sesión** (sección siguiente).
+
+**Resultado esperado:** puedes recargar para actualizar los datos sin volver a ingresar, y sabes cuándo la aplicación te pedirá credenciales otra vez.
+
+### 1.5. Cerrar sesión
 
 1. Guarda o termina la tarea que estés realizando.
 2. En la parte inferior del menú lateral, pulsa el botón con el icono de salida, **Cerrar sesión**.
 3. Comprueba que vuelve a aparecer **Iniciar sesión**, como en la figura 1.1.
 
-**Resultado esperado:** sales de la sesión en esa ventana. En un equipo compartido, cierra también la pestaña al terminar. No basta con dejar de usar la aplicación o cambiar de página.
+**Resultado esperado:** la sesión se borra de ese navegador. Si después abres una pantalla interna o recargas, se pedirá iniciar sesión otra vez. **Cerrar la pestaña no cierra la sesión:** en un equipo compartido, pulsa siempre **Cerrar sesión** antes de irte.
 
-### 1.5. Resolver problemas de acceso
+### 1.6. Resolver problemas de acceso
 
 | Situación o mensaje | Qué hacer |
 |---|---|
 | «Ingrese RUT o correo y contraseña» | Completa ambos campos e intenta nuevamente. |
 | «Credenciales incorrectas» | Revisa el identificador, las mayúsculas de la contraseña y que no hayas añadido espacios al copiarla. |
 | «Credenciales incorrectas o usuario inactivo» | Confirma tus datos. Si son correctos, pide al responsable que revise si tu cuenta está activa. El mensaje por sí solo no permite distinguir ambas causas. |
-| «No se pudo conectar con el servidor backend» o error de conexión | Revisa tu conexión e inténtalo de nuevo. Si continúa, informa al responsable; no cambies tu contraseña por este mensaje. |
+| «Error de conexión. Intente nuevamente.» | Revisa tu conexión e inténtalo de nuevo. Si continúa, informa al responsable; no cambies tu contraseña por este mensaje. |
+| «No se pudo iniciar sesión» | La respuesta del servidor fue incompleta. Inténtalo de nuevo y, si se repite, informa al responsable con la hora aproximada. |
 | Olvidaste tu contraseña | Contacta al responsable de usuarios. El botón «¿Olvidaste tu contraseña?» está visible, pero todavía no inicia una recuperación. |
-| Al recargar desaparece el menú o dejan de abrirse los formularios | Vuelve a la dirección de acceso terminada en `/login` e inicia sesión otra vez. La versión actual no restaura automáticamente la sesión visual después de recargar. |
-| Una operación indica que la sesión es inválida o expiró | Vuelve a iniciar sesión. Si sigue fallando, comunica el mensaje y la operación al responsable, sin compartir la contraseña. |
+| Al recargar aparece «Iniciar sesión» | Tu sesión expiró (8 horas) o se cerró. Ingresa de nuevo; volverás al Panel principal. |
+| Una operación indica que la sesión es inválida o expiró | Recarga la página e inicia sesión. Si sigue fallando, comunica el mensaje y la operación al responsable, sin compartir la contraseña. |
 | No ves una opción o aparece acceso denegado | Solicita que revisen el rol de tu cuenta. No utilices credenciales de otra persona. |
 
 **Resultado esperado:** corriges los datos de acceso o identificas cuándo pedir ayuda. Si solicitas soporte, indica la hora aproximada y el mensaje; no envíes tu contraseña ni códigos de sesión.
@@ -212,9 +225,9 @@ Para consultar la referencia visual, entra a **Configuración → Permisos de us
 
 *Figura 2.4. Referencia de accesos por cargo; los controles de edición están deshabilitados.*
 
-**Cuándo se aplica el cambio:** una vez guardado, el servidor consulta el cargo y estado actuales en cada solicitud para administrar **Usuarios** y **Configuración**, sin reiniciar el sistema. Sin embargo, el menú de una sesión ya abierta conserva el perfil anterior. Para ver el menú correspondiente al nuevo cargo, pide al colaborador que cierre sesión y vuelva a entrar. Ayudante y Calidad se muestran con el perfil de interfaz **Operario**.
+**Cuándo se aplica el cambio:** una vez guardado, el servidor consulta el cargo y estado actuales en cada solicitud para administrar **Usuarios** y **Configuración**, sin reiniciar el sistema. Sin embargo, el menú de una sesión ya abierta conserva el perfil anterior, **incluso si la persona recarga la página**. Para ver el menú correspondiente al nuevo cargo, pide al colaborador que pulse **Cerrar sesión** y vuelva a entrar. Ayudante y Calidad se muestran con el perfil de interfaz **Operario**.
 
-**Resultado esperado:** el listado muestra el cargo nuevo y, tras un nuevo inicio de sesión, la persona reconoce su menú. Si recibe acceso denegado aunque un enlace siga visible, solicita revisión del cargo; la presencia del enlace no confirma autorización. No se ha verificado en este manual la aplicación inmediata de permisos en todos los módulos.
+**Resultado esperado:** el listado muestra el cargo nuevo y, tras un nuevo inicio de sesión, la persona reconoce su menú. Si recibe acceso denegado aunque un enlace siga visible, solicita revisión del cargo; la presencia del enlace no confirma autorización. Verificado el 30-09-2026: al cambiar un Ayudante a Jefe de Planta, su sesión abierta pudo administrar Usuarios de inmediato, sin reiniciar el sistema; el menú cambió al volver a ingresar.
 
 ### 2.6. Desactivar una cuenta
 
@@ -226,7 +239,7 @@ Utiliza esta opción cuando una persona ya no deba iniciar sesión. **Desactivar
 4. Pulsa **Aceptar**. Si elegiste otra cuenta por error o decides mantenerla activa, pulsa **Cancelar**.
 5. Espera el cierre del mensaje y comprueba **Inactivo** en la lista. Si usabas el filtro Activo, la fila desaparece de ese filtro: selecciona Inactivo o Cualquiera para encontrarla.
 
-**Resultado esperado:** la cuenta figura como Inactiva y no puede iniciar una nueva sesión. También pierde la autorización para administrar Usuarios y Configuración. No se promete un cierre automático de todas sus sesiones abiertas ni la revocación de todos los accesos: ese alcance permanece sin verificar.
+**Resultado esperado:** la cuenta figura como Inactiva y no puede iniciar una nueva sesión. También pierde la autorización para administrar Usuarios y Configuración. Verificado el 30-09-2026: una sesión que ya estaba abierta pierde de inmediato el acceso a Usuarios y Configuración. **No se cierra automáticamente:** mientras no expire (8 horas), todavía puede consultar la cámara y el historial. Si la desactivación es urgente, pide a la persona que cierre sesión o informa al responsable técnico.
 
 ![Figura 2.5. Confirmación de desactivación de Ana Ejemplo](imagenes/us-02/04-desactivar.png)
 
@@ -265,11 +278,11 @@ Utiliza esta opción cuando una persona ya no deba iniciar sesión. **Desactivar
 | «No se puede desactivar ni cambiar el cargo del último jefe de planta activo…» | Conserva esa cuenta y coordina que exista otro jefe activo y autorizado antes de repetir el cambio. |
 | «Otro administrador está modificando usuarios. Vuelva a intentarlo» | Consulta nuevamente los datos actuales, coordina el cambio y repítelo si sigue siendo necesario. |
 | «Solo el jefe de planta puede administrar usuarios» | Solicita revisar el rol y estado de tu cuenta; después de un cambio de cargo, cierra sesión y entra nuevamente. |
-| «Inicie sesión nuevamente…» o «Token inválido o expirado» | Vuelve a iniciar sesión. Si recargar te deja sin menú, abre la dirección de acceso terminada en `/login`. |
+| «Inicie sesión nuevamente…» o «Token inválido o expirado» | Recarga la página; si la sesión expiró, aparecerá **Iniciar sesión**. Ingresa de nuevo. |
 | Error de carga, conexión o guardado | Comprueba la conexión. Vuelve a consultar la cuenta antes de reenviar para evitar duplicados o repetir una operación que sí se guardó. |
 | «Usuario no encontrado» | Regresa a Usuarios y busca nuevamente la cuenta; no sigas usando una edición antigua. |
 | La nueva contraseña no se acepta | En edición administrativa debe tener entre 8 y 72 caracteres. Si no quieres cambiarla, deja el campo vacío. |
-| El cargo cambió pero la otra persona conserva el menú anterior | Pídele cerrar sesión y volver a entrar. No uses el selector visual Perfil como comprobación del cambio. |
+| El cargo cambió pero la otra persona conserva el menú anterior | Pídele pulsar **Cerrar sesión** y volver a entrar; recargar la página no basta. No uses el selector visual Perfil como comprobación del cambio. |
 
 ![Figura 2.8. Mensaje por RUT duplicado en el formulario](imagenes/us-02/07-error.png)
 
@@ -279,7 +292,7 @@ Si necesitas soporte, indica la operación, el mensaje exacto y la hora aproxima
 
 ---
 
-**Control del documento:** pasos contrastados con la interfaz y el código disponibles el 29-09-2026. Las capturas usan respuestas simuladas; las comprobaciones y sus límites se detallan en [Validación de US-02](#validacion-us-02).
+**Control del documento:** pasos contrastados con la interfaz y el código disponibles el 29-09-2026 y verificados contra la base de datos el 30-09-2026. Las capturas usan respuestas simuladas; las comprobaciones y sus límites se detallan en [Validación de US-02](#validacion-us-02).
 
 ---
 
@@ -364,7 +377,7 @@ Si todavía estás seleccionando, **Cancelar selección** sale de ese modo. Si y
 2. Pulsa **Confirmar Ingreso** una sola vez. Mientras se procesa, el botón muestra **Guardando...**.
 3. Cuando el formulario se cierre, busca el código del lote en la cámara. En el ejemplo, **26-904** aparece en la zona de latas, C3.
 4. Toca el pallet para abrir **Detalles del Lote**. Comprueba **Lager**, **48 cajas**, **Lata** y el estado **En Cámara**.
-5. Para verificar que quedó guardado, recarga la página y busca nuevamente el lote. En esta versión puede desaparecer el menú o dejar de abrirse el detalle tras recargar: vuelve a la pantalla de inicio de sesión, ingresa de nuevo y entra a «Vista de Cámara». **No registres el pallet otra vez.**
+5. Para verificar que quedó guardado, recarga la página y busca nuevamente el lote; la sesión se mantiene al recargar. **No registres el pallet otra vez.**
 
 **Resultado esperado:** el pallet continúa visible después de recargar. El ejemplo 26-904 se guardó y permaneció visible durante la prueba.
 
@@ -384,7 +397,7 @@ El formulario usa automáticamente la fecha del momento del ingreso; no permite 
 | Error al guardar | Revisa los datos y comprueba primero si el lote ya aparece en la cámara. Un lote repetido también puede causar un error. | Evitas repetir un ingreso que ya se haya guardado. |
 | El envío demora o no sabes si terminó | Espera y verifica el lote antes de volver a confirmar. Si persiste el problema, informa el código de lote y el mensaje que aparece. | El responsable puede revisar el caso sin duplicar el registro. |
 | No aparece «Elegir otra ubicación» | Esa opción está disponible para Jefe de Planta. Consulta a ese perfil si necesitas cambiar la propuesta. | Se revisa la ubicación con el perfil adecuado. |
-| Al recargar desaparece el menú o no abre «Nuevo Ingreso» | Vuelve a iniciar sesión y entra desde el menú a «Vista de Cámara». | Recuperas los controles de la sesión; los ingresos guardados permanecen. |
+| Después de recargar aparece «Iniciar sesión» | Tu sesión expiró. Ingresa de nuevo y entra desde el menú a «Vista de Cámara». | Recuperas los controles de la sesión; los ingresos guardados permanecen. |
 
 ![Figura 3.5. Confirmar Ingreso deshabilitado antes de completar las selecciones](imagenes/us-04/05-validacion.png)
 
@@ -475,7 +488,7 @@ El detalle también puede mostrar acciones como **Registrar Despacho** o un camp
 
 Con una cuenta de Calidad, abre **Vista de Cámara** y toca el pallet del mismo modo. No necesitas cambiar el selector de perfil para consultar los datos.
 
-Aunque la pantalla dice «Vista en tiempo real», no uses esa frase como garantía de actualización instantánea. Si acabas de registrar una operación y no ves el resultado esperado, vuelve a consultar la vista. Si recargas la página y desaparecen el menú o los paneles, vuelve a iniciar sesión como se explica en [problemas de acceso](#acceso).
+Aunque la pantalla dice «Vista en tiempo real», no uses esa frase como garantía de actualización instantánea. Si acabas de registrar una operación y no ves el resultado esperado, vuelve a consultar la vista. Puedes recargar la página para volver a consultar: la sesión se mantiene (ver [duración de la sesión](#acceso)).
 
 **Resultado esperado:** Calidad puede leer la ocupación y los detalles sin entrar en modo de reorganización.
 
@@ -490,7 +503,7 @@ Aunque la pantalla dice «Vista en tiempo real», no uses esa frase como garant�
 | No aparece un lote | Comprueba su estado y ubicación. Esta grilla muestra solo lo registrado En Cámara en Bodega 1. |
 | El mapa aparece vacío o con cero pallets inesperadamente | Espera la carga y vuelve a consultar. Si continúa, informa al responsable: esta versión puede mostrar una grilla vacía cuando falla la consulta. No concluyas que la bodega está vacía. |
 | Al tocar el pallet se selecciona para moverlo | Estás en **Reorganizar**. Sal de ese modo antes de consultar. Si aparecen cambios pendientes que no deseas conservar, **Cancelar** en «¿Desea guardar los cambios?» los descarta y sale; no mantiene los movimientos pendientes. |
-| El detalle no abre después de recargar | Vuelve a iniciar sesión y entra a la vista desde el menú. |
+| Después de recargar aparece «Iniciar sesión» | Tu sesión expiró. Ingresa de nuevo y entra a la vista desde el menú. |
 | El número de columna no coincide con otra pantalla | Identifica zona, fila, columna y lote. En Barriles, las columnas visibles 1–3 corresponden a las generales 4–6. |
 | No reconoces un Petainer | No te guíes solo por la imagen: la versión actual no distingue su dibujo del de un barril. Consulta el texto de Envase y confirma con el responsable. |
 | La fecha o la alerta parece incorrecta | Informa al responsable y contrasta la fecha del lote antes de tomar decisiones. No modifiques el inventario solo para hacer coincidir el indicador. |
@@ -511,9 +524,9 @@ Inicia sesión con tu cuenta activa siguiendo el [capítulo de acceso](#acceso).
 
 **Se despacha el pallet completo:** estos formularios no permiten indicar una cantidad parcial de cajas o barriles. Si necesitas dividirlo o enviar pallets a distintos destinos, coordina el procedimiento con el responsable. Cada despacho múltiple utiliza un único destino para todos sus pallets.
 
-> **Estado de salida en esta versión:** el sistema registra **En Camión**, libera la ubicación de cámara y conserva el registro del pallet. No equivale a confirmar entrega al cliente. Aunque la historia solicita `DESPACHADO`, la implementación actual guarda `EN_CAMION`; no busques un cambio automático a Entregado o Despachado.
+> **Estado de salida en esta versión:** el sistema registra **En Camión**, libera la ubicación de cámara y conserva el registro del pallet. No equivale a confirmar entrega al cliente. La historia mencionaba `DESPACHADO`, pero el Product Owner decidió que el ciclo termina en **En Camión** (DPO-025, SRS v0.3); no busques un cambio automático a Entregado o Despachado.
 
-Las capturas se tomaron de la interfaz local con **datos ficticios y respuestas simuladas**, sin modificar inventario real. El recorrido visual se realizó con Jefe de Planta. Las opciones del Personal de Reparto se contrastaron en código; no se certificó un despacho real con ese perfil.
+Las capturas se tomaron de la interfaz local con **datos ficticios y respuestas simuladas**, sin modificar inventario real. El recorrido visual se realizó con Jefe de Planta. El 30-09-2026 se verificó además, contra la base de datos, el despacho individual y el múltiple con una cuenta de **Personal de Reparto**, y un despacho individual desde la interfaz (ver [Validación de US-18](#validacion-us-18)).
 
 Utilizaremos estos pallets de demostración, todos inicialmente **En Cámara**:
 
@@ -625,7 +638,7 @@ Si intentas despachar un pallet y quedan otros más antiguos del **mismo estilo*
 3. En el ejemplo completo se despacharon cuatro pallets: 26-901 individualmente y 26-902, 26-903 y 26-904 en grupo. Solo permanece **26-905** en cámara, ahora en el nivel 1 de su posición de barriles. La ocupación del ejemplo queda en **1/45 pallets**.
 4. Si eres **Jefe de Planta**, entra a **Ingresos y Despachos**, selecciona la fecha de la operación y pulsa **Despachos**. Comprueba lote, cantidad mostrada, destino, hora y usuario responsable. En un envío de varios pallets aparece un registro por cada pallet.
 5. Si eres **Personal de Reparto** y no ves ese historial, solicita la comprobación al Jefe de Planta. Esa opción del menú está reservada a dicho perfil.
-6. Para comprobar persistencia, vuelve a consultar la cámara y el historial. Si recargar deja la aplicación sin menú, entra de nuevo desde `/login`. **No repitas el despacho solo para comprobarlo.**
+6. Para comprobar persistencia, recarga la página y vuelve a consultar la cámara y el historial; la sesión se mantiene. **No repitas el despacho solo para comprobarlo.**
 
 **Resultado esperado:** el mapa y el historial son coherentes con las salidas realizadas. La disponibilidad de cámara disminuye por los pallets retirados; esto no equivale a poner su cantidad en cero ni a borrar sus registros.
 
@@ -663,7 +676,7 @@ Antes de enviar, **Cancelar** cierra el formulario individual; en el múltiple t
 
 ---
 
-**Control del documento:** procedimientos contrastados con la interfaz y el código del 29-09-2026. Las diez capturas usan respuestas simuladas. Las pruebas de lógica, las diferencias con la historia y la revisión de comprensión pendiente se detallan en [Validación de US-18](#validacion-us-18).
+**Control del documento:** procedimientos contrastados con la interfaz y el código del 29-09-2026 y verificados contra la base de datos el 30-09-2026. Las diez capturas usan respuestas simuladas. Las pruebas de lógica, las diferencias con la historia y la revisión de comprensión pendiente se detallan en [Validación de US-18](#validacion-us-18).
 
 ---
 
@@ -716,6 +729,30 @@ Las pruebas validan autenticación y navegación, no las cifras del inventario d
 
 Estas diferencias se registran como hallazgos de implementación, no como cambios incluidos en el trabajo del manual. No se modificó el código ni la tarjeta de Trello.
 
+#### Verificación del 30-09-2026 (edición 1.5)
+
+Pruebas del 30-09-2026 para Pruebas QA. Entorno local con el mismo código de producción (frontend `40e33be`, backend `26b32b3`), MySQL con el seed recién cargado y el build de producción del frontend. Detalle completo en el SRS v0.3, §76.1.
+
+| Prueba | Resultado |
+|---|---|
+| Ingreso con RUT sin formato, con puntos y guion, y con correo | Aprobado |
+| Ingreso de los cuatro perfiles (Jefe, Personal de reparto, Calidad → Operario, Encargado) | Aprobado: cada uno llega al Panel principal con su rol; Jefe con 11 opciones de menú, el resto con 7 |
+| Contraseña incorrecta y cuenta inactiva | Aprobado: 401 con «Credenciales incorrectas» o «…o usuario inactivo», sin guardar sesión |
+| Formulario vacío | Aprobado: «Ingrese RUT o correo y contraseña», sin consultar al servidor |
+| Contenido del JWT y hash de contraseñas | Aprobado: incluye identificador, RUT, correo y rol; dura 8 horas; contraseñas con bcrypt |
+| Acceso de Calidad/Operario a Usuarios y Configuración | Aprobado: la pantalla redirige y el servidor responde 403 |
+| Recargar en Inventario y en Usuarios | Aprobado: se mantienen la sesión, la pantalla y el menú |
+| Abrir una pantalla interna sin sesión | Aprobado: lleva a Iniciar sesión |
+| Abrir Iniciar sesión con una sesión vigente | Aprobado: lleva al Panel principal |
+| Cerrar sesión y recargar | Aprobado: la sesión se borra y queda Iniciar sesión |
+
+**Cambios respecto de la tabla anterior:**
+- **Restauración de sesión:** corregida en `frontend_corte` (PR #10). La sesión se restaura al recargar a partir del token guardado.
+- **Inicio de sesión en producción:** corregido en `frontend_corte` (PR #11). La pantalla ahora llama directamente al servidor, como el resto de la aplicación. Antes, en producción, la sesión quedaba sin rol ni token y el usuario terminaba en Inventario sin menú.
+- **Nombre del cargo del Jefe:** el seed de pruebas usa «Jefe de planta» (`backend_corte`, PR #1), que coincide con el mapa de roles. Un nombre no reconocido todavía recibe JEFE_PLANTA (hallazgo H-11).
+- **Protección por rol:** despacho, reorganización y edición de pallets exigen sesión. La lista de ingresos, el alta de pallets y la grilla todavía no la exigen (hallazgo H-06).
+- **Sin cambios:** la política de contraseña de la historia (≥ 10 alfanumérica) no se aplica (RF-AUT-06, DPO-019), y el selector «Perfil» del menú sigue visible (H-10).
+
 #### Prueba de comprensión con un compañero — pendiente
 
 Entregar el capítulo a una persona con una cuenta de prueba asignada. Solicitar: «Inicia sesión, identifica las opciones que corresponden a tu perfil, localiza cómo pedir ayuda si olvidas la contraseña y cierra sesión. Usa solo el manual y anota cualquier paso que necesite explicación».
@@ -725,8 +762,8 @@ Entregar el capítulo a una persona con una cuenta de prueba asignada. Solicitar
 | Encontrar los campos y entrar | Pendiente |
 | Reconocer las opciones de su perfil | Pendiente |
 | Interpretar un mensaje de acceso incorrecto | Pendiente |
-| Entender cómo recuperar el acceso tras recargar | Pendiente |
-| Cerrar sesión y reconocer la pantalla final | Pendiente |
+| Reconocer que la sesión se mantiene al recargar y cuándo expira | Pendiente |
+| Cerrar sesión (no solo la pestaña) y reconocer la pantalla final | Pendiente |
 
 **Revisor, fecha y observaciones:** pendientes. Corregir los pasos donde pida ayuda y repetirlos antes de aprobar esta revisión.
 
@@ -763,6 +800,25 @@ La tarjeta pide crear, editar y desactivar cuentas, asignar roles y aplicar perm
 
 Esta revisión **no certifica el cumplimiento integral del criterio de permisos inmediatos**: falta comprobar con sesiones concurrentes todos los módulos y los accesos de una cuenta desactivada. No se presenta la desactivación como cierre global de sesiones ni se considera la matriz visual una garantía de autorización del servidor.
 
+#### Verificación del 30-09-2026 (edición 1.5)
+
+Pruebas del 30-09-2026 para Pruebas QA. Entorno local con el mismo código de producción (frontend `40e33be`, backend `26b32b3`), MySQL con el seed recién cargado y el build de producción del frontend. Detalle completo en el SRS v0.3, §76.1. Las pruebas usaron la API contra MySQL y la interfaz para el filtro.
+
+| Prueba (criterio del SRS) | Resultado |
+|---|---|
+| Filtrar Inactivo y buscar por apellido (CA-RF-USR-01-01) | Aprobado en la interfaz: solo aparece la cuenta inactiva que coincide |
+| Crear una cuenta y entrar con los cinco dígitos del RUT (CA-RF-USR-02-01) | Aprobado: 201; la cuenta nueva inicia sesión |
+| RUT duplicado con otro formato (CA-RF-USR-02-02) | Aprobado: 409 «Ya existe un usuario con ese RUT.» |
+| Cambiar el cargo a Calidad (CA-RF-USR-03-01) | Aprobado |
+| Asignar una contraseña nueva (CA-RF-USR-03-02) | Aprobado: entra con la nueva y ya no con la anterior |
+| Contraseña de 8 minúsculas (CA-RF-USR-03-03) | **No cumple** la política decidida (DPO-019): se acepta. Pendiente en RF-AUT-06 |
+| **Permisos de inmediato** (criterio de la historia) | Aprobado: tras cambiar Ayudante → Jefe de Planta, la **misma sesión abierta** pasó de 403 a 200 en Usuarios, sin reiniciar el sistema |
+| Autodesactivación y último Jefe (CA-RF-USR-04-01, 02) | Aprobado: 403 y 409 con sus mensajes |
+| Desactivar una cuenta (CA-RF-USR-04-03) | Aprobado: no puede iniciar sesión; su sesión abierta recibe 403 en Usuarios. Sigue pudiendo consultar la cámara y el historial hasta que expire |
+| Pruebas automáticas `usuarios.test.ts` y `last-chief.test.ts` | Aprobadas. `last-chief.test.ts` vuelve a ejecutarse con la corrección de imports de la rama `backend_corte@fix/tests-imports` |
+
+Con esta verificación, **el criterio de permisos inmediatos queda comprobado en el servidor** para Usuarios y Configuración. El menú de una sesión abierta se actualiza al volver a ingresar, no al recargar.
+
 #### Particularidades de la versión
 
 - El selector muestra «Jefe de plata»; el servidor lo traduce a «Jefe de planta». El manual conserva la etiqueta visible y explica su significado.
@@ -772,7 +828,7 @@ Esta revisión **no certifica el cumplimiento integral del criterio de permisos 
 - La contraseña administrativa admite 8–72 caracteres; Mi perfil utiliza una política distinta. No se unificaron esas reglas como parte de este trabajo.
 - Se oculta el cambio de estado de la propia cuenta y el servidor rechaza su desactivación. Existe una protección transaccional para conservar al menos un jefe activo, contrastada en código con la limitación de prueba indicada arriba.
 - Configuración presenta una tabla fija de permisos de solo consulta. No existe edición individual de permisos desde esa pantalla.
-- Se conserva la limitación de restauración de sesión tras recargar descrita en US-01.
+- La sesión se restaura al recargar desde el 30-09-2026 (ver US-01), pero el menú conserva el perfil con que se inició sesión.
 
 #### Revisión con un compañero — pendiente
 
@@ -818,7 +874,7 @@ Los perfiles y límites se contrastaron con la interfaz y el código. Solo se re
 
 - La historia solicita `PENDIENTE_UBICACION`; la aplicación registra `EN_CAMARA` con posición.
 - Las fotos no se incluyen en el envío y la nota de calidad no se persiste en el controlador de creación.
-- Al recargar se pierde el estado de sesión del frontend; la cámara puede verse, pero los paneles y el menú requieren volver a iniciar sesión.
+- Al recargar se perdía el estado de sesión del frontend. **Corregido el 30-09-2026** (ver US-01): la sesión se mantiene. En esta edición solo se actualizaron las notas del capítulo 3 sobre recargar; el resto del capítulo no se volvió a verificar.
 - La fecha de envasado se genera al enviar y se guarda en un campo de fecha. En el detalle del ingreso realizado el 28-09-2026 se mostró 27-09-2026, 21:00, consistente con una conversión de zona horaria. No se corrigió código ni se presenta esa fecha como comportamiento correcto.
 - La unidad visible es «cajas» incluso para Barril.
 
@@ -870,7 +926,19 @@ Criterio de aceptación: la persona completa el recorrido sin instrucciones adic
 - La vista no presenta un estado de error o carga diferenciado: antes de recibir los datos o ante un fallo puede parecer vacía.
 - Zona Barriles muestra columnas 1–3, que corresponden a las columnas generales 4–6. Zona Extra muestra A2/A3 aunque se corresponde con la fila interna D. El manual utiliza zona y lote para evitar ambigüedades.
 - Las alertas usan la fecha de envasado y límites definidos en el frontend. Permanece la diferencia de fecha/zona horaria registrada en la validación de US-04; no se certifica el cálculo operativo de las alertas.
-- El frontend muestra Reorganizar para Jefe de Planta y previsualiza movimientos. El router de pallets revisado no tiene la ruta PATCH que invoca ese guardado; por ello no se presenta el movimiento persistente como una función validada.
+- El frontend muestra Reorganizar para Jefe de Planta y previsualiza movimientos. En la versión revisada el 28-09 no existía la ruta de guardado. Desde el backend `26b32b3` existen `POST /api/pallets/reorganizar` y `PATCH /api/pallets/{id}`, y sus pruebas automáticas (incluida la de MySQL) aprueban. Este capítulo sigue sin documentar el guardado desde la interfaz.
+
+#### Verificación del 30-09-2026 (edición 1.5)
+
+Pruebas del 30-09-2026 para Pruebas QA. Entorno local con el mismo código de producción (frontend `40e33be`, backend `26b32b3`), MySQL con el seed recién cargado y el build de producción del frontend. Detalle completo en el SRS v0.3, §76.1.
+
+| Prueba (criterio del SRS) | Resultado |
+|---|---|
+| Zonas Latas, Extra y Barriles, contador n/45 y Estante de Lúpulos (CA-RF-GD-01-01) | Aprobado, con la diferencia de rótulos ya descrita (H-19) |
+| Torre con niveles, lote e icono de alerta por nivel (CA-RF-GD-01-02) | Aprobado: se observaron N1–N3 con su lote e icono |
+| Detalle al tocar (CA-RF-GD-02-01) | Aprobado para lote, estilo, cantidad, estado, envase y fecha. **Faltan** la posición (H-29) y un botón para guardar la nota (H-02) |
+| Compactación de la torre tras un despacho | Aprobado: al despachar el N1, el pallet de arriba pasó a N1 |
+| Petainer | No verificable: no existe la zona ni pallets de ese envase. Pasa al Sprint 2 (DPO-012) |
 
 #### Revisión con un compañero — pendiente
 
@@ -919,14 +987,31 @@ Los **cinco casos de esa copia temporal pasaron**, con una base simulada:
 | Reorganización conserva movimientos repetidos, compacta e inserta niveles | Aprobado; comprobación complementaria del servicio compartido. |
 | Reorganización inválida revierte cambios y rechaza conflictos o permisos insuficientes | Aprobado; no certifica una política exclusiva de roles para despacho. |
 
-Estas pruebas verifican el comportamiento del servicio frente a una base simulada. No se ejecutó la prueba de integración MySQL ni se midió la persistencia real tras recargar. La importación original sigue pendiente de corrección fuera del alcance de este manual.
+Estas pruebas verifican el comportamiento del servicio frente a una base simulada. La importación se corrigió el 30-09-2026 en la rama `backend_corte@fix/tests-imports`; con ella, las pruebas se ejecutan desde el repositorio, incluida la de integración MySQL (`pallet-operations-db.test.ts`, que aprueba).
+
+#### Verificación del 30-09-2026 (edición 1.5)
+
+Pruebas del 30-09-2026 para Pruebas QA. Entorno local con el mismo código de producción (frontend `40e33be`, backend `26b32b3`), MySQL con el seed recién cargado y el build de producción del frontend. Detalle completo en el SRS v0.3, §76.1. Las operaciones se ejecutaron sobre la base de datos local, no con respuestas simuladas.
+
+| Prueba (criterio del SRS) | Resultado |
+|---|---|
+| Despachar el N1 de una torre de 4 con **Personal de Reparto** a «Camión Norte» (CA-RF-DES-01-01) | Aprobado: queda `EN_CAMION` sin posición; los tres de arriba bajan un nivel; un movimiento con destino y usuario |
+| Stock de la cámara | Aprobado: la grilla pasó de 23 a 22 pallets |
+| Repetir el despacho (CA-RF-DES-01-03) | Aprobado: 409 |
+| Destino vacío o solo espacios (CA-RF-DES-01-02) | Aprobado: botón deshabilitado en la interfaz y 400 en el servidor |
+| Despacho múltiple de dos pallets a «Bar Centro» (CA-RF-DES-01-04) | Aprobado: ambos `EN_CAMION` y sin posición |
+| Despacho múltiple con un pallet ya despachado | Aprobado: 409 y el otro sigue En Cámara (no hay salidas parciales) |
+| Despacho sin sesión | Aprobado: 401 |
+| Despacho individual desde la interfaz con Jefe de Planta (lote 26-016) | Aprobado: notificación, celda liberada, contador 18 → 17/45 y registro «Despacho hacia …» con usuario en Ingresos y Despachos |
+
+**Pendiente, fuera del criterio de la historia:** el motivo obligatorio al romper el orden de salida (RF-FIFO-03, DPO-024) y la restricción del despacho al Ayudante (DPO-016).
 
 #### Comparación con Trello y límites
 
 | Criterio o comportamiento | Implementación encontrada |
 |---|---|
 | Despachar uno o varios pallets de lata o barril | Existen formulario individual y selección múltiple en Alertas FIFO. El grupo utiliza un destino común y despacha pallets completos. |
-| Estado final DESPACHADO | Diferencia: el servicio guarda EN_CAMION y la notificación individual muestra En Camión. No hay transición final a DESPACHADO en esta operación. |
+| Estado final DESPACHADO | El servicio guarda EN_CAMION y la notificación individual muestra En Camión. El PO decidió que el ciclo termina ahí (DPO-025), así que no es una diferencia pendiente. |
 | Descontar stock | El servicio retira la asociación del pallet con su posición; así disminuye la disponibilidad de cámara. No reduce a cero la cantidad del pallet ni prueba un descuento global en todas las bodegas. Inventario se alimenta de la grilla de cámara. |
 | Liberar o actualizar posición | El servicio elimina la posición del pallet despachado y compacta los niveles restantes en la misma transacción. La imagen del resultado es simulada; la lógica se comprobó con los casos indicados. |
 | Priorizar FEFO/FIFO | Alertas ordena por horas restantes calculadas con límites por estilo. Los avisos de despacho comparan fechas de envasado entre pallets del mismo estilo, incluso si tienen distinto envase. No se valida una política FEFO completa basada en vencimientos configurados. |
