@@ -7,7 +7,7 @@
 **Código del proyecto:** CORTE (INFO282 · Grupo 2)
 **Versión del documento:** 0.3
 **Estado:** En revisión
-**Fecha:** 29/09/2026
+**Fecha:** 30/09/2026
 **Responsables:** Serruchos Dev Team (Product Owner: Giorgio Carlin)
 **Equipo:** Serruchos Dev Team — Ingeniería Civil en Informática, Universidad Austral de Chile
 
@@ -139,7 +139,7 @@ Las marcas **H-xx** remiten a los hallazgos del levantamiento de casos de uso (R
 |---|---|---|---|
 | 0.1 | 28/09/2026 | Serruchos Dev Team | Borrador inicial por ingeniería inversa de `NEXO-C.O.R.T.E@86ee1c9`, `frontend_corte@20bb26f`, `backend_corte@6c280aa` y `documentacion_corte@211e708` |
 | 0.2 | 29/09/2026 | Giorgio Carlin (PO) y Serruchos Dev Team | Incorpora las 34 decisiones del PO sobre las preguntas abiertas y los hallazgos (§0.5): ingreso por el patio, dos alertas, lotes con varios pallets, cantidades por envase, Kombucha y Petainer, matriz de permisos editable, política de contraseñas, anulación de ingresos y motivo de ruptura FIFO. Quedan 6 preguntas abiertas (§85) |
-| 0.3 | 29/09/2026 | Serruchos Dev Team | RF-AUT-05 pasa a **Implementado** (`frontend_corte@a7f46a0`, rama `fix/redireccion-login`): la sesión se restaura desde el JWT al recargar y una guardia central protege todas las rutas (se cierra la observación de RF-AUT-04 sobre pantallas sin guarda, H-12 y DT-014). `GET /api/actividad` ya no se consulta sin sesión (`frontend_corte@30df2db`). RNF-SEG-004 pasa a **Parcial**: producción corre en `https://corte-cuellonegro.inf.uach.cl` con TLS 1.2+; faltan HSTS y cerrar el dominio anterior por HTTP |
+| 0.3 | 30/09/2026 | Serruchos Dev Team | Verificación de aceptación del PO (30/09/2026, §76.1): US-01, US-02, US-09, US-18 y TECH-02 aceptadas; API-035 (despacho múltiple), CA-RF-DES-01-04, TC-029 y DT-019 a DT-021. RF-AUT-05 pasa a **Implementado** (`frontend_corte@a7f46a0`, rama `fix/redireccion-login`): la sesión se restaura desde el JWT al recargar y una guardia central protege todas las rutas (se cierra la observación de RF-AUT-04 sobre pantallas sin guarda, H-12 y DT-014). `GET /api/actividad` ya no se consulta sin sesión (`frontend_corte@30df2db`). RNF-SEG-004 pasa a **Parcial**: producción corre en `https://corte-cuellonegro.inf.uach.cl` con TLS 1.2+; faltan HSTS y cerrar el dominio anterior por HTTP |
 | 1.0 | | | Versión aprobada por el cliente |
 
 ## 0.2 Estado del documento
@@ -409,7 +409,7 @@ Definir los requisitos funcionales, técnicos y de calidad necesarios para imple
 | REF-06 | Carta Gantt | `documentacion_corte/Documentos/Carta_Gantt_CORTE.xlsx` | 2026 |
 | REF-07 | Catálogo de diagramas | `documentacion_corte/Diagramas.md` y `documentacion_corte/Diagramas/` | 2026 |
 | REF-08 | Levantamiento de casos de uso desde el frontend | `documentacion_corte/Casos_de_Uso/Levantamiento_Frontend.md` | 28/09/2026; decisiones del PO agregadas el 29/09/2026 |
-| REF-09 | Manual de usuario (US-01, US-02, US-04 y US-09) y sus validaciones | `documentacion_corte/Manuales/` | 29/09/2026 (rama `main`) |
+| REF-09 | Manual de usuario (US-01, US-02, US-04, US-09 y US-18) y sus validaciones | `documentacion_corte/Manuales/` | 30/09/2026 (rama `main`, `9df1d3f`) |
 | REF-10 | Guía de instalación y despliegue | `NEXO-C.O.R.T.E/INSTALACION.md` y `README.md` | `86ee1c9` |
 | REF-11 | README del backend | `backend_corte/README.md` | `6c280aa` |
 | REF-12 | Evaluación heurística (HCI) | `frontend_corte/docs/HCI/` | 21/06/2026 |
@@ -4914,6 +4914,28 @@ Reúne los compose de producción (`docker-compose.yml`, que construye en el ser
 
 **Response 200:** `{ "success": true, "data": { "guardado": true }, "timestamp": "..." }`
 
+### API-035 — Despachar varios pallets
+
+| Atributo | Valor |
+|---|---|
+| Método y ruta | `POST /api/pallets/despachar-varios` |
+| Autenticación | Bearer JWT |
+| Permisos | Cualquier cuenta activa (hoy). Esperado: el permiso Despachar (DPO-016) |
+| Requisitos | RF-DES-01 (US-18, despacho de uno o varios pallets) |
+| Validación | `ids`: de 1 a 200 enteros positivos, sin repetir; `destino` de 1 a 150 caracteres. Cuerpo estricto. **Esperado:** `motivoRuptura` como en API-018 (DPO-024) |
+| Transacción | Todo o nada: si algún pallet ya no está `EN_CAMARA`, responde 409 y no despacha ninguno. Para cada pallet, igual que API-018 |
+| Errores | ERR-006, ERR-007, ERR-017 (409), ERR-026 (400), ERR-027 (409) |
+
+**Request:**
+
+```json
+{ "ids": [25, 26], "destino": "Bar Centro" }
+```
+
+**Response 200:** `{ "success": true, "data": { "guardado": true }, "timestamp": "..." }`
+
+*Implementado en `backend_corte@ed54147` y usado por el frontend desde US-18. No figuraba en el levantamiento de casos de uso (REF-08).*
+
 ### API-019 — Historial de actividad
 
 | Atributo | Valor |
@@ -6665,6 +6687,7 @@ MAJOR.MINOR.PATCH
 | CA-RF-DES-01-01 | Un pallet en el nivel 1 de una torre de 3 | Se despacha con destino "Camión Norte" | Queda `EN_CAMION`, los pallets de arriba bajan un nivel y el historial registra el despacho con el destino y el usuario | Sí |
 | CA-RF-DES-01-02 | El formulario de despacho | El destino está vacío o solo tiene espacios | **Confirmar** queda deshabilitado | Sí |
 | CA-RF-DES-01-03 | Un pallet ya despachado | Se intenta despacharlo de nuevo | Se rechaza con 409 | Sí |
+| CA-RF-DES-01-04 | Varios pallets en cámara, uno de ellos ya despachado | Se despachan juntos (API-035) | Se rechaza con 409 y no se despacha ninguno; sin el pallet ya despachado, todos quedan `EN_CAMION` y sin posición | Sí |
 | CA-RF-CAL-01-01 | Un ingreso con nota de calidad | Se confirma | La nota aparece en el historial del pallet, con autor y fecha | No |
 | CA-RF-CAL-02-01 | El detalle de un pallet | Se escribe una nota y se pulsa **Guardar** | La nota aparece en el historial y se muestra "Nota registrada" | No |
 | CA-RF-MOV-01-01 | Un día con 1 ingreso, 1 despacho y 1 reorganización | Se consulta el historial de ese día | Aparecen los 3 tipos, con hora y usuario | No (falta el ingreso) |
@@ -6698,19 +6721,19 @@ La tabla resume los casos de prueba asociados a los requisitos. La columna **Aut
 
 | TC | Requisito / CA | Precondiciones | Pasos (resumen) | Resultado esperado | Automatización |
 |---|---|---|---|---|---|
-| TC-001 | RF-AUT-01 / CA-RF-AUT-01-01 a 03 | Un usuario activo y uno inactivo | 1) Login correcto. 2) Contraseña errónea. 3) Login de un usuario inactivo | 1) Panel principal. 2) y 3) 401 con mensaje | No |
+| TC-001 | RF-AUT-01 / CA-RF-AUT-01-01 a 03 | Un usuario activo y uno inactivo | 1) Login correcto. 2) Contraseña errónea. 3) Login de un usuario inactivo | 1) Panel principal. 2) y 3) 401 con mensaje | No. **Pasa** en la verificación del 30/09/2026 (§76.1) |
 | TC-002 | RF-USR-02 / CA-RF-USR-02-01, 02 | Sesión de Jefe | 1) Crear un usuario válido. 2) Crear otro con el mismo RUT | 1) 201 y contraseña inicial. 2) 409 | Sí: `backend/tests/usuarios.test.ts` |
 | TC-003 | RF-USR-03 / CA-RF-USR-03-01, 02 | Sesión de Jefe | 1) Cambiar el cargo. 2) Asignar una contraseña (y probar una de menos de 8 caracteres) | Cambios guardados; la contraseña corta se rechaza | Sí: `usuarios.test.ts` |
-| TC-004 | RF-USR-04 / CA-RF-USR-04-01 a 03 | Un solo Jefe activo | 1) Autodesactivación. 2) Desactivar al último Jefe. 3) Desactivar a otro usuario | 1) 403. 2) 409. 3) Desactivado y sin acceso | Parcial: `last-chief.test.ts` |
+| TC-004 | RF-USR-04 / CA-RF-USR-04-01 a 03 | Un solo Jefe activo | 1) Autodesactivación. 2) Desactivar al último Jefe. 3) Desactivar a otro usuario | 1) 403. 2) 409. 3) Desactivado y sin acceso | Sí: `last-chief.test.ts` (vuelve a ejecutarse con la corrección de imports de DT-019). **Pasa** el 30/09/2026 |
 | TC-005 | RF-PER-02 / CA-RF-PER-02-01, 02 | Usuario autenticado | Cambiar la contraseña con la actual correcta y luego incorrecta | Primero se guarda; después 400 | Sí: `profile-inventory.test.ts` |
 | TC-006 | RF-ING-01 / CA-RF-ING-01-01 | Lager y Barril Euro activos | Registrar el lote 26-001, envasado hoy, con la cantidad propuesta | Pallet `PATIO` con 16 barriles, vencimiento +90 días y plazo de 24 h en curso | Hoy falla: el ingreso va a la cámara (el manual US-04 validó el flujo actual con una lata en C3) |
 | TC-007 | RF-ING-01 / CA-RF-ING-01-02, 03 | Caja de latas con máximo 72 | Probar los límites de cantidad y un lote con formato inválido | Botones deshabilitados en 1 y 72; ERR-039 y ERR-041 en la API | Manual |
 | TC-008 | RF-ING-01 / CA-RF-ING-01-04 a 06 | El lote 26-001 existe | 1) Registrar otro pallet con 26-001, mismo estilo y luego otro estilo. 2) Revisar el historial. 3) Enviar sin token | 1) El pallet se agrega al lote; con otro estilo, 409 (ERR-042). 2) Movimiento "Ingreso" con el autor. 3) 401 | Hoy falla (prueba de regresión para las correcciones) |
 | TC-009 | RF-OPT-01 / CA-RF-OPT-01-01 a 03 | Cámaras con distintas ocupaciones | Calcular la sugerencia para lata y barril | Zona, apilado y preferencia correctos | Parcial: `frontend/src/lib/apilado.test.ts` cubre zonas y apilado, no el puntaje |
-| TC-010 | RF-GD-01, RF-GD-02 / CA-RF-GD-* | Datos del seed | Abrir la Vista de Cámara y tocar pallets | Zonas, niveles y detalle correctos | Manual |
+| TC-010 | RF-GD-01, RF-GD-02 / CA-RF-GD-* | Datos del seed | Abrir la Vista de Cámara y tocar pallets | Zonas, niveles y detalle correctos | Manual. **Parcial** el 30/09/2026: zonas, contador, niveles y detalle correctos; faltan los rótulos A1–D6 (H-19), la posición en el detalle (H-29) y la zona Petainer (DPO-012) |
 | TC-011 | RF-FIFO-01 / CA-RF-FIFO-01-01 a 03 | Reloj controlado | Evaluar pallets en el patio registrados hace 19 h (Lager) y 62 h (Stout), y uno en la cámara que vence en 5 días | Fuera de frío CRÍTICO con 5 h y PREVENTIVO con 10 h; Vencimiento CRÍTICO en todas las pantallas | No (se propone una prueba unitaria de las dos alertas) |
 | TC-012 | RF-FIFO-03 / CA-RF-FIFO-03-01, 02 | Dos IPA, uno vence antes | Despachar el que vence después: 1) Cancelar. 2) Sin motivo. 3) Con motivo | 1) No despacha. 2) ERR-044. 3) Despacho con el motivo en el historial | Manual; el paso 3 hoy falla |
-| TC-013 | RF-DES-01 / CA-RF-DES-01-01 a 03 | Torre de 3 pallets | 1) Despachar el N1. 2) Repetir | 1) `EN_CAMION`, compactación y un solo movimiento de salida. 2) 409 | Sí: `pallet-operations.test.ts` y `pallet-operations-db.test.ts` (con `RUN_DB_TESTS=1`) |
+| TC-013 | RF-DES-01 / CA-RF-DES-01-01 a 03 | Torre de 3 pallets | 1) Despachar el N1. 2) Repetir | 1) `EN_CAMION`, compactación y un solo movimiento de salida. 2) 409 | Sí: `pallet-operations.test.ts` y `pallet-operations-db.test.ts` (con `RUN_DB_TESTS=1`). **Pasa** el 30/09/2026 |
 | TC-014 | RF-CAM-01 / CA-RF-CAM-01-01 a 03 | Sesiones de Jefe y de Ayudante | 1) Mover y guardar. 2) Conflicto concurrente. 3) Guardar como Ayudante (con permiso) y como un cargo sin permiso | 1) Guardado. 2) 409. 3) Guardado y 403 | Parcial: `pallet-operations.test.ts` hoy espera 403 para todo el que no es Jefe |
 | TC-015 | RF-MOV-02 / CA-RF-MOV-02-01 | Movimientos en dos fechas | Filtrar por fecha y tipo | Solo los del día y tipo elegidos | Manual |
 | TC-016 | RF-CFG-01, RF-CFG-02 / CA-RF-CFG-01-01, 02-01 | Sesión de Jefe | Crear, duplicar y editar envases y cervezas | 201 / 409 / 200 | Sí: `config.test.ts` |
@@ -6725,6 +6748,7 @@ La tabla resume los casos de prueba asociados a los requisitos. La columna **Aut
 | TC-025 | RF-ING-07 / CA-RF-ING-07-01, 02, CA-RF-FIFO-05-01 | Pallets en el patio, uno con el plazo vencido | 1) Ubicar con la sugerencia. 2) Ubicar dos a la vez en la misma torre. 3) Ubicar el del plazo vencido | 1) `EN_CAMARA` en el primer nivel libre. 2) Uno falla con una nueva sugerencia. 3) Se ubica y queda la marca de exceso | No |
 | TC-026 | RN-027, RN-028 / CA-RF-OPT-01-05, 06 | Kombucha y Petainer activos (Sprint 2) | Ubicar Kombucha; ubicar Petainer en A4 (torre de 4), en B4 y en C4; intentar apilar sobre un Petainer | Kombucha solo en D2; Petainer en N5 de A4, N4 de B4 y como máximo N2 en C4; nada sobre el Petainer | No |
 | TC-027 | RF-AUT-06, RF-USR-06 / CA-RF-AUT-06-01, CA-RF-USR-06-01 | Usuario recién creado | 1) Ingresar con la contraseña inicial. 2) Llamar a otra API. 3) Definir una contraseña válida. 4) El Jefe la restablece | 1) Pantalla de cambio. 2) ERR-045. 3) Acceso normal. 4) Vuelve a exigir el cambio | No |
+| TC-029 | RF-DES-01 / CA-RF-DES-01-04 | Tres pallets en cámara | 1) Despachar dos con API-035. 2) Despachar uno ya despachado junto con otro | 1) Ambos `EN_CAMION` y sin posición. 2) 409 y el otro sigue `EN_CAMARA` | Sí: `pallet-operations.test.ts` (despacho múltiple). **Pasa** el 30/09/2026 |
 | TC-028 | RF-ING-05, RF-ING-06 / CA-RF-ING-05-01, CA-RF-ING-06-01 | Sesión de Jefe y un ingreso erróneo en la cámara | 1) Editar la cantidad. 2) Anular sin motivo. 3) Anular con motivo | 1) Cambio con valores anterior y nuevo. 2) ERR-044. 3) `ANULADO`, posición liberada y movimiento con el motivo | No |
 
 **Ejemplo en el formato completo de la plantilla:**
@@ -6743,6 +6767,40 @@ La tabla resume los casos de prueba asociados a los requisitos. La columna **Aut
 1. 200 `{ guardado: true }`.
 2. El pallet ya no aparece en la grilla; los otros quedan en N1 y N2; hay un movimiento "Despacho hacia Camión Norte" con el nombre del usuario.
 3. 409 "El pallet ya salió o no está en la cámara. Actualiza la lista."
+
+## 76.1 Verificación de aceptación del PO — 30/09/2026
+
+**Alcance:** historias en PO review que el PO decidió aceptar: US-01, US-02, US-09, US-18 y TECH-02. Las historias US-04, US-15, US-21 y TECH-03 se devolvieron a desarrollo porque no cumplen su criterio (ver al final).
+
+**Entorno:**
+- Local, con el mismo código que producción: `frontend_corte@40e33be` (build de producción) y `backend_corte@26b32b3`, MySQL 8.0 con el seed recién cargado.
+- Producción (`https://corte-cuellonegro.inf.uach.cl`): solo pruebas de humo sin escritura.
+
+**Pruebas automáticas:**
+- Backend (`RUN_DB_TESTS=1 npm test`): **10 de 10**, después de corregir las rutas de import de tres archivos de prueba (DT-019).
+- Frontend (`apilado.test.ts`): "apilado OK".
+
+**Pruebas de aceptación (API):** 34 verificaciones basadas en los CA de §75; **31 pasan**. Las 3 que fallan ya estaban identificadas y no forman parte de los criterios de las historias aceptadas: CA-RF-USR-03-03 (política de contraseñas, DPO-019) y dos respuestas de error sin el formato estándar (DT-020).
+
+**Pruebas de interfaz:** login y menú de los 4 roles, filtro de usuarios, Vista de Cámara, detalle del pallet, formulario de despacho y registro en el historial.
+
+| HU | Criterio de la HU | CA y TC | Resultado | Observaciones |
+|---|---|---|---|---|
+| US-01 | Login con bcrypt, JWT y redirección por rol | CA-RF-AUT-01-01 a 03, CA-RF-AUT-04-01 · TC-001 | **Aceptada con observaciones** | RUT con y sin formato y correo; los 4 roles reciben su menú; contraseña errónea e inactivo → 401; JWT de 8 h; hash bcrypt. La política de contraseña de la HU (≥ 10 alfanumérica) no se aplica: queda en RF-AUT-06 y DPO-019. El selector de perfil del menú lateral sigue visible (H-10, CA-RF-AUT-04-02) |
+| US-02 | Crear, editar y desactivar; los permisos se aplican de inmediato | CA-RF-USR-01-01 a 04-03 · TC-002 a TC-004 | **Aceptada** | Un cambio de cargo aplica con el token anterior (el servidor lee el cargo en cada solicitud); el desactivado no ingresa y pierde acceso. El menú de una sesión abierta cambia al volver a ingresar (manual §2.5) |
+| US-09 | Grilla por variedad, niveles y detalle al tocar | CA-RF-GD-01-01 a 02-01 · TC-010 | **Aceptada con observaciones** | Zonas, contador n/45, Estante de Lúpulos, niveles N1–N3 con lote e icono y detalle correctos. Pendientes: rótulos A1–D6 (H-19), posición en el detalle (H-29), guardar nota (H-02) y zona Petainer (Sprint 2, DPO-012) |
+| US-18 | Despachar uno o varios; descuenta stock, libera la posición | CA-RF-DES-01-01 a 04 · TC-013, TC-029 | **Aceptada** | Torre de 4: el N1 queda `EN_CAMION` y los de arriba bajan; un movimiento con destino y usuario; 409 al repetir; destino vacío bloqueado en la interfaz y en la API; despacho múltiple todo o nada. El estado final es `EN_CAMION` por DPO-025. El motivo de ruptura (RF-FIFO-03, DPO-024) queda pendiente |
+| TECH-02 | `GET /api/health` → 200 con JSON estándar y BD conectada | RNF-OBS-003, RNF-CON-003 | **Aceptada con observaciones** | Responde `{success, timestamp, data:{status, database}}`; la validación Zod responde 400 estándar. Una ruta inexistente y un JSON mal formado no usan el formato estándar (DT-020); mensajes de Zod en inglés (H-31) |
+
+**Devueltas a desarrollo:**
+- US-04: el pallet se crea en `EN_CAMARA` y no en el patio (DPO-005); además H-01, H-05 y H-06.
+- US-15: los parámetros se guardan pero no se usan en alertas ni en el ingreso (RF-CFG-05, H-07).
+- US-21: la criticidad usa horas fuera de frío (24 h / 72 h) y no el vencimiento por vida útil; no hay alerta de Vencimiento (DPO-002, H-08, H-24).
+- TECH-03: sin carpeta de migraciones (se usa `db push`), Bodega 2 sin pallets en el seed y tabla `permiso` vacía.
+
+**Producción:** `/api/health`, login con contraseña errónea (401) y los endpoints protegidos sin token (401) responden como en local. Entre las 11:07 y las 11:13 (GMT-3) hubo 502 intermitentes y, desde las 11:08:37, unos 5 minutos sin respuesta del frontend ni de la API; luego se normalizó (DT-021).
+
+**Pendiente:** la verificación en tablet y celular del checklist de cada historia (TC-022).
 
 ---
 
@@ -6993,6 +7051,9 @@ Se describen desde el punto de vista del usuario y de TI del cliente, para la ve
 | DT-016 | Tablas `auditoria`, `alerta`, `permiso` y `tipo_usuario_permiso` sin uso | Modelo engañoso | Implementar RF-AUD-01, RF-NTF-02 y RF-USR-05, o eliminarlas | Media |
 | DT-017 | Formatos regionales mezclados (`es-ES` y `es-CL`) | Inconsistencia visual | §60 | Baja |
 | DT-018 | El contenedor del backend corre como `root`, y los servicios de la aplicación no tienen *healthcheck* en compose | Seguridad y operación | Usuario sin privilegios y `healthcheck` en compose | Media |
+| DT-019 | Tres pruebas del backend importaban `src/lib/…`, movido a `src/services/` en el refactor `152596b`: no se ejecutaban | Falsa sensación de cobertura | Corregido en la rama `backend_corte@fix/tests-imports`; ejecutar las pruebas en la CI (DT-011) | Alta |
+| DT-020 | La ruta inexistente responde `{ "error" }` y un JSON mal formado responde la página HTML de Express, sin el formato `{ success, error, timestamp }` | Clientes que no pueden interpretar el error | Usar `sendError` en el 404 y un manejador de errores de *parsing* | Baja |
+| DT-021 | Sin monitoreo de disponibilidad; el 30/09/2026 producción estuvo intermitente o sin respuesta unos 6 minutos | Caídas que nadie detecta | Monitoreo de `/api/health` (RNF-OBS-002) y revisar reinicios de los contenedores | Media |
 
 ---
 
@@ -7081,7 +7142,7 @@ El 29/09/2026 el PO respondió 18 de las 23 preguntas de la versión 0.1, ademá
 ## 86.3 Documentación pendiente
 
 - Manual de administración y manual de despliegue: están vacíos.
-- Manual de usuario: en `main` cubre las US-01, US-02, US-04 y US-09. Describe el comportamiento actual: las secciones de ingreso (US-04), permisos (US-02) y detalle del pallet (US-09) deberán actualizarse cuando se implementen las decisiones del PO (DPO-005, DPO-016, DPO-002).
+- Manual de usuario: en `main` cubre las US-01, US-02, US-04, US-09 y US-18. La sección de US-01 aún indica que la sesión se pierde al recargar; debe actualizarse por RF-AUT-05. Describe el comportamiento actual: las secciones de ingreso (US-04), permisos (US-02) y detalle del pallet (US-09) deberán actualizarse cuando se implementen las decisiones del PO (DPO-005, DPO-016, DPO-002).
 - Manual de integración técnica y API (Gantt).
 - Actualizar la Carta Gantt: las tareas del Sprint 1 figuran como "Pendiente", aunque varias ya están implementadas (gemelo digital, detalle y algoritmo base). Hay que agregar las tareas nuevas de las decisiones del PO (§0.5).
 - Actualizar las HU que contradicen las decisiones del PO: Calidad como "Admin" (DPO-018), despacho parcial (HU-5.4, DPO-023) y la recuperación de contraseña por correo (DPO-021).
