@@ -139,6 +139,7 @@ Las marcas **H-xx** remiten a los hallazgos del levantamiento de casos de uso (R
 |---|---|---|---|
 | 0.1 | 28/09/2026 | Serruchos Dev Team | Borrador inicial por ingeniería inversa de `NEXO-C.O.R.T.E@86ee1c9`, `frontend_corte@20bb26f`, `backend_corte@6c280aa` y `documentacion_corte@211e708` |
 | 0.2 | 29/09/2026 | Giorgio Carlin (PO) y Serruchos Dev Team | Incorpora las 34 decisiones del PO sobre las preguntas abiertas y los hallazgos (§0.5): ingreso por el patio, dos alertas, lotes con varios pallets, cantidades por envase, Kombucha y Petainer, matriz de permisos editable, política de contraseñas, anulación de ingresos y motivo de ruptura FIFO. Quedan 6 preguntas abiertas (§85) |
+| 0.4 | 02/10/2026 | Giorgio Carlin (PO) y Serruchos Dev Team | **Matriz de permisos alineada con el Manual de Usuario** (DPO-035, §29.4): despachan solo el Jefe de Planta y el Personal de reparto; reorganizar, elegir otra ubicación, la lista de ingresos, el historial, la configuración y los usuarios quedan solo para el Jefe. DPO-016 y DPO-018 quedan reemplazadas en lo que se opongan. El aviso de ruptura FIFO es un popup que se superpone a la pantalla y, una vez aceptado, permite despachar (RF-FIFO-03). La versión 0.3 se trabaja en la rama `docs/manuales-pruebas-qa` |
 | 1.0 | | | Versión aprobada por el cliente |
 
 ## 0.2 Estado del documento
@@ -215,9 +216,9 @@ Cuando una decisión contradice una HU o el código, **prevalece la decisión**.
 
 | ID | Decisión | Resuelve |
 |---|---|---|
-| DPO-016 | Matriz de permisos inicial (el Jefe de Planta puede todo): **todos los cargos** registran ingresos en el patio, ubican pallets en la cámara, cambian la ubicación sugerida, reorganizan y registran notas de calidad. **Despachan** el Jefe, Calidad y Reparto; el **Ayudante no despacha**. Solo el Jefe administra usuarios. Detalle en §29.4 | PA-004, PA-005 |
+| DPO-016 | **Reemplazada por DPO-035 (02/10/2026).** Matriz de permisos inicial (el Jefe de Planta puede todo): **todos los cargos** registran ingresos en el patio, ubican pallets en la cámara, cambian la ubicación sugerida, reorganizan y registran notas de calidad. **Despachan** el Jefe, Calidad y Reparto; el **Ayudante no despacha**. Solo el Jefe administra usuarios. Detalle en §29.4 | PA-004, PA-005 |
 | DPO-017 | Los permisos por cargo **se editan desde la aplicación** (el Jefe), y el backend los aplica en cada operación | H-26 |
-| DPO-018 | El Encargado de Calidad **administra la configuración** (estilos, envases, plazos, umbrales y cantidades), pero **no los usuarios**. Tiene un rol propio | H-27 |
+| DPO-018 | **Reemplazada por DPO-035 (02/10/2026): la configuración queda solo para el Jefe.** El Encargado de Calidad **administra la configuración** (estilos, envases, plazos, umbrales y cantidades), pero **no los usuarios**. Tiene un rol propio | H-27 |
 | DPO-019 | Una sola **política de contraseñas** para todos: 12 a 72 caracteres, con al menos una mayúscula, una minúscula y un número, también cuando la asigna el Jefe | H-15 |
 | DPO-020 | La **contraseña inicial** sigue siendo los últimos 5 dígitos del RUT, pero el sistema **obliga a cambiarla** en el primer acceso, antes de operar | RN-018 |
 | DPO-021 | Una contraseña olvidada **la restablece el Jefe** desde Usuarios (vuelve a la inicial, con cambio obligatorio). "¿Olvidaste tu contraseña?" indica pedírsela al Jefe. No se necesita correo | H-20, PA-023 |
@@ -244,6 +245,7 @@ Cuando una decisión contradice una HU o el código, **prevalece la decisión**.
 | DPO-032 | Al término del convenio, el sistema **se traspasa al cliente**, porque el servidor del curso es temporal. Dónde se alojará se definirá más adelante con TI del cliente | PA-009 (en parte) |
 | DPO-033 | La priorización MoSCoW (§10) queda **aprobada** con los ajustes de estas decisiones | §10 |
 | DPO-034 | Responsables: **DevOps**, Giorgio Carlin; **desarrollo frontend**, Javier Martínez | §0.3 |
+| DPO-035 | (02/10/2026) La matriz de permisos se **alinea con el Manual de Usuario**: todos los cargos consultan el panel, la cámara, las alertas y los inventarios, y registran ingresos; **despachan solo el Jefe y el Personal de reparto**; reorganizar, elegir otra ubicación, la lista de ingresos, el historial, la configuración y los usuarios son **solo del Jefe**. Reemplaza a DPO-016 y DPO-018 en lo que se opongan. Detalle en §29.4 | DPO-016, DPO-018 |
 
 **Criterios del análisis que no requirieron consulta** (corrigen fallas sin alternativas razonables):
 - El selector de perfil del menú lateral se elimina: el rol lo define el servidor (H-10).
@@ -560,7 +562,7 @@ flowchart LR
 | STK-101 | Patrocinador (Esteban Barra, Cervecería Cuello Negro) | Dirección general, aprobación y resolución de obstáculos |
 | STK-102 | Cliente y Administrador del convenio (Benjamín Tapia) | Define objetivos, valida y firma la recepción de entregables |
 | STK-103 | Jefe(a) de Planta | Usuario principal. Administra la cámara, los usuarios, los permisos y la configuración |
-| STK-104 | Encargado(a) de Calidad | Supervisa el estado de los lotes, registra observaciones de calidad y administra la configuración (DPO-018) |
+| STK-104 | Encargado(a) de Calidad | Supervisa el estado de los lotes y registra observaciones de calidad (DPO-035) |
 | STK-105 | Ayudantes operativos | Ingresan la producción al patio, la ubican en la cámara y buscan pallets |
 | STK-106 | Personal de reparto | Retira y despacha pallets |
 | STK-107 | TI del cliente | Recibe, opera y mantiene el sistema después del convenio |
@@ -581,7 +583,7 @@ flowchart LR
 
 # 4. ACTORES DEL SISTEMA
 
-Los permisos "actuales" se refieren al código analizado. Los "esperados" son la matriz inicial que definió el PO (DPO-016, detalle en §29.3). El Jefe puede editarla desde la aplicación (DPO-017).
+Los permisos "actuales" se refieren al código analizado. Los "esperados" son la matriz que definió el PO (DPO-035, detalle en §29.4). El Jefe puede editarla desde la aplicación (DPO-017).
 
 ## ACT-001 — Jefe de Planta
 
@@ -597,7 +599,7 @@ Los permisos "actuales" se refieren al código analizado. Los "esperados" son la
 
 **Permisos generales (actuales):** acceso a todas las pantallas; es el único que puede reorganizar la cámara, elegir una ubicación distinta a la sugerida, administrar usuarios y editar la configuración (el backend lo verifica en usuarios, configuración y reorganización).
 
-**Permisos esperados (DPO-016):** todos. Es el único que administra usuarios, restablece contraseñas (DPO-021) y edita la matriz de permisos (DPO-017). Por defecto, también es el único que edita y anula ingresos (DPO-022).
+**Permisos esperados (DPO-035):** todos. Despacha junto con el Personal de reparto, y es el único que reorganiza la cámara, elige otra ubicación, consulta la lista de ingresos y el historial, y administra la configuración. También es el único que administra usuarios, restablece contraseñas (DPO-021) y edita la matriz de permisos (DPO-017). Por defecto, también es el único que edita y anula ingresos (DPO-022).
 
 **Restricciones:**
 - No puede desactivarse a sí mismo.
@@ -605,20 +607,18 @@ Los permisos "actuales" se refieren al código analizado. Los "esperados" son la
 
 ## ACT-002 — Encargado(a) de Calidad
 
-**Descripción:** Administrador de la configuración (DPO-018). En la BD es el tipo `Calidad`. Hoy la aplicación lo mapea al rol `OPERARIO` (H-27); debe tener un rol propio, `CALIDAD`.
+**Descripción:** Supervisa la calidad de los lotes. En la BD es el tipo `Calidad`; la aplicación lo mapea al rol `OPERARIO` (H-27). Con DPO-035 ya no administra la configuración ni despacha, por lo que comparte los permisos del Ayudante.
 
 **Responsabilidades:**
 - Supervisar el estado de la cámara y registrar notas de calidad.
-- Administrar la configuración: estilos, envases, plazos, umbrales y cantidades (DPO-018).
-- Despachar.
 - Planificar la distribución y validar la ubicación sugerida.
 - Comparar el inventario con Gestión Cervecera y generar informes (según HU).
 
 **Permisos generales (actuales):** los mismos del Ayudante (ACT-003).
 
-**Permisos esperados (DPO-016, DPO-018):** registrar ingresos, ubicar, cambiar la ubicación sugerida, reorganizar, registrar notas de calidad, despachar y administrar la configuración.
+**Permisos esperados (DPO-035):** consultar el panel, la cámara, las alertas y los inventarios; registrar ingresos y notas de calidad.
 
-**Restricciones:** no administra usuarios ni permisos (DPO-018).
+**Restricciones:** no despacha, no reorganiza ni elige otra ubicación, y no administra configuración, usuarios ni permisos (DPO-035).
 
 ## ACT-003 — Ayudante Operativo
 
@@ -628,9 +628,9 @@ Los permisos "actuales" se refieren al código analizado. Los "esperados" son la
 
 **Permisos generales (actuales):** Panel principal, Vista de Cámara (incluido "Nuevo Ingreso"), Alertas FIFO, Inventario, Patio, Bodega 2, Mi perfil y Despachar.
 
-**Permisos esperados (DPO-016):** registrar ingresos, ubicar, cambiar la ubicación sugerida, reorganizar y registrar notas de calidad.
+**Permisos esperados (DPO-035):** consultar el panel, la cámara, las alertas y los inventarios; registrar ingresos y notas de calidad.
 
-**Restricciones:** no despacha (DPO-016); no administra usuarios, permisos ni configuración.
+**Restricciones:** no despacha, no reorganiza ni elige otra ubicación, y no administra usuarios, permisos ni configuración (DPO-035).
 
 ## ACT-004 — Personal de Reparto
 
@@ -640,7 +640,7 @@ Los permisos "actuales" se refieren al código analizado. Los "esperados" son la
 
 **Permisos generales (actuales):** los mismos del Ayudante.
 
-**Permisos esperados (DPO-016):** registrar ingresos, ubicar, cambiar la ubicación sugerida, reorganizar, registrar notas de calidad y despachar.
+**Permisos esperados (DPO-035):** consultar el panel, la cámara, las alertas y los inventarios; registrar ingresos y notas de calidad, y **despachar** (Manual de Usuario, US-18).
 
 **Restricciones:** no administra usuarios, permisos ni configuración.
 
@@ -693,7 +693,7 @@ Los permisos "actuales" se refieren al código analizado. Los "esperados" son la
 | P-02 | Ubicación en la cámara y almacenamiento en el gemelo digital | RF-ING-07, RF-OPT-01, RF-GD-01, RF-GD-02 | Parcial: la ubicación desde el patio no existe |
 | P-03 | Monitoreo del tiempo fuera de frío (patio) y del vencimiento (cámara) | RF-FIFO-01, RF-FIFO-02, RF-FIFO-05 | Parcial: hoy hay un solo criterio, contado desde el envasado (DPO-002) |
 | P-04 | Preparación y despacho | RF-DES-01, RF-FIFO-03 | Parcial: falta el motivo de ruptura (DPO-024) |
-| P-05 | Reorganización de la cámara | RF-CAM-01 | Implementado solo para el Jefe; debe abrirse a todos los cargos (DPO-016) |
+| P-05 | Reorganización de la cámara | RF-CAM-01 | Implementado solo para el Jefe, como define DPO-035 |
 | P-06 | Control de calidad (notas) | RF-CAL-01, RF-CAL-02, RF-CAL-03 | Parcial |
 | P-07 | Administración de usuarios, permisos y configuración | RF-USR-*, RF-CFG-* | Implementado / Parcial |
 | P-11 | Corrección y anulación de ingresos | RF-ING-05, RF-ING-06 | Propuesto (DPO-022) |
@@ -918,7 +918,7 @@ El formulario propone el máximo (pallet completo), y el operario lo baja si el 
 - se libera su posición y la torre se compacta;
 - `EN_CAMION` es el estado final: no se usan Reservado ni Entregado (DPO-025);
 - si hay pallets del mismo estilo que vencen antes, se exige un motivo (RN-030);
-- pueden despachar el Jefe, Calidad y Reparto (DPO-016).
+- pueden despachar el Jefe y el Personal de reparto (DPO-035).
 
 **Justificación:** refleja que el pallet ya no está físicamente en la cámara (HU-5.3).
 **Origen:** HU-5.2 y HU-5.3; PO.
@@ -942,19 +942,20 @@ El formulario propone el máximo (pallet completo), y el operario lo baja si el 
 
 ## RN-015 — Operaciones abiertas a todos los cargos
 
-**Descripción:** cualquier cargo puede registrar ingresos en el patio, ubicar pallets en la cámara, cambiar la ubicación sugerida, reorganizar la cámara y registrar notas de calidad (DPO-016).
+**Descripción:** cualquier cargo puede consultar el panel, la cámara, las alertas y los inventarios, registrar ingresos y ubicarlos en la posición sugerida, y registrar notas de calidad (DPO-035). Cambiar la ubicación sugerida y reorganizar la cámara son solo del Jefe (RN-016).
 **Justificación:** todo el personal de planta mueve pallets.
-**Origen:** PO (DPO-016), en línea con HU-6.1 ("cualquier usuario").
+**Origen:** PO (DPO-016, ajustada por DPO-035 según el Manual de Usuario).
 **Aplica a:** RF-ING-01, RF-ING-07, RF-OPT-02, RF-CAM-01, RF-CAL-01, RF-CAL-02.
-**Implementación actual:** solo el Jefe reorganiza y elige otra ubicación: el frontend oculta los botones y el backend responde 403 al resto en la reorganización.
+**Implementación actual:** coincide con DPO-035: solo el Jefe reorganiza y elige otra ubicación; el frontend oculta los botones y el backend responde 403 al resto en la reorganización.
 **Excepciones:** el Jefe puede cambiar esta matriz (RN-016).
 
 ## RN-016 — Administración, despacho y matriz de permisos
 
 **Descripción:**
 - Solo el Jefe de Planta administra usuarios, restablece contraseñas y edita la matriz de permisos (DPO-017, DPO-021).
-- La configuración la administran el Jefe y el Encargado de Calidad (DPO-018).
-- Despachan el Jefe, Calidad y Reparto; el Ayudante no (DPO-016).
+- La configuración, la lista de ingresos y el historial de ingresos y despachos son solo del Jefe (DPO-035).
+- Reorganizar la cámara y elegir una ubicación distinta de la sugerida son solo del Jefe (DPO-035).
+- Despachan el Jefe y el Personal de reparto; Calidad y el Ayudante no (DPO-035, Manual de Usuario US-18).
 - Editar y anular ingresos tiene un permiso propio, asignado por defecto solo al Jefe (DPO-022).
 - El backend aplica la matriz vigente en cada operación (DPO-017).
 
@@ -1041,7 +1042,7 @@ El formulario propone el máximo (pallet completo), y el operario lo baja si el 
 
 ## RN-025 — Notas de calidad
 
-**Descripción:** cualquier usuario activo puede registrar notas de calidad (DPO-016). Cada nota queda asociada a su autor y a la fecha, no se puede editar ni eliminar y se conserva mientras dure el servicio (DPO-028).
+**Descripción:** cualquier usuario activo puede registrar notas de calidad (DPO-016, se mantiene en DPO-035). Cada nota queda asociada a su autor y a la fecha, no se puede editar ni eliminar y se conserva mientras dure el servicio (DPO-028).
 **Justificación:** trazabilidad de calidad.
 **Origen:** HU-2.4, diagrama de actividad y PO.
 **Aplica a:** RF-CAL-01, RF-CAL-02, RF-CAL-03.
@@ -1151,7 +1152,7 @@ En empate, gana la primera posición recorrida.
 | RF-AUT-01 | Funcional | Iniciar sesión con RUT o correo | Must | Implementado | Full-stack | HU-1.1 · CU-01 |
 | RF-AUT-02 | Funcional | Cerrar sesión | Must | Implementado | Frontend | CU-21 |
 | RF-AUT-03 | Funcional | Recuperar la contraseña con ayuda del Jefe | Should | Propuesto | Full-stack | CU-01 (el botón existe, sin acción) · DPO-021 |
-| RF-AUT-04 | Funcional | Control de acceso por rol en la interfaz y la API | Must | Parcial | Full-stack | HU-1.1, HU-1.3 · DPO-016 |
+| RF-AUT-04 | Funcional | Control de acceso por rol en la interfaz y la API | Must | Parcial | Full-stack | HU-1.1, HU-1.3 · DPO-035 |
 | RF-AUT-05 | Funcional | Mantener la sesión al recargar la página | Should | Propuesto | Frontend | Manual US-04 |
 | RF-AUT-06 | Funcional | Obligar a cambiar la contraseña inicial en el primer acceso | Must | Propuesto | Full-stack | DPO-020 |
 | RF-USR-01 | Funcional | Listar y buscar usuarios | Must | Implementado | Full-stack | HU-1.2 · CU-02 |
@@ -1178,7 +1179,7 @@ En empate, gana la primera posición recorrida.
 | RF-MB-01 | Funcional | Vista consolidada multi-bodega | Should | Parcial | Javier M., Francisco H. | Gantt · CU-24 |
 | RF-MB-02 | Funcional | Tránsitos entre bodegas | Should | Propuesto | Javier M., Francisco H. | Gantt · HU-3.1 |
 | RF-MB-03 | Funcional | Editor gráfico de planos (layout builder) | Could | Propuesto | Ángel L., Giorgio C. | Gantt · Charter |
-| RF-CAM-01 | Funcional | Reorganizar la cámara | Must | Parcial | Full-stack | HU-6.1, HU-3.4 · CU-14 · US-R9 · DPO-016 |
+| RF-CAM-01 | Funcional | Reorganizar la cámara | Must | Parcial | Full-stack | HU-6.1, HU-3.4 · CU-14 · US-R9 · DPO-035 |
 | RF-CAM-02 | Funcional | Mover un pallet indicando la ubicación en texto | Could | Propuesto | Frontend | HU-3.4, HU-6.1 |
 | RF-CAM-03 | Funcional | Editar los datos de un pallet | Should | Propuesto | Full-stack | HU-3.4 · CU-07 |
 | RF-CAM-04 | Funcional | Mostrar la ocupación de la cámara | Should | Parcial | Frontend | HU-6.3 · CU-22 |
@@ -1521,7 +1522,7 @@ En empate, gana la primera posición recorrida.
 **Entradas (propuestas):** cargo; permisos asignados, elegidos de un catálogo (por ejemplo: registrar ingresos, ubicar, reorganizar, despachar, registrar notas, editar ingresos, anular ingresos, administrar configuración y administrar usuarios).
 
 **Proceso propuesto:**
-1. Persistir los permisos en `permiso` y `tipo_usuario_permiso` (las tablas ya existen), con la matriz inicial de §29.3 (DPO-016) como datos de partida.
+1. Persistir los permisos en `permiso` y `tipo_usuario_permiso` (las tablas ya existen), con la matriz de §29.4 (DPO-035) como datos de partida.
 2. Consultarlos en cada solicitud (o incluirlos en el token, con vida corta), para que un cambio se aplique sin esperar a que expire la sesión.
 3. Aplicarlos en el frontend y en el backend.
 4. Impedir que el Jefe se quite a sí mismo la administración de usuarios y permisos (RN-017).
@@ -1770,7 +1771,7 @@ En empate, gana la primera posición recorrida.
 
 **Descripción:** el sistema deberá permitir descartar la ubicación sugerida y elegir otra posición válida, registrando que fue una elección manual y su justificación.
 **Prioridad:** Should · **Estado:** Parcial · **Origen:** HU-7.2, Gantt RF-OPT-02
-**Actor principal:** todos los cargos (DPO-016)
+**Actor principal:** ACT-001, Jefe de Planta (DPO-035)
 **Entradas:**
 - Celda elegida en la mini-grilla (solo celdas válidas y con espacio).
 - Justificación: texto obligatorio, propuesto.
@@ -1824,7 +1825,7 @@ En empate, gana la primera posición recorrida.
 - Lote, estilo, cantidad con su unidad, estado y envase.
 - Fecha de envasado (sin hora, DPO-004).
 - Historial de notas y botón para guardar una nota nueva (RF-CAL-02).
-- Acción **Registrar Despacho**, solo para los cargos que despachan (DPO-016).
+- Acción **Registrar Despacho**, solo para los cargos que despachan: Jefe y Personal de reparto (DPO-035).
 
 **Casos de uso relacionados:** UC-010 · **Criterios de aceptación:** CA-RF-GD-02-01
 **Observaciones:** hoy muestra el estado FIFO por horas desde el envasado, con barra de tiempo y límite del estilo; no muestra la posición (H-29), y la nota nueva no se puede guardar (H-02).
@@ -1871,7 +1872,7 @@ En empate, gana la primera posición recorrida.
 
 ### RF-CAM-01 — Reorganizar la cámara
 
-**Descripción:** el sistema deberá permitir que cualquier cargo con el permiso Reorganizar (por defecto, todos, DPO-016) cambie la posición de uno o varios pallets (arrastrando o tocando), vea cómo quedaría la cámara antes de guardar y guarde todos los cambios como una sola operación.
+**Descripción:** el sistema deberá permitir que cualquier cargo con el permiso Reorganizar (por defecto, solo el Jefe, DPO-035) cambie la posición de uno o varios pallets (arrastrando o tocando), vea cómo quedaría la cámara antes de guardar y guarde todos los cambios como una sola operación.
 **Objetivo relacionado:** OBJ-002, OBJ-007 · **Actor principal:** ACT-001 a ACT-004
 **Prioridad:** Must · **Estado:** Parcial (hoy solo el Jefe)
 **Precondiciones:** sesión activa con el permiso Reorganizar.
@@ -2058,7 +2059,7 @@ En empate, gana la primera posición recorrida.
 **Proceso:** se buscan los pallets `EN_CAMARA` del mismo estilo con fecha de vencimiento anterior, y se ordenan del que vence primero al último. El motivo viaja con el despacho (API-018) y se guarda con el movimiento.
 **Salidas:**
 - Aviso previo dentro del formulario de despacho.
-- Diálogo "Despacho fuera de orden", con la lista de pallets (lote, posición y vencimiento), la sugerencia y el campo de motivo.
+- Diálogo "Despacho fuera de orden" que se superpone a la pantalla, con la lista de pallets (lote, posición y vencimiento), la sugerencia y el campo de motivo. Aparece igual en el despacho de uno o de varios pallets y, una vez aceptado, cualquier cargo con permiso de despacho puede completar el despacho (DPO-035).
 
 **Reglas de negocio relacionadas:** RN-009, RN-030 · **Casos de uso relacionados:** UC-015 · **Criterios de aceptación:** CA-RF-FIFO-03-01, CA-RF-FIFO-03-02
 **Observaciones:**
@@ -2086,7 +2087,7 @@ En empate, gana la primera posición recorrida.
 ### RF-DES-01 — Registrar el despacho con destino
 
 **Descripción:** el sistema deberá registrar la salida de un pallet completo de la cámara hacia un destino (camión, cliente o pedido). El pallet deberá pasar a "En Camión", que es su estado final (DPO-025); su posición deberá liberarse y el movimiento deberá quedar registrado.
-**Objetivo relacionado:** OBJ-003, OBJ-005 · **Actor principal:** ACT-001, ACT-002 y ACT-004 (DPO-016). El Ayudante no despacha
+**Objetivo relacionado:** OBJ-003, OBJ-005 · **Actor principal:** ACT-001 y ACT-004 (DPO-035). Calidad y el Ayudante no despachan
 **Prioridad:** Must · **Estado:** Implementado
 **Precondiciones:** sesión activa con el permiso Despachar; el pallet está `EN_CAMARA`.
 
@@ -2249,7 +2250,7 @@ En empate, gana la primera posición recorrida.
 ### RF-CFG-01 — Administrar tipos de envase
 
 **Descripción:** el sistema deberá permitir crear, editar, activar y desactivar tipos de envase, cada uno con su unidad y su cantidad máxima por pallet (DPO-009).
-**Actor principal:** ACT-001, ACT-002 (DPO-018) · **Prioridad:** Should · **Estado:** Parcial (faltan la unidad y la cantidad máxima)
+**Actor principal:** ACT-001 (DPO-035) · **Prioridad:** Should · **Estado:** Parcial (faltan la unidad y la cantidad máxima)
 
 **Entradas:**
 
@@ -2269,7 +2270,7 @@ En empate, gana la primera posición recorrida.
 ### RF-CFG-02 — Administrar tipos de cerveza
 
 **Descripción:** el sistema deberá permitir crear y editar estilos (cerveza o Kombucha) con su vida útil (en días), su plazo máximo fuera de frío antes de entrar a la cámara (en horas, DPO-001) y su estado.
-**Actor principal:** ACT-001, ACT-002 (DPO-018) · **Prioridad:** Must · **Estado:** Implementado
+**Actor principal:** ACT-001 (DPO-035) · **Prioridad:** Must · **Estado:** Implementado
 
 **Entradas:**
 
@@ -2289,7 +2290,7 @@ En empate, gana la primera posición recorrida.
 ### RF-CFG-03 — Administrar reglas de alerta
 
 **Descripción:** el sistema deberá permitir definir reglas de alerta de stock mínimo, stock máximo, vencimiento y orden de salida (FEFO o FIFO), y **aplicarlas** para generar alertas. También deberá permitir ajustar los umbrales de las alertas Fuera de frío (6 h y 12 h) y Vencimiento (7 y 14 días) (DPO-002).
-**Actor principal:** ACT-001, ACT-002 (DPO-018) · **Prioridad:** Should · **Estado:** Parcial
+**Actor principal:** ACT-001 (DPO-035) · **Prioridad:** Should · **Estado:** Parcial
 
 **Entradas:**
 
@@ -3013,7 +3014,7 @@ RN-007, RN-008, RN-029
 ## UC-012 — Despachar pallets
 
 **Objetivo:** registrar la salida de un pallet completo hacia un camión, cliente o pedido.
-**Actor principal:** ACT-004; también ACT-001 y ACT-002. El Ayudante no despacha (DPO-016)
+**Actor principal:** ACT-004; también ACT-001. Calidad y el Ayudante no despachan (DPO-035)
 **Precondiciones:** el pallet está en cámara.
 **Disparador:** el usuario pulsa **Despachar** o **Registrar Despacho**.
 
@@ -3086,7 +3087,7 @@ RN-022
 ## UC-014 — Ordenar la cámara y mover pallets
 
 **Objetivo:** dejar la cámara ordenada después de retirar o recibir producto.
-**Actor principal:** cualquier cargo con el permiso Reorganizar (por defecto, todos, DPO-016)
+**Actor principal:** cualquier cargo con el permiso Reorganizar (por defecto, solo el Jefe, DPO-035)
 **Precondiciones:** sesión con el permiso Reorganizar.
 **Disparador:** el usuario pulsa **Reorganizar**.
 
@@ -3373,7 +3374,7 @@ Mermaid no tiene diagramas UML de casos de uso, así que se representa con un di
 - las líneas punteadas indican especialización del actor ("es un");
 - los casos con borde discontinuo no están implementados.
 
-Las asociaciones siguen la matriz inicial de permisos del PO (DPO-016): todos ingresan, ubican, reorganizan y registran notas; despachan el Jefe, Calidad y Reparto; configuran el Jefe y Calidad.
+Las asociaciones siguen la matriz de permisos del PO (DPO-035): todos ingresan, ubican en la posición sugerida y registran notas; despachan el Jefe y el Personal de reparto; reorganizan, eligen otra ubicación y configuran solo el Jefe.
 
 ```mermaid
 flowchart LR
@@ -4076,7 +4077,7 @@ El diagrama de §17.1 refleja el esquema vigente. Las decisiones de §0.5 requie
 | `parametro` | Umbrales de las alertas Fuera de frío (6 y 12 h) y Vencimiento (7 y 14 días) | DPO-002 |
 | `movimiento` | Nuevo campo `motivo` VARCHAR(300) NULL y un tipo explícito (`INGRESO`, `UBICACION`, `REUBICACION`, `DESPACHO`, `EDICION`, `ANULACION`) en vez de deducirlo | DPO-022, DPO-024 |
 | `usuario` | Nuevo campo `debe_cambiar_password` BOOLEAN | DPO-020, DPO-021 |
-| `permiso`, `tipo_usuario_permiso` | Cargar el catálogo de permisos y la matriz inicial de §29.3 | DPO-016, DPO-017 |
+| `permiso`, `tipo_usuario_permiso` | Cargar el catálogo de permisos y la matriz de §29.4 | DPO-035, DPO-017 |
 | `tipo_usuario` | El tipo `Calidad` se mapea a un rol propio `CALIDAD` | DPO-018 |
 | `posicion` | Crear el nivel 5 en A4–A6, B5, B6, C5 y C6, y el nivel 4 en B4, solo para Petainer | DPO-012 |
 | `pallet_posicion` | UNIQUE en `id_posicion`, y solo pallets `EN_CAMARA` con posición | DT-010, DPO-025 |
@@ -4849,7 +4850,7 @@ Reúne los compose de producción (`docker-compose.yml`, que construye en el ser
 |---|---|
 | Método y ruta | `POST /api/pallets/reorganizar` |
 | Autenticación | Bearer JWT |
-| Permisos | Jefe de planta activo (hoy). Esperado: el permiso Reorganizar, que por defecto tienen todos los cargos (DPO-016) |
+| Permisos | Jefe de planta activo (hoy). Esperado: el permiso Reorganizar, que por defecto tiene solo el Jefe (DPO-035) |
 | Requisitos | RF-CAM-01 |
 | Validación | `movimientos`: entre 1 y 500 elementos `{id, posicion}`. `esperado`: hasta 200 elementos con ids únicos. Cuerpo estricto |
 | Transacción | Serializable, con un tiempo máximo de 15 s. Control optimista: la cámara actual debe ser **idéntica** a `esperado` |
@@ -4875,7 +4876,7 @@ Reúne los compose de producción (`docker-compose.yml`, que construye en el ser
 |---|---|
 | Método y ruta | `POST /api/pallets/{id}/despacho` |
 | Autenticación | Bearer JWT |
-| Permisos | Cualquier cuenta activa (hoy). Esperado: el permiso Despachar (Jefe, Calidad y Reparto, DPO-016) |
+| Permisos | Cualquier cuenta activa (hoy). Esperado: el permiso Despachar (Jefe y Personal de reparto, DPO-035) |
 | Requisitos | RF-DES-01, RF-FIFO-03 |
 | Validación | `id` entero positivo; `destino` de 1 a 150 caracteres (sin espacios al inicio ni al final). Cuerpo estricto. **Esperado:** `motivoRuptura` obligatorio si hay pallets del mismo estilo en cámara que vencen antes (VAL-024, DPO-024); el backend lo verifica |
 | Transacción | Serializable. Cambia el estado a `EN_CAMION`, elimina la ubicación del pallet, crea el movimiento de despacho (con el motivo, si lo hay), compacta la torre y registra un movimiento por cada pallet que baja de nivel |
@@ -5180,28 +5181,29 @@ Las tablas `permiso` y `tipo_usuario_permiso` todavía no se usan (RF-USR-05).
 | Configuración | ✓ | ✗ | ✗ | ✗ | Solo el Jefe (BD) | — |
 | Planificación, informes y comparación con el ERP | — | — | — | — | No implementado | Según las HU, Calidad |
 
-## 29.4 Matriz objetivo inicial (DPO-016)
+## 29.4 Matriz objetivo (DPO-035)
 
-La definió el PO el 29/09/2026 y es la configuración de partida de RF-USR-05: el Jefe puede cambiarla desde la aplicación (DPO-017). Toda acción exige un JWT válido y una cuenta activa, y el backend verifica el permiso.
+La definió el PO el 02/10/2026 alineándola con el Manual de Usuario (§1.3 Menú, §2.5 Permisos, US-04, US-09 y US-18). Reemplaza la matriz inicial de DPO-016 y es la configuración de partida de RF-USR-05: el Jefe puede cambiarla desde la aplicación (DPO-017). Toda acción exige un JWT válido y una cuenta activa, y el backend verifica el permiso.
 
 | Acción | Jefe | Calidad | Ayudante | Reparto | Origen |
 |---|---:|---:|---:|---:|---|
-| Iniciar y cerrar sesión; Mi perfil | ✓ | ✓ | ✓ | ✓ | — |
-| Panel principal, Vista de cámara, detalle, alertas e inventarios | ✓ | ✓ | ✓ | ✓ | — |
-| Registrar ingresos en el patio | ✓ | ✓ | ✓ | ✓ | DPO-016 |
-| Ubicar en la cámara (con la sugerencia) | ✓ | ✓ | ✓ | ✓ | DPO-016 |
-| Cambiar la ubicación sugerida | ✓ | ✓ | ✓ | ✓ | DPO-016 |
-| Reorganizar la cámara | ✓ | ✓ | ✓ | ✓ | DPO-016 (HU-6.1) |
-| Registrar notas de calidad | ✓ | ✓ | ✓ | ✓ | DPO-016 |
-| Despachar | ✓ | ✓ | ✗ | ✓ | DPO-016 (coincide con las HU) |
-| Consultar la lista de ingresos | ✓ | ✓ | ✓ | ✓ | Propuesta del análisis: todos la necesitan para ubicar desde el patio |
-| Editar ingresos | ✓ | ✗ | ✗ | ✗ | DPO-022 (permiso propio) |
-| Anular ingresos | ✓ | ✗ | ✗ | ✗ | DPO-022 (permiso propio) |
-| Historial de ingresos y despachos | ✓ | ✗ | ✗ | ✗ | Sin cambios respecto de hoy |
-| Configuración (estilos, envases, plazos, umbrales, cantidades) | ✓ | ✓ | ✗ | ✗ | DPO-018 |
-| Usuarios y restablecimiento de contraseñas | ✓ | ✗ | ✗ | ✗ | DPO-018, DPO-021 |
+| Iniciar y cerrar sesión; Mi perfil | ✓ | ✓ | ✓ | ✓ | Manual §1 |
+| Panel principal, Vista de cámara, detalle, alertas FIFO e inventarios (cámara, Patio y Bodega 2) | ✓ | ✓ | ✓ | ✓ | Manual §1.3 |
+| Registrar ingresos y ubicarlos en la posición sugerida | ✓ | ✓ | ✓ | ✓ | Manual §3 (US-04) |
+| Cambiar la ubicación sugerida | ✓ | ✗ | ✗ | ✗ | Manual §3 (US-04) |
+| Reorganizar la cámara | ✓ | ✗ | ✗ | ✗ | Manual §4 (US-09) |
+| Registrar notas de calidad | ✓ | ✓ | ✓ | ✓ | DPO-016 (se mantiene) |
+| Despachar uno o varios pallets | ✓ | ✗ | ✗ | ✓ | Manual §5 (US-18) |
+| Despachar fuera del orden de salida, tras aceptar el aviso (RF-FIFO-03) | ✓ | ✗ | ✗ | ✓ | Quien puede despachar |
+| Consultar la lista de ingresos | ✓ | ✗ | ✗ | ✗ | Manual §1.3 |
+| Editar y anular ingresos | ✓ | ✗ | ✗ | ✗ | DPO-022 (permiso propio) |
+| Historial de ingresos y despachos | ✓ | ✗ | ✗ | ✗ | Manual §1.3 y §2.5 |
+| Configuración (estilos, envases, plazos, umbrales, cantidades) | ✓ | ✗ | ✗ | ✗ | Manual §1.3 y §2.5 |
+| Usuarios y restablecimiento de contraseñas | ✓ | ✗ | ✗ | ✗ | Manual §2, DPO-021 |
 | Editar la matriz de permisos | ✓ | ✗ | ✗ | ✗ | DPO-017 |
 | Planificación, informes y comparación con el ERP (no implementados) | ✓ | ✓ | ✗ | ✗ | HU |
+
+**Pendiente:** el cargo `Encargado` (§29.2) no tiene actor ni fila propia. El Manual le muestra el mismo menú que al Personal de reparto, pero falta decidir si despacha (§85).
 
 El Jefe no puede quitarse a sí mismo (ni al cargo Jefe de planta) la administración de usuarios y de permisos, para no dejar el sistema sin administrador (RN-017).
 
@@ -6155,7 +6157,7 @@ Estos diagramas describen la **implementación actual**. Con las decisiones del 
 - **DS-001:** si la cuenta usa la contraseña inicial, el login termina en la pantalla de cambio obligatorio (RF-AUT-06).
 - **DS-002:** el ingreso ya no elige la posición: crea el pallet en el patio, y la ubicación es una operación aparte (ACT-DIAG-001, ACT-DIAG-005, API-030).
 - **DS-003:** el diálogo de ruptura pide el motivo, que viaja en la solicitud y se guarda con el movimiento (RN-030).
-- **DS-004:** cualquier cargo con el permiso Reorganizar puede guardar (DPO-016).
+- **DS-004:** cualquier cargo con el permiso Reorganizar puede guardar; por defecto, solo el Jefe (DPO-035).
 
 ## DS-001 — Inicio de sesión
 
@@ -6624,7 +6626,7 @@ MAJOR.MINOR.PATCH
 | CA-RF-MB-02-01 | Un pallet en la cámara | Se traslada a la Bodega 2 | Queda en la Bodega 2, con el movimiento entre bodegas (el paso del patio a la cámara es CA-RF-ING-07-01) | No |
 | CA-RF-CAM-01-01 | El Jefe en modo Reorganizar | Mueve un barril a una torre con espacio y guarda | La posición se guarda y el historial registra el movimiento | Sí |
 | CA-RF-CAM-01-02 | Otro usuario despachó un pallet durante la reorganización | El Jefe guarda | Recibe 409 y no se aplica ningún cambio | Sí |
-| CA-RF-CAM-01-03 | Un Ayudante con el permiso Reorganizar (por defecto, DPO-016) | Reorganiza y guarda | Se guarda. Un cargo al que el Jefe le quitó el permiso recibe 403 | No (hoy solo el Jefe) |
+| CA-RF-CAM-01-03 | Un Ayudante sin el permiso Reorganizar (por defecto, DPO-035) | Intenta reorganizar | La interfaz no muestra **Reorganizar** y la API responde 403. Si el Jefe le asigna el permiso, puede guardar | Sí (solo el Jefe reorganiza) |
 | CA-RF-INV-04-01 | Pallets de varios estilos y fechas | Se filtra por IPA, vencimiento Crítico y un rango de envasado | Solo se ven los pallets que cumplen todos los filtros | Sí |
 | CA-RF-FIFO-01-01 | Un Lager registrado en el patio hace 19 h | Se muestra | Alerta Fuera de frío CRÍTICO, con 5 h restantes | Parcial: hoy el cálculo parte del envasado |
 | CA-RF-FIFO-01-02 | Un Stout registrado en el patio hace 62 h | Se muestra | Alerta Fuera de frío PREVENTIVO, con 10 h restantes | Parcial: hoy el cálculo parte del envasado |
@@ -6934,7 +6936,7 @@ Se describen desde el punto de vista del usuario y de TI del cliente, para la ve
 | LIM-007 | Los pallets despachados dejan de verse y "Stock en tránsito" no los cuenta. Los estados posteriores al despacho no se usarán (DPO-025) |
 | LIM-008 | El estado FIFO usa la fecha de envasado sin hora y el reloj del dispositivo, y la Lista de Ingresos usa otro criterio (DPO-001, DPO-002) |
 | LIM-009 | La sesión se pierde al recargar la página, y no hay recuperación de contraseña (DPO-021) |
-| LIM-010 | Solo el Jefe de Planta reorganiza, y no hay advertencia FIFO al mover pallets (DPO-016) |
+| LIM-010 | No hay advertencia FIFO al mover pallets. Que solo el Jefe reorganice es intencional (DPO-035) |
 | LIM-011 | Patio y Bodega 2 son solo de consulta: no se pueden mover pallets entre bodegas (DPO-005) |
 | LIM-012 | No hay informes, exportación, integración con Gestión Cervecera ni conteo de inventario |
 | LIM-013 | No hay modo sin conexión (no se requiere, DPO-029) |
@@ -6978,8 +6980,8 @@ El 29/09/2026 el PO respondió 18 de las 23 preguntas de la versión 0.1, ademá
 | PA-001 | ¿Qué criterio de prioridad rige: FIFO por horas o FEFO por días? | Ambos, como alertas separadas y con nombres distintos: Fuera de frío (patio) y Vencimiento (cámara) | DPO-002 |
 | PA-002 | ¿"Horas máximas fuera de cámara" es el tiempo antes de entrar al frío o la vida útil? | Es el plazo máximo para entrar a la cámara, contado desde el registro en el patio | DPO-001 |
 | PA-003 | ¿El ingreso pasa por el patio antes de la cámara? | Sí: todo pallet queda primero en el patio | DPO-005 |
-| PA-004 | ¿Cuáles son los permisos de cada cargo? | Matriz inicial de §29.4, editable por el Jefe. Calidad administra la configuración, no los usuarios | DPO-016 a DPO-018 |
-| PA-005 | ¿Quién reorganiza y elige otra ubicación? | Todos los cargos | DPO-016 |
+| PA-004 | ¿Cuáles son los permisos de cada cargo? | Matriz de §29.4, alineada con el Manual de Usuario y editable por el Jefe. Despachan el Jefe y Reparto; la configuración y los usuarios son solo del Jefe | DPO-035 (reemplaza DPO-016 y DPO-018), DPO-017 |
+| PA-005 | ¿Quién reorganiza y elige otra ubicación? | Solo el Jefe de Planta | DPO-035 (reemplaza DPO-016) |
 | PA-006 | ¿Hacen falta despachos parciales? | No en esta versión: se despacha el pallet completo | DPO-023 |
 | PA-007 | ¿Se usarán Reservado, Despachado y Entregado? | No. El ciclo termina en "En camión" | DPO-025 |
 | PA-010 | ¿Cuánto tiempo se conservan los datos? | Movimientos, notas y auditoría, mientras dure el servicio | DPO-028 |
@@ -7160,7 +7162,7 @@ Quedan descartados: la temperatura de la cámara (RF-CFG-04, DPO-027) y los esta
 - [ ] Cada requisito tiene criterios de aceptación. *(Los tienen los requisitos funcionales Must y los implementados. Los no funcionales usan métricas. Faltan algunos Should y Could.)*
 - [x] Las reglas de negocio están documentadas.
 - [x] Los actores están definidos.
-- [x] Los permisos están especificados. *(Matriz actual en §29.3 y matriz objetivo inicial en §29.4, DPO-016.)*
+- [x] Los permisos están especificados. *(Matriz actual en §29.3 y matriz objetivo en §29.4, DPO-035.)*
 - [x] Los estados y las transiciones están documentados.
 - [x] Existe un modelo de datos.
 - [x] Existe un DER. *(Está actualizado en §17.1; las imágenes antiguas deben regenerarse.)*
