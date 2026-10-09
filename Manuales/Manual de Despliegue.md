@@ -36,7 +36,7 @@ gh workflow run build.yml -R SerruchosDevTeam/nexo_corte --ref main
 
 También se puede hacer desde GitHub → `nexo_corte` → *Actions* → *Build and Push Docker Images to GHCR* → *Run workflow*. Un push a `main` de `nexo_corte` también la lanza.
 
-Espera a que termine con éxito (unos 4 minutos):
+Espera a que termine con éxito (unos 4 minutos aproximado):
 
 ```bash
 gh run watch -R SerruchosDevTeam/nexo_corte
