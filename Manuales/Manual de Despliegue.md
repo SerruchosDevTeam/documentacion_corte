@@ -4,9 +4,11 @@
 
 **Edición:** 1.1 · **Fecha:** 9 de octubre de 2026
 
-**Versión documentada:** tag `v0.1.0-sprint1` en los tres repositorios: `nexo_corte@bd9d727`, `frontend_corte@01ca318` y `backend_corte@9f3fc26`. Las comprobaciones de la sección 8 se ejecutaron contra producción el 09-10-2026.
+**Versión documentada:** tag `v0.1.0-sprint1` en los tres repositorios: `nexo_corte@bd9d727`, `frontend_corte@0f3cb65` y `backend_corte@9f3fc26`. Las comprobaciones de la sección 8 se ejecutaron contra producción el 09-10-2026.
 
-> **Versión desplegada al 09-10-2026.** La última construcción de imágenes (GitHub Actions, 05-10-2026 10:26) usó `frontend_corte@0f3cb65` y `backend_corte@d652f07`. El backend tiene el mismo contenido que el tag. El frontend **no**: incluye el PR #12 (despacho desde la cámara), que se revirtió en `main` después de esa construcción. Para que producción quede igual al tag, lanza el workflow (sección 5) y despliega (sección 6).
+> **Versión desplegada al 09-10-2026.** La última construcción de imágenes (GitHub Actions, 05-10-2026 10:26) usó `frontend_corte@0f3cb65` (igual al tag) y `backend_corte@d652f07` (mismo contenido que el tag).
+>
+> **Cuidado:** `main` de `frontend_corte` (`01ca318`) **no** es igual al tag: el rollback del 05/10 revirtió también el despacho desde la Vista de Cámara (PR #12). Si se lanza el workflow sin corregir `main`, ese botón desaparece de producción.
 
 Este manual explica cómo está desplegado C.O.R.T.E. en el servidor del taller, cómo publicar una versión nueva y cómo verificarla. Incluye la arquitectura del backend y el contrato de respuestas de la API, que corresponden a [TECH-02 — Arquitectura de API y respuestas estándar](https://trello.com/c/YLFTH2ls).
 
@@ -434,4 +436,4 @@ Al terminar el convenio, el sistema se traspasa al cliente. El despliegue actual
 | Edición | Fecha | Cambios |
 |---|---|---|
 | 1.0 | 30-09-2026 | Primera edición, a partir de `nexo_corte`, `backend_corte` y `frontend_corte` y de los despliegues del 29 y 30-09-2026 |
-| 1.1 | 09-10-2026 | Versión del tag `v0.1.0-sprint1` y versión desplegada; entornos; comprobaciones de la sección 8 repetidas contra producción (sin modificar datos); versiones con tags; respaldos, seguridad técnica y traspaso al cliente |
+| 1.1 | 09-10-2026 | Versión del tag `v0.1.0-sprint1` (corregido al commit desplegado del frontend) y aviso sobre `main`; entornos; comprobaciones de la sección 8 repetidas contra producción (sin modificar datos); versiones con tags; respaldos, seguridad técnica y traspaso al cliente |
