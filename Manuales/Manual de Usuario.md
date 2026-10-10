@@ -2,11 +2,11 @@
 
 **Cervecería Cuello Negro**
 
-**Edición:** 1.4 · **Fecha:** 29 de septiembre de 2026
+**Edición:** 1.5 · **Fecha:** 2 de octubre de 2026
 
-**Aplicación documentada:** US-18: frontend 0.1.0 (`952dfde`) y backend 1.0.0 (`bf5a1d7`). US-02: frontend 0.1.0 (`6ca4992`) y backend 1.0.0 (`152596b`). Base de los capítulos anteriores: frontend 0.1.0 (`3d21cc3`) y backend 1.0.0 (`abb434f`). Sus verificaciones históricas conservan el alcance y la fecha indicados en el anexo.
+**Aplicación documentada:** US-18: frontend 0.1.0 (`952dfde`) y backend 1.0.0 (`bf5a1d7`). US-02: frontend 0.1.0 (`6ca4992`) y backend 1.0.0 (`152596b`). Base de los capítulos anteriores: frontend 0.1.0 (`3d21cc3`) y backend 1.0.0 (`abb434f`). Los capítulos de US-21 (alertas) y US-15 (configuración) se redactaron a partir del SRS Técnico v0.3 y de las pantallas de la versión actual; su verificación contra el código queda pendiente en el anexo. Las verificaciones históricas conservan el alcance y la fecha indicados en el anexo.
 
-Este manual reúne las instrucciones de uso de la aplicación actual. Comienza por el acceso al sistema y continúa con la gestión de usuarios, roles y permisos, el registro de producción, la consulta del mapa de Bodega 1 y el despacho de uno o varios pallets. Las capturas usan cuentas y datos de ejemplo; no utilices esos datos para registrar producción real.
+Este manual reúne las instrucciones de uso de la aplicación actual. Comienza por el acceso al sistema y continúa con la gestión de usuarios, roles y permisos, el registro de producción, la consulta del mapa de Bodega 1, el despacho de uno o varios pallets, la consulta de alertas de prioridad de salida y la configuración de parámetros. Las capturas usan cuentas y datos de ejemplo; no utilices esos datos para registrar producción real.
 
 ## Índice
 
@@ -15,12 +15,16 @@ Este manual reúne las instrucciones de uso de la aplicación actual. Comienza p
 3. [Registrar un ingreso de producción — US-04](#ingresos)
 4. [Gemelo Digital 2D — Bodega 1 — US-09](#bodega-1)
 5. [Despachar uno o varios pallets — US-18](#despachos)
-6. [Anexo: validaciones y revisión del manual](#validaciones)
+6. [Alertas de prioridad de salida y vencimiento — US-21](#alertas)
+7. [Configurar el sistema (Data-Driven) — US-15](#configuracion)
+8. [Anexo: validaciones y revisión del manual](#validaciones)
    - [Validación de US-01](#validacion-us-01)
    - [Validación de US-02](#validacion-us-02)
    - [Validación de US-04](#validacion-us-04)
    - [Validación de US-09](#validacion-us-09)
    - [Validación de US-18](#validacion-us-18)
+   - [Validación de US-21](#validacion-us-21)
+   - [Validación de US-15](#validacion-us-15)
 
 <a id="acceso"></a>
 
@@ -71,7 +75,7 @@ La siguiente tabla describe **visibilidad del menú**, no certifica todos los pe
 
 En esta versión, las cuentas clasificadas como **Ayudante** o **Calidad** se asocian al perfil de interfaz **Operario**. Si tu menú no corresponde a tu trabajo, solicita una revisión de tu cuenta al responsable.
 
-No uses el selector «Perfil» como procedimiento para obtener permisos: en esta versión cambia la vista del menú y no sustituye la asignación de rol de tu cuenta. Los nombres que muestra ese selector son etiquetas fijas y no deben usarse para comprobar la identidad de la persona conectada.
+No uses el selector «Perfil» del menú lateral como procedimiento para obtener permisos: en esta versión cambia la vista del menú y no sustituye la asignación de rol de tu cuenta. Los nombres que muestra ese selector son etiquetas fijas y no deben usarse para comprobar la identidad de la persona conectada.
 
 **Resultado esperado:** identificas las herramientas visibles para tu perfil y solicitas ayuda si falta alguna necesaria.
 
@@ -667,15 +671,225 @@ Antes de enviar, **Cancelar** cierra el formulario individual; en el múltiple t
 
 ---
 
+<a id="alertas"></a>
+
+## 6. Alertas de prioridad de salida y vencimiento — US-21
+
+Este capítulo explica cómo consultar la prioridad de salida de los lotes para despachar a tiempo y en el orden correcto. Corresponde a **US-21 — Alertas FEFO/FIFO y de vencimiento (5 SP)** y sirve a cualquier perfil que supervise la cámara.
+
+### 6.1. Antes de comenzar
+
+Inicia sesión con tu cuenta activa siguiendo el [capítulo de acceso](#acceso). La alerta se calcula automáticamente: no necesitas registrar nada para verla. Las capturas usan datos de ejemplo; las horas, los colores y las fechas cambian con el inventario y el momento de la consulta, así que no tomes los valores de las imágenes como referencia de tu operación.
+
+**Qué significan los criterios:** *FIFO* («primero en entrar, primero en salir») prioriza el lote más antiguo; *FEFO* («primero en vencer, primero en salir») prioriza el que vence antes. Como la vida útil es fija por estilo, dentro de un mismo estilo ambos criterios coinciden.
+
+> **Alcance de esta versión.** El requisito define dos alertas distintas: **Fuera de frío** (pallets en el patio) y **Vencimiento** (pallets en la cámara), cada una con umbrales configurables. En la versión actual, la pantalla de alertas aplica **un solo cálculo**: el tiempo transcurrido desde la **fecha de envasado** frente al **límite de horas del estilo**, y todavía no separa ambas alertas (es una funcionalidad parcial). Por eso un mismo lote puede mostrarse con una criticidad distinta en esta pantalla y en la Lista de ingresos: contrasta siempre con la fecha real del lote antes de decidir.
+
+**Resultado esperado:** puedes entrar al **Panel principal** y a **Alertas FIFO** desde el menú lateral.
+
+### 6.2. Ver el resumen en el Panel principal
+
+1. En el menú lateral, entra a **Panel principal**.
+2. En la fila superior de tarjetas, localiza **Alertas Críticas FIFO**: muestra cuántos lotes requieren atención inmediata. A su lado, **Porcentaje Tipo Cerveza** resume la distribución por estilo y **Stock en Tránsito** cuenta los pallets en camión.
+3. A la derecha, revisa la lista **Lotes Para Despachar**, ordenada por criticidad y tipo de cerveza. Cada fila muestra el lote y el estilo, la etiqueta de criticidad, la fecha de envasado, el tiempo restante y el estado.
+
+**Resultado esperado:** obtienes una visión rápida de cuántos lotes son críticos y cuáles deberían salir primero, sin entrar al detalle.
+
+![Figura 6.1. Panel principal con la tarjeta de alertas críticas y la lista de lotes para despachar](imagenes/us-21/01-dashboard.png)
+
+*Figura 6.1. Resumen de alertas en el panel. Las cantidades son de ejemplo y cambian según el inventario.*
+
+### 6.3. Consultar el panel de Alertas FIFO
+
+1. En el menú lateral, selecciona **Alertas FIFO**. Si el menú muestra solo iconos, despliega sus nombres con la flecha del borde.
+2. Espera a que cargue el listado, bajo el subtítulo **«Prioridad de salida por criticidad y tolerancia»**. Arriba verás los chips de resumen (por ejemplo, **19 críticos** y **0 óptimos**) y las pestañas de filtro **Todos**, **Crítico**, **Preventivo** y **Óptimo**, cada una con su conteo.
+3. Recorre las tarjetas, agrupadas por nivel. Cada una muestra:
+   - el **código de lote** y el **estilo**, con la etiqueta de criticidad (**CRÍTICO**, **PREVENTIVO** u **ÓPTIMO**);
+   - la barra **Tiempo consumido**, con el formato **horas consumidas / límite del estilo** (por ejemplo, `0h / 24h` para Lager e IPA, `0h / 72h` para Ámbar y Stout);
+   - la **posición** (fila), la **fecha de envasado** y el estado **En Cámara**;
+   - los botones **Ver en Cámara** y **Despachar**.
+
+**Resultado esperado:** ves la lista completa de lotes clasificados por su prioridad de salida.
+
+![Figura 6.2. Panel de Alertas FIFO con los chips de resumen, las pestañas de filtro y las tarjetas de lote](imagenes/us-21/02-panel-alertas.png)
+
+*Figura 6.2. Vista general de alertas con datos de ejemplo. Desplázate para ver todas las tarjetas.*
+
+### 6.4. Interpretar la criticidad
+
+La **barra Tiempo consumido** indica cuánto del límite del estilo se ha consumido desde el envasado. El **nivel** de cada lote se asigna según las **horas restantes** (límite del estilo menos el tiempo transcurrido), con estos umbrales, que el Jefe de Planta puede configurar:
+
+| Nivel | Señal | Horas restantes |
+|---|---|---|
+| **Crítico** | Triángulo rojo · barra roja llena | Menos de 6 horas |
+| **Preventivo** | Reloj naranja · barra parcial | Entre 6 y menos de 12 horas |
+| **Óptimo** | Verde | 12 horas o más |
+
+Cuando el límite del estilo ya se cumplió, el lote aparece en **Crítico** con **0 h restantes** y la barra completamente roja. Un nivel **Óptimo** no sustituye la comprobación del lote real, y un aviso **Crítico** no es una autorización automática de despacho: contrasta siempre con la fecha y el estado reales del lote.
+
+> En esta base de ejemplo todos los lotes están en **Crítico** (0 preventivos y 0 óptimos), porque sus fechas de envasado superan el límite del estilo. Un lote **Preventivo** se vería con el reloj naranja y la barra parcialmente llena.
+
+### 6.5. Filtrar y actuar sobre un lote
+
+1. Para concentrarte en lo urgente, pulsa la pestaña **Crítico**. La lista muestra solo los lotes de ese nivel; el número de la pestaña indica cuántos coinciden.
+2. Para ubicar físicamente un lote, pulsa **Ver en Cámara**: se abre la **Vista de Cámara** con el panel **Detalles del Lote**, donde ves la criticidad, las horas restantes, el ID de lote, el estilo, la cantidad, el envase, la fecha de envasado y el historial de notas. En una torre, verifica también el nivel.
+3. Para registrar su salida, pulsa **Despachar** (o **Registrar Despacho** desde el detalle) y sigue el [capítulo de despacho](#despachos). Al despachar, el sistema avisa si quedan lotes más antiguos del mismo estilo en cámara.
+
+**Resultado esperado:** acotas la lista al nivel que necesitas y pasas a ubicar o despachar el lote correcto.
+
+![Figura 6.3. Alertas filtradas por el nivel Crítico](imagenes/us-21/03-filtro-critico.png)
+
+*Figura 6.3. Filtro Crítico aplicado. La tarjeta muestra la barra de tiempo consumido, la posición, el envasado y las acciones.*
+
+![Figura 6.4. Panel Detalles del Lote tras pulsar Ver en Cámara](imagenes/us-21/04-detalle-lote.png)
+
+*Figura 6.4. Detalle del lote con su criticidad, información y acceso a Registrar Despacho. Consultar el detalle no cambia el estado del pallet.*
+
+### 6.6. Si algo no coincide
+
+| Situación | Qué hacer |
+|---|---|
+| El mismo lote aparece con distinta criticidad que en la Lista de ingresos | Es una limitación conocida de esta versión: las pantallas usan cálculos distintos (horas desde el envasado vs. días al vencimiento). Contrasta con la fecha real del lote antes de decidir. |
+| Todos los lotes aparecen en Crítico | Puede deberse a que sus fechas de envasado superan el límite del estilo. Revisa las fechas reales; no modifiques el inventario para cambiar el indicador. |
+| El panel aparece vacío o sin tarjetas | Espera la carga y vuelve a consultar. Si continúa, informa al responsable; no concluyas que no hay lotes por vencer ante un fallo de conexión. |
+| El tiempo restante parece incorrecto | Recuerda que esta versión cuenta desde el envasado. Contrasta con la fecha real del lote y comunícalo al responsable. |
+| No ves la opción "Alertas FIFO" en el menú | Solicita al responsable que revise el rol y estado de tu cuenta. |
+| Al recargar desaparece el menú | Vuelve a la dirección terminada en `/login` e inicia sesión otra vez. |
+
+**Resultado esperado:** distingues una limitación conocida de un fallo de datos, y sabes cuándo pedir ayuda.
+
+---
+
+**Control del documento:** capítulo redactado a partir del SRS Técnico v0.3 (RF-FIFO-01, RF-FIFO-02, RN-007, RN-008, DPO-002) y de las pantallas de Panel principal, Alertas FIFO y Vista de Cámara de la versión actual. Las capturas corresponden a un entorno de prueba con datos de ejemplo. La verificación de los pasos contra el código queda **pendiente**; su pauta se registrará en el anexo [Validación de US-21](#validacion-us-21). Los umbrales (6 h / 12 h) y la separación de las alertas Fuera de frío y Vencimiento corresponden al requisito; la implementación actual es parcial (un solo cálculo desde el envasado).
+
+---
+
+<a id="configuracion"></a>
+
+## 7. Configurar el sistema (Data-Driven) — US-15
+
+Este capítulo explica cómo revisar y ajustar los **parámetros del negocio** sin modificar el código: los **tipos de cerveza** (con su vida útil y su tiempo máximo fuera de cámara), los **tipos de envase** y los **tipos de alerta**. También incluye una tabla de **permisos por cargo** de solo consulta. Corresponde a **US-15 — Configuración Data-Driven de parámetros (5 SP)** y está dirigido al **Jefe de Planta**.
+
+> **Estado de esta versión.** La configuración es la fuente de la verdad del negocio: los tipos de cerveza, envases y alertas se administran desde aquí, no desde el código. La administración de **tipos de cerveza, envase y alertas está disponible**; la tabla de **permisos por cargo es de solo consulta**; y la aplicación inmediata de algunos cambios en todos los cálculos todavía es parcial (al cambiar un valor, verifica su efecto en las pantallas correspondientes). La **temperatura fue retirada del alcance** y no aparece en esta pantalla.
+
+### 7.1. Antes de comenzar
+
+Inicia sesión con una cuenta activa de **Jefe de Planta**, siguiendo el [capítulo de acceso](#acceso). Según la tabla de permisos de esta versión, solo el Jefe de Planta tiene acceso a Configuración. Ten claro qué vas a cambiar y por qué: estos valores afectan a todo el sistema (alertas, formularios de ingreso, cálculos de vencimiento). Las capturas usan datos de ejemplo; no modifiques la configuración real para reproducir el manual.
+
+**Resultado esperado:** puedes entrar a **Configuración** desde el menú lateral. Si no aparece, solicita al responsable que revise el cargo de tu cuenta.
+
+### 7.2. Abrir Configuración
+
+1. En el menú lateral, selecciona **Configuración**. Si el menú muestra solo iconos, despliega sus nombres con la flecha del borde.
+2. Bajo el subtítulo **«Permisos, catálogos y tipos de alertas del sistema»**, desplázate para ver sus cuatro secciones, en este orden: **Permisos de usuarios**, **Tipos de envase**, **Tipos de cerveza** y **Tipos de alertas**.
+
+**Resultado esperado:** ves la pantalla de Configuración con sus cuatro secciones.
+
+![Figura 7.1. Pantalla de Configuración: permisos y tipos de envase](imagenes/us-15/01-config-general.png)
+
+*Figura 7.1. Vista superior de Configuración con datos de ejemplo.*
+
+### 7.3. Administrar tipos de cerveza
+
+Los tipos de cerveza definen la **vida útil** (días hasta el vencimiento) y el **tiempo máximo fuera de cámara** (horas) que usan las alertas. En el ejemplo: Ámbar 120 días / 72 h, IPA 60 días / 24 h, Kombucha 45 días / 12 h, Lager 90 días / 24 h, Stout 120 días / 72 h.
+
+1. Ve a la sección **Tipos de cerveza**. La tabla muestra, por cada cerveza: **Cerveza**, **Vida útil**, **Máx. fuera de cámara**, **Estado** y **Editar**.
+2. Para **agregar**, pulsa **+ Nueva cerveza**. Completa **Nombre**, **Vida útil (días)** y **Máximo fuera de cámara (horas)**, deja marcado **Registro activo** y pulsa **Guardar cambios**.
+3. Para **editar**, pulsa **Editar** en la fila, ajusta los valores y guarda.
+4. Para dejar de usar una cerveza sin borrar su historial, desactiva su interruptor de **Estado** (o desmarca **Registro activo** en el formulario).
+
+> El propio formulario advierte: **«Cambiar la vida útil no modifica las fechas de vencimiento de pallets ya registrados»**. El nuevo valor aplica a los ingresos futuros, no a los lotes que ya existen.
+
+**Resultado esperado:** la cerveza aparece en la tabla con sus valores y queda disponible en los formularios de ingreso y en el cálculo de alertas.
+
+![Figura 7.2. Sección Tipos de cerveza con vida útil y máximo fuera de cámara](imagenes/us-15/02-estilos-lista.png)
+
+*Figura 7.2. Catálogo de cervezas. El «Máx. fuera de cámara» es el límite que usa la barra de Tiempo consumido de las alertas.*
+
+![Figura 7.3. Formulario para crear o editar una cerveza](imagenes/us-15/03-estilo-form.png)
+
+*Figura 7.3. Campos de la cerveza: nombre, vida útil, máximo fuera de cámara y registro activo.*
+
+### 7.4. Administrar tipos de envase
+
+Los envases disponibles en el ejemplo son **Barril Euro**, **Barril Slim**, **Caja Latas** y **Petainer**.
+
+1. Ve a la sección **Tipos de envase**. La tabla muestra **Envase**, **Estado** y **Editar**.
+2. Para **agregar**, pulsa **+ Nuevo envase**, escribe el **Nombre**, deja marcado **Registro activo** y pulsa **Guardar cambios**.
+3. Para **editar** o **activar/desactivar** un envase, usa **Editar** o el interruptor de **Estado**.
+
+> En esta versión, el formulario de envase solo pide **nombre** y **estado**: la **cantidad máxima por pallet no se configura aquí** (se gestiona como parámetro del sistema, no desde esta pantalla).
+
+**Resultado esperado:** el envase queda disponible (o inactivo) para el registro de producción.
+
+![Figura 7.4. Formulario para crear o editar un envase](imagenes/us-15/04-envases.png)
+
+*Figura 7.4. El envase se define solo con nombre y estado.*
+
+### 7.5. Administrar tipos de alerta
+
+Esta sección administra las **alertas de stock** (por ejemplo, stock mínimo).
+
+1. Ve a la sección **Tipos de alertas** y pulsa **+ Nueva alerta** (o **Editar** sobre una existente).
+2. Completa el **Nombre**, elige el **Tipo de alerta** (por ejemplo, **Stock mínimo**), indica el **Umbral de stock (unidades)**, deja marcado **Registro activo** y pulsa **Guardar cambios**.
+
+> Esta configuración corresponde a las alertas de **stock**. Los niveles Crítico/Preventivo de las alertas **FIFO/vencimiento** no se editan aquí: dependen del **Máx. fuera de cámara** de cada cerveza (ver el [capítulo de alertas](#alertas)).
+
+**Resultado esperado:** la alerta de stock queda registrada con su umbral.
+
+![Figura 7.5. Formulario para crear una alerta de stock](imagenes/us-15/05-umbrales.png)
+
+*Figura 7.5. Alerta de tipo Stock mínimo con su umbral en unidades.*
+
+### 7.6. Consultar los permisos por cargo
+
+La primera sección, **Permisos de usuarios**, muestra qué puede hacer cada cargo. Es de **solo consulta**: su subtítulo lo indica («Solo consulta por ahora») y los botones **+ Nuevo cargo** y **Editar** están deshabilitados.
+
+La tabla cruza cada cargo con los accesos **Consultar inventario**, **Ver cámara y alertas**, **Ingresos y despachos**, **Administrar usuarios** y **Configuración**:
+
+| Cargo | Consultar inventario | Ver cámara y alertas | Ingresos y despachos | Administrar usuarios | Configuración |
+|---|:---:|:---:|:---:|:---:|:---:|
+| Jefe de planta | Sí | Sí | Sí | Sí | Sí |
+| Ayudante | Sí | Sí | No | No | No |
+| Calidad | Sí | Sí | No | No | No |
+| Personal de reparto | Sí | Sí | No | No | No |
+
+Para reasignar a una persona, usa **Usuarios** (ver el [capítulo de gestión de usuarios](#usuarios)); no se editan permisos individuales desde esta tabla.
+
+**Resultado esperado:** entiendes qué accesos tiene cada cargo; los controles de edición de esta sección están deshabilitados.
+
+![Figura 7.6. Tabla de permisos por cargo (solo lectura)](imagenes/us-15/06-permisos.png)
+
+*Figura 7.6. Referencia de accesos por cargo; «Nuevo cargo» y «Editar» están deshabilitados.*
+
+### 7.7. Si algo no coincide
+
+| Situación | Qué hacer |
+|---|---|
+| No ves la opción "Configuración" en el menú | En esta versión solo el Jefe de Planta accede a Configuración. Solicita que revisen el cargo de tu cuenta. |
+| Cambiaste la vida útil y un lote antiguo no cambió su vencimiento | Es el comportamiento esperado: el nuevo valor aplica a ingresos futuros, no a los pallets ya registrados. |
+| No encuentras dónde fijar la cantidad por pallet de un envase | No se configura en esta pantalla; se gestiona como parámetro del sistema. Consulta al responsable técnico. |
+| Cambiaste el "Máx. fuera de cámara" y las alertas no cambian de inmediato | La aplicación en todos los cálculos es parcial en esta versión. Verifica en Alertas FIFO e informa al responsable. |
+| Quieres editar los permisos de un cargo | No es posible desde aquí (tabla de solo consulta). Reasigna a la persona desde **Usuarios**. |
+| Un cambio de configuración no aparece en la auditoría | En esta versión, los cambios de configuración no generan registro de auditoría todavía. |
+
+**Resultado esperado:** distingues una limitación conocida de un error, y sabes a quién avisar.
+
+---
+
+**Control del documento:** capítulo redactado a partir del SRS Técnico v0.3 (RF-CFG-01 a RF-CFG-05, DPO-010, DPO-018, DPO-027) y de la pantalla de Configuración de la versión actual, con datos de ejemplo. La verificación de los pasos contra el código queda **pendiente**; su pauta se registrará en el anexo [Validación de US-15](#validacion-us-15). La separación de alertas, la aplicación inmediata de todos los cambios (RF-CFG-05) y la auditoría de configuración corresponden al requisito y hoy son parciales o propuestas.
+
+---
+
 <a id="validaciones"></a>
 
-## 6. Anexo: validaciones y revisión del manual
+## 8. Anexo: validaciones y revisión del manual
 
 Este anexo conserva las comprobaciones realizadas, las diferencias observadas y las pautas pendientes de revisión con un compañero. Está dirigido al equipo que mantiene el manual; no es necesario seguirlo para operar la aplicación.
 
 <a id="validacion-us-01"></a>
 
-### 6.1. Validación de US-01
+### 8.1. Validación de US-01
 
 **Fecha de comprobación:** 28-09-2026 · **Edición comprobada:** 1.0
 
@@ -732,7 +946,7 @@ Entregar el capítulo a una persona con una cuenta de prueba asignada. Solicitar
 
 <a id="validacion-us-02"></a>
 
-### 6.2. Validación de US-02
+### 8.2. Validación de US-02
 
 **Historia:** [US-02 — Gestión de usuarios, roles y permisos (3 SP)](https://trello.com/c/6ND3asV2).
 
@@ -792,7 +1006,7 @@ En un entorno de prueba con cuentas desechables y al menos un jefe activo, entre
 
 <a id="validacion-us-04"></a>
 
-### 6.3. Validación de US-04
+### 8.3. Validación de US-04
 
 **Fecha de comprobación:** 28-09-2026 · **Edición comprobada:** 1.0
 
@@ -843,7 +1057,7 @@ Criterio de aceptación: la persona completa el recorrido sin instrucciones adic
 
 <a id="validacion-us-09"></a>
 
-### 6.4. Validación de US-09
+### 8.4. Validación de US-09
 
 **Historia:** [US-09 — Gemelo Digital 2D — Bodega 1](https://trello.com/c/bUMsBE5E).
 
@@ -880,7 +1094,7 @@ Solicitar que, usando solo el capítulo 4, entre a la cámara, distinga pallets 
 
 <a id="validacion-us-18"></a>
 
-### 6.5. Validación de US-18
+### 8.5. Validación de US-18
 
 **Historia:** [US-18 — Despacho de pallets (1 y varios) (5 SP)](https://trello.com/c/3jhBa3jN).
 
@@ -953,3 +1167,57 @@ En un entorno de pruebas aislado, preparar pallets de lata y barril, al menos do
 | Explicar En Camión frente a entrega final y cómo actuar ante un error | Pendiente |
 
 **Revisor, fecha y observaciones:** pendientes. Ajustar los pasos que requieran ayuda y repetirlos antes de aprobar la revisión de comprensión.
+
+<a id="validacion-us-21"></a>
+
+### 8.6. Validación de US-21 — pendiente
+
+**Historia:** US-21 — Alertas FEFO/FIFO y de vencimiento (5 SP).
+
+**Estado:** capítulo redactado a partir del SRS Técnico v0.3 y de las pantallas de la versión actual (Panel principal, Alertas FIFO y Vista de Cámara), con datos de ejemplo. **Falta la verificación contra el código y la revisión de comprensión con un compañero.**
+
+#### Comprobaciones pendientes
+
+| Comprobación | Estado |
+|---|---|
+| Nombre exacto del menú y subtítulo («Alertas FIFO» / «Prioridad de salida por criticidad y tolerancia») | Pendiente de contraste con la interfaz |
+| Chips de resumen y pestañas con sus conteos | Pendiente |
+| Barra «Tiempo consumido» (formato horas consumidas / límite del estilo) | Pendiente |
+| Umbrales de criticidad (Crítico < 6 h, Preventivo 6–12 h, Óptimo ≥ 12 h) | Pendiente de verificación en el código |
+| Separación de las alertas Fuera de frío y Vencimiento | Documentada como parcial (un solo cálculo desde el envasado); confirmar en el código |
+| Diferencia de criticidad entre esta pantalla y la Lista de ingresos (H-08) | Pendiente de reproducción |
+| Cálculo del tiempo desde el envasado vs. desde el registro en patio (H-07) | Pendiente de verificación |
+
+#### Revisión con un compañero — pendiente
+
+Entregar el capítulo 6 y solicitar: «Consulta el resumen del Panel principal y abre Alertas FIFO. Identifica un lote crítico, interpreta su barra de tiempo, filtra por nivel y ubica el lote con Ver en Cámara, usando solo el manual».
+
+**Revisor, fecha y observaciones:** pendientes.
+
+<a id="validacion-us-15"></a>
+
+### 8.7. Validación de US-15 — pendiente
+
+**Historia:** US-15 — Configuración Data-Driven de parámetros (5 SP).
+
+**Estado:** capítulo redactado a partir del SRS Técnico v0.3 y de la pantalla de Configuración de la versión actual, con datos de ejemplo. **Falta la verificación contra el código y la revisión de comprensión con un compañero.**
+
+#### Comprobaciones pendientes
+
+| Comprobación | Estado |
+|---|---|
+| Secciones de Configuración y su orden (Permisos, Tipos de envase, Tipos de cerveza, Tipos de alertas) | Pendiente de contraste con la interfaz |
+| Formulario de cerveza (nombre, vida útil, máximo fuera de cámara, registro activo) y su aviso sobre pallets ya registrados | Pendiente |
+| Formulario de envase (solo nombre y estado; sin cantidad por pallet) | Pendiente de verificación |
+| Formulario de alerta de stock (tipo y umbral en unidades) | Pendiente |
+| Tabla de permisos por cargo de solo consulta («Nuevo cargo» y «Editar» deshabilitados) | Pendiente |
+| Acceso restringido a Jefe de Planta; rol previsto de Calidad (DPO-018) | Pendiente de verificación |
+| Aplicación inmediata de los cambios en los cálculos (RF-CFG-05) | Documentada como parcial; confirmar en el código |
+| Ausencia de sección de temperatura (DPO-027) | Confirmada en las capturas; verificar en el código |
+| Registro de auditoría de los cambios de configuración | Documentado como ausente; confirmar |
+
+#### Revisión con un compañero — pendiente
+
+Entregar el capítulo 7 y solicitar: «Abre Configuración, agrega un estilo de cerveza ficticio con su vida útil y su máximo fuera de cámara, revisa los tipos de envase y de alerta, y consulta la tabla de permisos por cargo, usando solo el manual».
+
+**Revisor, fecha y observaciones:** pendientes.
