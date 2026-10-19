@@ -705,7 +705,7 @@ El detalle **no muestra la posición** del pallet (H-29).
 
 **Observaciones**
 - HU-5.3 habla de "En Tránsito"; la interfaz usa "En Camión".
-- HU-5.4 pide registrar la cantidad de cajas despachadas; siempre sale el pallet completo (H-28).
+- Actualización US18-CP-03: el despacho individual permite indicar la cantidad y conservar el saldo en cámara; el múltiple sigue enviando pallets completos.
 - Después del despacho, el pallet ya no aparece en ninguna pantalla (H-09).
 
 ---
@@ -1252,7 +1252,7 @@ El 29/09/2026 el Product Owner decidió los hallazgos que tenían más de una so
 | H-25 | El toast de la reorganización dice "Lote Reorganización de cámara movido" | `layout/AppProvider.tsx` | CU-14 | Corregir el texto |
 | H-26 | La matriz de permisos es fija y de solo lectura, y no refleja lo que realmente pasa (por ejemplo, todos los roles pueden despachar). Las tablas `permiso` y `tipo_usuario_permiso` no se usan | `config/ConfigView.tsx` | CU-02 | DPO-017: matriz editable por el Jefe; matriz inicial DPO-016 |
 | H-27 | El rol "Calidad" (Encargado de Calidad, Admin según las HU) queda como `OPERARIO`, con los mismos permisos que el Ayudante | `backend_corte/src/routes/auth.ts` | Actores | DPO-018: rol propio; administra la configuración, no los usuarios |
-| H-28 | El despacho no pide la cantidad de cajas (HU-5.4): siempre sale el pallet completo. Tampoco se registra el motivo cuando se rompe el orden FIFO | `RegistroDespachoForm.tsx` | CU-12, CU-15 | DPO-023: en esta versión, siempre el pallet completo. DPO-024: motivo obligatorio al romper el orden |
+| H-28 | US18-CP-03 incorpora cantidad en el despacho individual y conserva el saldo. Sigue pendiente registrar el motivo cuando se rompe el orden FIFO | `RegistroDespachoForm.tsx` | CU-12, CU-15 | US18-CP-03 amplía el individual a despacho parcial; el múltiple es completo. DPO-024: motivo obligatorio al romper el orden |
 | H-29 | El Detalle del lote no muestra la posición del pallet | `PalletDetailPanel.tsx` | CU-10 | Corregir: mostrar la posición |
 | H-30 | Cerrar sesión no invalida el token en el servidor; sigue siendo válido hasta 8 h | `AppProvider.tsx` | CU-21 | Corregir (SRS §30) |
 | H-31 | Al crear o editar un usuario, algunos mensajes de validación del servidor salen en inglés (son los mensajes por defecto de Zod) | `backend_corte/src/routes/usuarios.ts` | CU-02 | Corregir: mensajes en español |

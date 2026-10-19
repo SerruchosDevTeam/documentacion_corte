@@ -513,9 +513,9 @@ Este capítulo explica cómo registrar la salida de pallets de **Lata** y **Barr
 
 Inicia sesión con tu cuenta activa siguiendo el [capítulo de acceso](#acceso). Confirma qué pallets saldrán y ten a mano el camión, cliente o pedido de destino. Comprueba el lote, envase, cantidad y ubicación física antes de registrar la salida.
 
-**Se despacha el pallet completo:** estos formularios no permiten indicar una cantidad parcial de cajas o barriles. Si necesitas dividirlo o enviar pallets a distintos destinos, coordina el procedimiento con el responsable. Cada despacho múltiple utiliza un único destino para todos sus pallets.
+**Despacho individual completo o parcial:** indica una cantidad entera entre 1 y el saldo disponible. El formulario muestra cuánto quedará en cámara. Si despachas una parte, el pallet conserva su identificador, estado En Cámara, ubicación y nivel; el historial registra solo la cantidad enviada. Cada despacho múltiple sigue enviando pallets completos y utiliza un único destino para todos sus pallets.
 
-> **Estado de salida en esta versión:** el sistema registra **En Camión**, libera la ubicación de cámara y conserva el registro del pallet. No equivale a confirmar entrega al cliente. Aunque la historia solicita `DESPACHADO`, la implementación actual guarda `EN_CAMION`; no busques un cambio automático a Entregado o Despachado.
+> **Estado de salida completa en esta versión:** al enviar todo el saldo, el sistema registra **En Camión**, libera la ubicación de cámara y conserva el registro del pallet. No equivale a confirmar entrega al cliente. Aunque la historia solicita `DESPACHADO`, la implementación actual guarda `EN_CAMION`; no busques un cambio automático a Entregado o Despachado.
 
 Las capturas se tomaron de la interfaz local con **datos ficticios y respuestas simuladas**, sin modificar inventario real. El recorrido visual se realizó con Jefe de Planta. Las opciones del Personal de Reparto se contrastaron en código; no se certificó un despacho real con ese perfil.
 
@@ -546,7 +546,7 @@ Las posiciones A4 de los formularios corresponden a la primera columna visible d
 
 *Figura 5.1. Inicio del ejemplo con cinco pallets. Parte del listado queda más abajo; desplázate para verlo completo.*
 
-**Cómo interpretar la prioridad:** FIFO significa dar salida primero a lo más antiguo; FEFO, a lo que vence primero. Alertas FIFO ordena por horas restantes calculadas por la aplicación. Además, al despachar, avisa si quedan pallets del mismo estilo con fecha de envasado anterior. Los indicadores dependen de las fechas y límites de esta versión: contrástalos con la información real del lote. Un color Óptimo no sustituye esa comprobación y un aviso Crítico no es una autorización de despacho.
+**Cómo interpretar la prioridad:** FIFO significa dar salida primero a lo más antiguo; FEFO, a lo que vence primero. Alertas FIFO ordena primero por vencimiento, después por fecha de ingreso del pallet y, si ambas fechas coinciden, por identificador numérico ascendente. Además, al despachar, avisa si quedan pallets del mismo estilo con fecha de envasado anterior. Los indicadores dependen de las fechas y límites de esta versión: contrástalos con la información real del lote. Un color Óptimo no sustituye esa comprobación y un aviso Crítico no es una autorización de despacho.
 
 También puedes abrir el despacho individual desde **Inventario**: busca el lote, filtra **En Cámara** y utiliza **Por Vencimiento** o **Por Fecha** para revisar el orden. En computador, pasa el puntero por la fila y pulsa el icono del camión **Despachar**; en móvil aparece un botón con ese nombre. Otra entrada es **Vista de Cámara → pallet → Registrar Despacho**. Las tres entradas abren el mismo formulario individual.
 
@@ -554,13 +554,13 @@ También puedes abrir el despacho individual desde **Inventario**: busca el lote
 
 1. En **Alertas FIFO**, pulsa **Despachar** en la tarjeta del lote que corresponda.
 2. Se abre **Registrar Despacho**, con el subtítulo **Salida de pallet hacia camión**.
-3. Revisa el lote, estilo, cantidad, posición y fecha de envasado. Este formulario no permite cambiarlos. Si elegiste otro pallet, pulsa **Cancelar** y vuelve a seleccionarlo.
+3. Revisa el lote, estilo, saldo disponible, posición y fecha de envasado. En **Cantidad a despachar**, deja el saldo completo o ingresa una parte; comprueba el **Saldo en cámara** mostrado. Se rechazan cantidades cero, negativas, decimales o mayores al saldo. Si elegiste otro pallet, pulsa **Cancelar** y vuelve a seleccionarlo.
 4. Completa **Destino / Pedido**, obligatorio, con el camión, cliente o pedido. Admite hasta **150 caracteres**; un campo vacío o compuesto solo por espacios no habilita el envío.
 5. Para el despacho individual del ejemplo, selecciona **26-901** y escribe **Pedido DEMO-18 · Ruta Sur**.
 6. Pulsa **Confirmar Despacho** una sola vez. Si aparece una advertencia FIFO, sigue la sección siguiente. Durante el guardado se muestra **Guardando…** y no se permite cerrar el formulario.
-7. Espera a que cierre el formulario y aparezca la notificación **Despacho registrado**. Comprueba que el pallet deja de estar disponible en Alertas FIFO y realiza las verificaciones de la [sección de resultados](#resultado-despacho).
+7. Espera a que cierre el formulario y aparezca la notificación **Despacho registrado**. Comprueba que el pallet conserva el saldo restante en Alertas FIFO o deja de estar disponible si enviaste todo, y realiza las verificaciones de la [sección de resultados](#resultado-despacho).
 
-**Resultado esperado:** se registra una salida del pallet completo con su destino. No vuelvas a enviarla si la confirmación demora: consulta primero el resultado.
+**Resultado esperado:** se registra una salida por la cantidad indicada con su destino. Por ejemplo, enviar 4 de 10 deja 6 en la misma posición; intentar después 7 o 0 no cambia el saldo ni agrega movimientos. No vuelvas a enviarla si la confirmación demora: consulta primero el resultado.
 
 ![Figura 5.2. Formulario individual con destino vacío](imagenes/us-18/02-individual.png)
 
@@ -1141,14 +1141,14 @@ Estas pruebas verifican el comportamiento del servicio frente a una base simulad
 |---|---|
 | Despachar uno o varios pallets de lata o barril | Existen formulario individual y selección múltiple en Alertas FIFO. El grupo utiliza un destino común y despacha pallets completos. |
 | Estado final DESPACHADO | Diferencia: el servicio guarda EN_CAMION y la notificación individual muestra En Camión. No hay transición final a DESPACHADO en esta operación. |
-| Descontar stock | El servicio retira la asociación del pallet con su posición; así disminuye la disponibilidad de cámara. No reduce a cero la cantidad del pallet ni prueba un descuento global en todas las bodegas. Inventario se alimenta de la grilla de cámara. |
-| Liberar o actualizar posición | El servicio elimina la posición del pallet despachado y compacta los niveles restantes en la misma transacción. La imagen del resultado es simulada; la lógica se comprobó con los casos indicados. |
-| Priorizar FEFO/FIFO | Alertas ordena por horas restantes calculadas con límites por estilo. Los avisos de despacho comparan fechas de envasado entre pallets del mismo estilo, incluso si tienen distinto envase. No se valida una política FEFO completa basada en vencimientos configurados. |
+| Descontar stock | En el parcial, el servicio descuenta la cantidad enviada en el pallet y en su posición. En la salida completa retira la asociación con la posición. No reduce a cero la cantidad del pallet que sale ni prueba un descuento global en todas las bodegas. Inventario se alimenta de la grilla de cámara. |
+| Liberar o actualizar posición | Un parcial conserva posición y nivel. Una salida completa elimina la asociación con la posición y compacta los niveles restantes en la misma transacción. La imagen del resultado es simulada; la lógica se comprobó con los casos indicados. |
+| Priorizar FEFO/FIFO | Alertas ordena por vencimiento, fecha de ingreso e identificador numérico. Los avisos de despacho comparan fechas de envasado entre pallets del mismo estilo, incluso si tienen distinto envase. No se valida una política FEFO completa basada en vencimientos configurados. |
 | Excepciones FIFO | El individual ofrece Despachar de todos modos y el múltiple una casilla. El servidor no recibe una justificación ni una confirmación FIFO específica y no vuelve a ejecutar esa comparación. No se certifica bloqueo de excepciones desde el servidor. |
 | Personal de Reparto y Jefe de Planta | Ambos tienen acceso al menú Alertas FIFO según el frontend. El servicio exige una cuenta activa para despachar, pero no restringe esa operación exclusivamente a esos dos roles. Solo se recorrió visualmente Jefe de Planta con sesión simulada. |
 | Consistencia de varios pallets | El servicio valida todos los seleccionados y usa una transacción serializable. Un pallet no disponible provoca rechazo del grupo; las pruebas simuladas comprueban ausencia de salidas parciales. |
 | Historial | Registra un movimiento por pallet con destino, cantidad y usuario. Puede registrar además cambios de posición de pallets que quedan en una torre. La vista consulta los últimos 100 movimientos y luego filtra por fecha y tipo. |
-| Validaciones | Destino obligatorio de 1 a 150 caracteres tras quitar espacios extremos; grupo de 1 a 200 identificadores positivos distintos. No hay campo de cantidad parcial. |
+| Validaciones | Destino obligatorio de 1 a 150 caracteres tras quitar espacios extremos; grupo de 1 a 200 identificadores positivos distintos. El despacho individual admite una cantidad entera positiva hasta el saldo disponible; el múltiple continúa siendo completo. |
 
 Las cifras de tiempo, colores y fechas de las capturas son ilustrativas. Continúan los límites de interpretación de fechas descritos en los capítulos anteriores. No se cambiaron código, políticas, estado de la historia en Trello ni datos operativos como parte de esta documentación.
 
