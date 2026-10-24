@@ -413,7 +413,7 @@ La historia [HU-04 — Ingreso masivo](https://trello.com/c/ZSnLfp7P) permite re
 
 #### Antes de comenzar
 
-Inicia sesión con una cuenta que tenga acceso a **Patio**. Ten preparados el estilo de cerveza, el envase, el ID del lote, la cantidad de cajas o barriles **por pallet** y el número de pallets. Puedes añadir una nota de calidad y hasta cinco fotografías. Comprueba físicamente la cantidad antes de guardar: el formulario crea tantos registros de pallet como indique el número de pallets.
+Inicia sesión con una cuenta que tenga acceso a **Patio**. Ten preparados el estilo de cerveza, el envase, el ID del lote, la cantidad de cajas o barriles **por pallet** y el número de pallets. Puedes añadir una nota de calidad y seleccionar una imagen de hasta 2 MB como vista previa temporal; la imagen no se guarda. Comprueba físicamente la cantidad antes de guardar: el formulario crea tantos registros de pallet como indique el número de pallets.
 
 El ejemplo usa **Stout**, **Barril**, lote **26-942**, **32 barriles por pallet** y **5 pallets**. Son datos ilustrativos: usa un ID de lote nuevo y los valores de tu producción real.
 
@@ -424,7 +424,8 @@ El ejemplo usa **Stout**, **Barril**, lote **26-942**, **32 barriles por pallet*
 | ID de Lote | Código compartido; debe ser único entre los lotes registrados. |
 | Cantidad | Número de cajas o barriles **en cada pallet**, no el total del lote. |
 | Número de pallets | Cantidad de filas y registros de pallet que se crearán. |
-| Fotos y nota de calidad | Información opcional asociada al ingreso; no aparece como columna en la tabla de Patio. |
+| Foto del pallet | Una imagen opcional de hasta 2 MB, solo para vista previa temporal. No se envía ni se guarda con el ingreso. |
+| Nota de calidad | Observación opcional que se guarda para cada pallet; no aparece como columna en la tabla de Patio. |
 
 #### Abrir y completar el formulario
 
@@ -432,7 +433,7 @@ El ejemplo usa **Stout**, **Barril**, lote **26-942**, **32 barriles por pallet*
 2. En **Registrar Ingreso · Nuevo lotes en Patio**, elige **¿Qué estilo vas a ingresar?**. Al seleccionar uno aparecen las opciones de envase.
 3. Selecciona **Lata** o **Barril** en **¿Qué tipo de envase vas a ingresar?**. Comprueba que la opción quede resaltada.
 4. En **Datos del lote**, revisa **ID de Lote**. Se propone un código, pero debes sustituirlo si no es el código real de producción. Ajusta **Cantidad (cajas)** o **Número de barriles** con los botones **− / +** o escribiendo un número entero de **1 a 60**. Esa cantidad se aplicará a *cada* pallet.
-5. En **Fotos del pallet**, si corresponde, adjunta imágenes PNG, JPG, WebP o GIF de hasta **2 MB cada una**, con un máximo de **5**. Comprueba sus miniaturas; puedes quitar una antes de confirmar. Este paso es opcional.
+5. En **Foto del pallet**, si corresponde, selecciona **una imagen** PNG, JPG, WebP o GIF de hasta **2 MB**. Puedes verla y quitarla antes de confirmar. Por ahora es solo una vista previa temporal: **la imagen no se envía ni se guarda** y se descarta al cerrar el formulario. Este paso es opcional.
 6. En **Cantidad de pallets del lote**, indica un entero entre **1 y 999** con los botones o escribiéndolo. Para el ejemplo, escribe **5**.
 7. En **Nota de calidad**, escribe observaciones si las tienes. Es opcional; admite hasta **2.000 caracteres**.
 
@@ -462,7 +463,7 @@ El ejemplo usa **Stout**, **Barril**, lote **26-942**, **32 barriles por pallet*
 |---|---|
 | **Confirmar ingresos** deshabilitado | Selecciona estilo y envase; comprueba el ID del lote, un número entero de 1 a 60 por pallet y entre 1 y 999 pallets. |
 | Mensaje de lote ya existente | Usa el ID correcto de un lote nuevo. Antes de reintentar, comprueba en la tabla si el ingreso anterior sí quedó registrado. |
-| Error al adjuntar fotos | Usa PNG, JPG, WebP o GIF; cada imagen debe pesar como máximo 2 MB. Retira los archivos rechazados y vuelve a seleccionar. |
+| Error al adjuntar la imagen | Selecciona una sola imagen PNG, JPG, WebP o GIF de como máximo 2 MB. Retira los archivos rechazados y vuelve a seleccionar. |
 | Error al guardar o conexión interrumpida | Conserva los datos del formulario, revisa si las filas ya aparecen en Patio y pulsa **Actualizar inventario**. Si no aparecen, comunica al responsable el código de lote y el mensaje visible. |
 | Patio vacío inesperadamente | Revisa los filtros, actualiza y confirma que la página cargó sin error. Un fallo de consulta no prueba que el inventario esté vacío. |
 
