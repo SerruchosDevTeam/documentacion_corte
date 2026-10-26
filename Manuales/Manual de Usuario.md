@@ -2,33 +2,36 @@
 
 **Cervecería Cuello Negro**
 
-**Edición:** 1.5 · **Fecha:** 2 de octubre de 2026
+**Edición:** 1.6 · **Fecha:** 20 de octubre de 2026
 
-**Aplicación documentada:** US-18: frontend 0.1.0 (`952dfde`) y backend 1.0.0 (`bf5a1d7`). US-02: frontend 0.1.0 (`6ca4992`) y backend 1.0.0 (`152596b`). Base de los capítulos anteriores: frontend 0.1.0 (`3d21cc3`) y backend 1.0.0 (`abb434f`). Los capítulos de US-21 (alertas) y US-15 (configuración) se redactaron a partir del SRS Técnico v0.3 y de las pantallas de la versión actual; su verificación contra el código queda pendiente en el anexo. Las verificaciones históricas conservan el alcance y la fecha indicados en el anexo.
+**Aplicación documentada:** HU-11: frontend 0.1.0 (`952dfde`) y backend 1.0.0 (`bf5a1d7`). HU-02: frontend 0.1.0 (`6ca4992`) y backend 1.0.0 (`152596b`). Base de los capítulos anteriores: frontend 0.1.0 (`3d21cc3`) y backend 1.0.0 (`abb434f`). HU-04 describe el flujo de ingreso masivo a Patio disponible al 20-10-2026. Los capítulos de HU-14 (alertas) y HU-10 (configuración) se redactaron a partir del SRS Técnico v0.3 y de las pantallas de la versión documentada; su verificación contra el código queda pendiente en el anexo. Las verificaciones históricas conservan el alcance y la fecha indicados en el anexo.
 
-Este manual reúne las instrucciones de uso de la aplicación actual. Comienza por el acceso al sistema y continúa con la gestión de usuarios, roles y permisos, el registro de producción, la consulta del mapa de Bodega 1, el despacho de uno o varios pallets, la consulta de alertas de prioridad de salida y la configuración de parámetros. Las capturas usan cuentas y datos de ejemplo; no utilices esos datos para registrar producción real.
+Este manual reúne las instrucciones de uso de la aplicación. Comienza por el acceso al sistema y continúa con la gestión de usuarios, roles y permisos, los ingresos individuales y masivos, la consulta del mapa de Bodega 1, el despacho de uno o varios pallets, la consulta de alertas de prioridad de salida y la configuración de parámetros. Las capturas usan cuentas y datos de ejemplo; no utilices esos datos para registrar producción real. Las secciones históricas conservan las limitaciones y fechas de sus comprobaciones.
 
 ## Índice
 
-1. [Iniciar sesión y acceder según tu perfil — US-01](#acceso)
-2. [Gestionar usuarios, roles y permisos — US-02](#usuarios)
-3. [Registrar un ingreso de producción — US-04](#ingresos)
-4. [Gemelo Digital 2D — Bodega 1 — US-09](#bodega-1)
-5. [Despachar uno o varios pallets — US-18](#despachos)
-6. [Alertas de prioridad de salida y vencimiento — US-21](#alertas)
-7. [Configurar el sistema (Data-Driven) — US-15](#configuracion)
+1. [Autenticación y control de acceso por roles — HU-01](#acceso)
+2. [Gestión de usuarios, roles y permisos — HU-02](#usuarios)
+3. [Registro e ingreso de producción — HU-03](#ingresos)
+   - [Ingreso masivo a Patio — HU-04](#ingreso-masivo)
+4. [Gemelo Digital 2D — Bodega 1 — HU-06](#bodega-1)
+   - [Cambio solicitado T-01: nueva distribución](#cambio-t-01)
+5. [Despacho de pallets (1 y varios) — HU-11](#despachos)
+6. [Alertas FEFO/FIFO y de vencimiento — HU-14](#alertas)
+7. [Configuración Data-Driven de parámetros — HU-10](#configuracion)
 8. [Anexo: validaciones y revisión del manual](#validaciones)
-   - [Validación de US-01](#validacion-us-01)
-   - [Validación de US-02](#validacion-us-02)
-   - [Validación de US-04](#validacion-us-04)
-   - [Validación de US-09](#validacion-us-09)
-   - [Validación de US-18](#validacion-us-18)
-   - [Validación de US-21](#validacion-us-21)
-   - [Validación de US-15](#validacion-us-15)
+   - [Validación de HU-01](#validacion-hu-01)
+   - [Validación de HU-02](#validacion-hu-02)
+   - [Validación de HU-03](#validacion-hu-03)
+   - [Validación de HU-06](#validacion-hu-06)
+   - [Validación de HU-11](#validacion-hu-11)
+   - [Validación de HU-14](#validacion-hu-14)
+   - [Validación de HU-10](#validacion-hu-10)
+   - [Revisión de HU-04](#validacion-hu-04)
 
 <a id="acceso"></a>
 
-## 1. Iniciar sesión y acceder según tu perfil — US-01
+## 1. Autenticación y control de acceso por roles — HU-01
 
 Esta sección explica cómo entrar al sistema, reconocer las opciones de tu perfil y cerrar sesión. Para registrar producción después de entrar, continúa con [Registro de producción](#ingresos).
 
@@ -116,15 +119,15 @@ No uses el selector «Perfil» del menú lateral como procedimiento para obtener
 
 ---
 
-**Alcance:** inicio y cierre de sesión y navegación por perfil. Para crear cuentas, asignar cargos o restablecer contraseñas desde administración, continúa con [Gestión de usuarios](#usuarios). Las verificaciones y diferencias respecto de la historia se registran en el anexo [Validación US-01](#validacion-us-01).
+**Alcance:** inicio y cierre de sesión y navegación por perfil. Para crear cuentas, asignar cargos o restablecer contraseñas desde administración, continúa con [Gestión de usuarios](#usuarios). Las verificaciones y diferencias respecto de la historia se registran en el anexo [Validación HU-01](#validacion-hu-01).
 
 ---
 
 <a id="usuarios"></a>
 
-## 2. Gestionar usuarios, roles y permisos — US-02
+## 2. Gestión de usuarios, roles y permisos — HU-02
 
-Este capítulo está dirigido al **Jefe de Planta**. Explica cómo registrar colaboradores, corregir sus datos, asignarles un cargo y activar o desactivar su acceso. Corresponde a [US-02 — Gestión de usuarios, roles y permisos (3 SP)](https://trello.com/c/6ND3asV2).
+Este capítulo está dirigido al **Jefe de Planta**. Explica cómo registrar colaboradores, corregir sus datos, asignarles un cargo y activar o desactivar su acceso. Corresponde a [HU-02 — Gestión de usuarios, roles y permisos (3 SP)](https://trello.com/c/6ND3asV2).
 
 ### 2.1. Antes de comenzar
 
@@ -283,15 +286,15 @@ Si necesitas soporte, indica la operación, el mensaje exacto y la hora aproxima
 
 ---
 
-**Control del documento:** pasos contrastados con la interfaz y el código disponibles el 29-09-2026. Las capturas usan respuestas simuladas; las comprobaciones y sus límites se detallan en [Validación de US-02](#validacion-us-02).
+**Control del documento:** pasos contrastados con la interfaz y el código disponibles el 29-09-2026. Las capturas usan respuestas simuladas; las comprobaciones y sus límites se detallan en [Validación de HU-02](#validacion-hu-02).
 
 ---
 
 <a id="ingresos"></a>
 
-## 3. Registrar un ingreso de producción — US-04
+## 3. Registro e ingreso de producción — HU-03
 
-Esta sección explica cómo registrar un pallet y comprobar que quedó guardado. Las capturas de este recorrido se tomaron en un entorno de prueba aislado.
+Esta sección explica cómo registrar un pallet y comprobar que quedó guardado. Corresponde a [HU-03 — Registro e ingreso de producción](https://trello.com/c/WLpdSpJM). Las capturas de este recorrido se tomaron en un entorno de prueba aislado.
 
 ### 3.1. Antes de comenzar
 
@@ -332,6 +335,8 @@ La disponibilidad cambia con el inventario. C3 solo sirve para este ejemplo si e
 4. Desplázate hasta **¿Qué tipo de envase vas a ingresar?** y selecciona **Lata** o **Barril**. Para el ejemplo, selecciona **Lata**.
 
 **Resultado esperado:** quedan seleccionados el estilo y el envase, se muestran el lote y la cantidad correctos, y aparece la sección de ubicación.
+
+**Si el lote ya existe:** puedes usar su mismo ID para ingresar otro pallet. Todos los pallets de ese lote tienen **la misma cerveza**, pero cada pallet puede tener **un envase distinto** (por ejemplo, uno en lata y otro en barril). Selecciona la cerveza del lote existente; el sistema conserva también su fecha de envasado. El pallet nuevo recibe su propio ID y cantidad. Si eliges otra cerveza para ese ID de lote, el ingreso se rechaza.
 
 > Si cambias el estilo después de completar los datos, vuelve a revisar el lote y la cantidad: la aplicación los reemplaza por nuevos valores sugeridos. La etiqueta de cantidad sigue diciendo «cajas» incluso al elegir Barril; consulta la unidad de registro con el responsable antes de ingresar barriles.
 
@@ -385,7 +390,7 @@ El formulario usa automáticamente la fecha del momento del ingreso; no permite 
 | «Confirmar Ingreso» está deshabilitado | Selecciona estilo y envase y comprueba que exista una ubicación disponible. Revisa también el lote y la cantidad antes de enviar. | El botón se habilita cuando están completas las selecciones necesarias. |
 | No puedes bajar de 1 o subir de 60 | Es el límite de «Cantidad (cajas)». Revisa cómo dividir el ingreso con el responsable si tu producción supera ese rango. | La cantidad permanece dentro del rango permitido. |
 | «Cámara llena» | No hay una posición compatible disponible para la selección actual. Consulta al responsable para revisar disponibilidad y movimientos reales. | Continúas cuando exista una ubicación adecuada; no cambies el envase para forzar el ingreso. |
-| Error al guardar | Revisa los datos y comprueba primero si el lote ya aparece en la cámara. Un lote repetido también puede causar un error. | Evitas repetir un ingreso que ya se haya guardado. |
+| Error al guardar | Revisa si el código corresponde a un lote existente y si seleccionaste su misma cerveza. El envase del nuevo pallet puede ser distinto. Comprueba también si el pallet se guardó antes de reintentar. | Evitas ingresar el mismo pallet dos veces. |
 | El envío demora o no sabes si terminó | Espera y verifica el lote antes de volver a confirmar. Si persiste el problema, informa el código de lote y el mensaje que aparece. | El responsable puede revisar el caso sin duplicar el registro. |
 | No aparece «Elegir otra ubicación» | Esa opción está disponible para Jefe de Planta. Consulta a ese perfil si necesitas cambiar la propuesta. | Se revisa la ubicación con el perfil adecuado. |
 | Al recargar desaparece el menú o no abre «Nuevo Ingreso» | Vuelve a iniciar sesión y entra desde el menú a «Vista de Cámara». | Recuperas los controles de la sesión; los ingresos guardados permanecen. |
@@ -398,15 +403,99 @@ Para salir sin registrar, pulsa **Cancelar** antes de confirmar. Si ya confirmas
 
 ---
 
-**Control del documento:** se verificaron el acceso con Jefe de Planta, las selecciones, la ubicación manual, el guardado y la persistencia tras recargar en un entorno aislado. La revisión de comprensión por un compañero sigue pendiente; su pauta está en el anexo [Validación del manual US-04](#validacion-us-04).
+**Control del documento:** se verificaron el acceso con Jefe de Planta, las selecciones, la ubicación manual, el guardado y la persistencia tras recargar en un entorno aislado. La revisión de comprensión por un compañero sigue pendiente; su pauta está en el anexo [Validación del manual HU-03](#validacion-hu-03).
+
+---
+
+<a id="ingreso-masivo"></a>
+
+### 3.7. Ingreso masivo a Patio — HU-04
+
+La historia [HU-04 — Ingreso masivo](https://trello.com/c/ZSnLfp7P) permite registrar **varios pallets de un mismo lote** en una sola operación. Todos ingresan directamente a **Patio**. El procedimiento de las secciones 3.1 a 3.6 corresponde al ingreso individual desde **Vista de Cámara**; para ingresar varios pallets utiliza el recorrido siguiente.
+
+#### Antes de comenzar
+
+Inicia sesión con una cuenta que tenga acceso a **Patio**. Ten preparados el estilo de cerveza, el envase, el ID del lote, la cantidad de cajas o barriles **por pallet** y el número de pallets. Puedes añadir una nota de calidad y seleccionar una imagen de hasta 2 MB como vista previa temporal; la imagen no se guarda. Comprueba físicamente la cantidad antes de guardar: el formulario crea tantos registros de pallet como indique el número de pallets.
+
+El ejemplo usa **Stout**, **Barril**, lote **26-942**, **32 barriles por pallet** y **5 pallets**. Son datos ilustrativos: usa el ID real de tu producción, sea un lote nuevo o uno que ya tenga pallets en Patio o Cámara.
+
+| Dato del formulario | Qué significa en este ingreso |
+|---|---|
+| Estilo | Cerveza común a todos los pallets creados. |
+| Envase | Lata o Barril, común a todos los pallets. |
+| ID de Lote | Código compartido; puedes reutilizar uno registrado en Patio o Cámara para añadir más pallets. El lote debe conservar su tipo de cerveza. |
+| Cantidad | Número de cajas o barriles **en cada pallet**, no el total del lote. |
+| Número de pallets | Cantidad de filas y registros de pallet que se crearán. |
+| Foto del pallet | Una imagen opcional de hasta 2 MB, solo para vista previa temporal. No se envía ni se guarda con el ingreso. |
+| Nota de calidad | Observación opcional que se guarda para cada pallet; se consulta desde **Detalles** en su fila de Patio. |
+
+**Si reutilizas un lote:** selecciona su misma cerveza. Puedes elegir otro envase y otra cantidad para los pallets nuevos. El sistema conserva la fecha de envasado original del lote y calcula el vencimiento a partir de ella. Los pallets anteriores no se modifican. Si eliges una cerveza diferente para ese ID, se mostrará un error y no se registrará el ingreso.
+
+#### Abrir y completar el formulario
+
+1. En el menú lateral, entra a **Patio** y pulsa **Nuevo ingreso patio**, arriba a la derecha.
+2. En **Registrar Ingreso · Nuevo lotes en Patio**, elige **¿Qué estilo vas a ingresar?**. Al seleccionar uno aparecen las opciones de envase.
+3. Selecciona **Lata** o **Barril** en **¿Qué tipo de envase vas a ingresar?**. Comprueba que la opción quede resaltada.
+4. En **Datos del lote**, revisa **ID de Lote**. Se propone un código, pero debes sustituirlo si no es el código real de producción. Ajusta **Cantidad (cajas)** o **Número de barriles** con los botones **− / +** o escribiendo un número entero de **1 a 60**. Esa cantidad se aplicará a *cada* pallet.
+5. En **Foto del pallet**, si corresponde, selecciona **una imagen** PNG, JPG, WebP o GIF de hasta **2 MB**. Puedes verla y quitarla antes de confirmar. Por ahora es solo una vista previa temporal: **la imagen no se envía ni se guarda** y se descarta al cerrar el formulario. Este paso es opcional.
+6. En **Cantidad de pallets del lote**, indica un entero entre **1 y 999** con los botones o escribiéndolo. Para el ejemplo, escribe **5**.
+7. En **Nota de calidad**, escribe observaciones si las tienes. Es opcional; admite hasta **2.000 caracteres**.
+
+**Resultado esperado:** el botón **Confirmar ingresos** se habilita cuando hay estilo, envase, lote, cantidad por pallet y número de pallets válidos. Cambiar el estilo vuelve a proponer un lote y una cantidad y desmarca el envase; revisa nuevamente esos campos antes de confirmar. La fecha de envasado se toma automáticamente al guardar: esta pantalla no permite elegir una fecha anterior.
+
+![Figura 3.6. Formulario de ingreso masivo en Patio](imagenes/hu-04/01-formulario.png)
+
+*Figura 3.6. Selección del estilo y envase y comienzo de los datos del lote. El ID visible es otro dato de prueba; esta captura muestra el formulario, no una confirmación de ingreso.*
+
+#### Confirmar y comprobar el resultado
+
+1. Revisa el ID del lote, el estilo, el envase, la cantidad **por pallet** y el número de pallets. En el ejemplo, **5 × 32** significa cinco pallets de 32 barriles cada uno, no 32 barriles entre todos.
+2. Pulsa **Confirmar ingresos** una sola vez y espera **Guardando…**. El formulario se cierra al terminar y aparece una notificación con la cantidad registrada. Si decides salir antes de enviar, pulsa **Cancelar** o la **X**: no se crea ningún pallet.
+3. En la tabla de **Patio**, busca el ID del lote. Debe aparecer una fila por cada pallet creado. En el ejemplo se ven cinco filas con el lote **26-942** y distintos números de pallet.
+4. Comprueba en cada fila **Cerveza, Envase, Cantidad, Estado «En patio», Ingreso, Envasado y Vencimiento**. El estilo, envase, cantidad y fechas del lote coinciden entre las filas; el ID del pallet es diferente. El resumen de arriba suma los pallets y sus cantidades.
+5. Si no ves las filas, borra los filtros o la búsqueda y pulsa **Actualizar inventario**. Antes de volver a confirmar, verifica si los registros ya existen para evitar un intento duplicado.
+
+**Resultado esperado:** al registrar cinco pallets aparecen **cinco filas** inmediatamente en Patio y los registros permanecen disponibles al actualizar la página. El botón de **Detalles** permite revisar cada pallet y su nota. El botón de traslado a cámara sigue deshabilitado en esta versión.
+
+![Figura 3.7. Cinco pallets del mismo lote en la tabla de Patio](imagenes/hu-04/03-tabla-patio.png)
+
+*Figura 3.7. Ejemplo de cinco filas con IDs de pallet distintos. La captura precede a ajustes visuales de colores y columnas; confirma los datos con la tabla de tu versión.*
+
+#### Consultar el detalle y las notas de un pallet en Patio
+
+1. Busca el **ID del pallet** en la tabla de Patio. Si varios pallets comparten lote, elige la fila del pallet que quieres revisar.
+2. Pulsa el botón con forma de **ojo** en **Detalles**, a la derecha de **Editar** cuando esa columna está visible. Las cuentas sin permiso de edición no ven la columna **Editar**, pero pueden abrir **Detalles**.
+3. Comprueba el ID de pallet y de lote, la cerveza, el envase, la cantidad, el estado, la ubicación y las fechas. En **Comentarios y notas de calidad** aparecen solo las observaciones de ese pallet, con autor y fecha, de la más reciente a la más antigua.
+4. Si no hay observaciones, el panel lo indica. Cierra con **Cerrar**, la **X** o la tecla **Esc**. Consultar el panel no modifica el ingreso.
+
+**Resultado esperado:** las notas del pallet elegido se muestran sin mezclar las de otros pallets del mismo lote. Si el pallet ya no está en Patio, aparece un mensaje y puedes volver a cargar los datos.
+
+#### Si no se puede guardar
+
+| Lo que ves | Qué hacer |
+|---|---|
+| **Confirmar ingresos** deshabilitado | Selecciona estilo y envase; comprueba el ID del lote, un número entero de 1 a 60 por pallet y entre 1 y 999 pallets. |
+| El lote ya existe con otra cerveza | Selecciona la cerveza del lote existente. Puedes conservar el mismo ID y cambiar el envase de los pallets nuevos. |
+| No sabes si se guardó | Revisa el número de pallets en Patio y el ID de cada fila antes de volver a confirmar, para no repetir el ingreso. |
+| Error al adjuntar la imagen | Selecciona una sola imagen PNG, JPG, WebP o GIF de como máximo 2 MB. Retira los archivos rechazados y vuelve a seleccionar. |
+| Error al guardar o conexión interrumpida | Conserva los datos del formulario, revisa si las filas ya aparecen en Patio y pulsa **Actualizar inventario**. Si no aparecen, comunica al responsable el código de lote y el mensaje visible. |
+| Patio vacío inesperadamente | Revisa los filtros, actualiza y confirma que la página cargó sin error. Un fallo de consulta no prueba que el inventario esté vacío. |
+
+La figura 3.8 muestra un mensaje de error después de intentar confirmar. En ese estado **no** se debe asumir que se guardaron los cinco pallets; primero revisa la tabla. Si el problema persiste, informa al soporte técnico del proyecto. Para dudas sobre los datos o el procedimiento, consulta al responsable de planta o al Product Owner.
+
+![Figura 3.8. Mensaje de error de un ingreso masivo](imagenes/hu-04/02-validacion-error.png)
+
+*Figura 3.8. Mensaje de error visible al pie del formulario de Patio; no representa un ingreso exitoso.*
+
+**Control del documento:** instrucciones contrastadas con el formulario y el servicio de ingreso a Patio al 20-10-2026. Las capturas fueron proporcionadas durante el desarrollo; la figura 3.7 refleja una presentación anterior de la tabla. La prueba de comprensión con otra persona y una nueva comprobación integral del flujo se indican en el [anexo de HU-04](#validacion-hu-04).
 
 ---
 
 <a id="bodega-1"></a>
 
-## 4. Gemelo Digital 2D — Bodega 1 — US-09
+## 4. Gemelo Digital 2D — Bodega 1 — HU-06
 
-El gemelo digital es el mapa interactivo de Bodega 1. Permite consultar los pallets registrados en cámara, distinguir variedades, reconocer niveles de apilado y abrir el detalle de un lote.
+El gemelo digital es el mapa interactivo de Bodega 1 de [HU-06 — Gemelo Digital 2D](https://trello.com/c/bUMsBE5E). Permite consultar los pallets registrados en cámara, distinguir variedades, reconocer niveles de apilado y abrir el detalle de un lote.
 
 ### 4.1. Entrar a Bodega 1
 
@@ -493,7 +582,7 @@ Aunque la pantalla dice «Vista en tiempo real», no uses esa frase como garant�
 |---|---|
 | No aparece un lote | Comprueba su estado y ubicación. Esta grilla muestra solo lo registrado En Cámara en Bodega 1. |
 | El mapa aparece vacío o con cero pallets inesperadamente | Espera la carga y vuelve a consultar. Si continúa, informa al responsable: esta versión puede mostrar una grilla vacía cuando falla la consulta. No concluyas que la bodega está vacía. |
-| Al tocar el pallet se selecciona para moverlo | Estás en **Reorganizar**. Sal de ese modo antes de consultar. Si aparecen cambios pendientes que no deseas conservar, **Cancelar** en «¿Desea guardar los cambios?» los descarta y sale; no mantiene los movimientos pendientes. |
+| Al tocar el pallet se selecciona para moverlo | Estás en **Reorganizar**. Sal de ese modo antes de consultar. Si aparece la confirmación de cambios pendientes y no deseas conservarlos, pulsa **Descartar cambios**. **Cancelar** vuelve a la vista de reorganización sin guardar ni descartar. |
 | El detalle no abre después de recargar | Vuelve a iniciar sesión y entra a la vista desde el menú. |
 | El número de columna no coincide con otra pantalla | Identifica zona, fila, columna y lote. En Barriles, las columnas visibles 1–3 corresponden a las generales 4–6. |
 | No reconoces un Petainer | No te guíes solo por la imagen: la versión actual no distingue su dibujo del de un barril. Consulta el texto de Envase y confirma con el responsable. |
@@ -501,13 +590,27 @@ Aunque la pantalla dice «Vista en tiempo real», no uses esa frase como garant�
 
 **Reorganización:** este capítulo cubre la consulta del mapa. El guardado de movimientos no se ha validado en esta versión; una previsualización no confirma que se haya guardado una nueva ubicación.
 
+<a id="cambio-t-01"></a>
+
+### 4.7. Cambio solicitado para la distribución — T-01
+
+La tarjeta [T-01 de «Sugerencias Listas»](https://trello.com/c/61GGClsn) recoge una modificación solicitada en la revisión del Sprint 1 para **HU-06 — Gemelo Digital 2D**. Se refiere **solo a la primera columna de Zona Barriles**: el cliente pidió que tuviera cuatro filas y que pudiera albergar una sección para pallets de latas, propuesta como un sector aparte similar al prepicado. La sugerencia de ubicación de **HU-05** deberá respetar esa zona cuando se defina e implemente.
+
+| Aspecto | Mapa documentado en la figura 4.1 | Solicitud T-01 |
+|---|---|---|
+| Primera columna de Barriles | Tres filas: A4, B4 y C4. | Cuatro filas en esa columna. |
+| Latas en esa columna | No se ubican en ese sector del mapa documentado. | Incorporar una sección que admita pallets de latas. |
+| Otras columnas de Barriles | Mantienen la distribución descrita en este capítulo. | No se pidió añadirles una cuarta fila ni una sección para latas. |
+
+**Pendiente de definición:** la tarjeta no fija cuál será la cuarta posición (se plantea **D4** como posibilidad), si la sección de latas ocupará solo esa posición o un sector mayor, ni sus límites de apilado. Hasta que esas reglas se acuerden y el sistema muestre la nueva distribución, sigue utilizando las posiciones **visibles y habilitadas** de tu versión; no registres un pallet en una posición nueva basándote solo en esta propuesta. La figura 4.1 representa el mapa anterior al cambio.
+
 ---
 
 <a id="despachos"></a>
 
-## 5. Despachar uno o varios pallets — US-18
+## 5. Despacho de pallets (1 y varios) — HU-11
 
-Este capítulo explica cómo registrar la salida de pallets de **Lata** y **Barril**, revisar la prioridad de salida y comprobar la actualización de la cámara. Corresponde a [US-18 — Despacho de pallets (1 y varios) (5 SP)](https://trello.com/c/3jhBa3jN), dirigida al **Personal de Reparto** y al **Jefe de Planta**.
+Este capítulo explica cómo registrar la salida de pallets de **Lata** y **Barril**, revisar la prioridad de salida y comprobar la actualización de la cámara. Corresponde a [HU-11 — Despacho de pallets (1 y varios) (5 SP)](https://trello.com/c/3jhBa3jN), dirigida al **Personal de Reparto** y al **Jefe de Planta**.
 
 ### 5.1. Antes de comenzar
 
@@ -667,15 +770,15 @@ Antes de enviar, **Cancelar** cierra el formulario individual; en el múltiple t
 
 ---
 
-**Control del documento:** procedimientos contrastados con la interfaz y el código del 29-09-2026. Las diez capturas usan respuestas simuladas. Las pruebas de lógica, las diferencias con la historia y la revisión de comprensión pendiente se detallan en [Validación de US-18](#validacion-us-18).
+**Control del documento:** procedimientos contrastados con la interfaz y el código del 29-09-2026. Las diez capturas usan respuestas simuladas. Las pruebas de lógica, las diferencias con la historia y la revisión de comprensión pendiente se detallan en [Validación de HU-11](#validacion-hu-11).
 
 ---
 
 <a id="alertas"></a>
 
-## 6. Alertas de prioridad de salida y vencimiento — US-21
+## 6. Alertas FEFO/FIFO y de vencimiento — HU-14
 
-Este capítulo explica cómo consultar la prioridad de salida de los lotes para despachar a tiempo y en el orden correcto. Corresponde a **US-21 — Alertas FEFO/FIFO y de vencimiento (5 SP)** y sirve a cualquier perfil que supervise la cámara.
+Este capítulo explica cómo consultar la prioridad de salida de los lotes para despachar a tiempo y en el orden correcto. Corresponde a [HU-14 — Alertas FEFO/FIFO y de vencimiento (5 SP)](https://trello.com/c/SLo6fs9N) y sirve a cualquier perfil que supervise la cámara.
 
 ### 6.1. Antes de comenzar
 
@@ -760,15 +863,15 @@ Cuando el límite del estilo ya se cumplió, el lote aparece en **Crítico** con
 
 ---
 
-**Control del documento:** capítulo redactado a partir del SRS Técnico v0.3 (RF-FIFO-01, RF-FIFO-02, RN-007, RN-008, DPO-002) y de las pantallas de Panel principal, Alertas FIFO y Vista de Cámara de la versión actual. Las capturas corresponden a un entorno de prueba con datos de ejemplo. La verificación de los pasos contra el código queda **pendiente**; su pauta se registrará en el anexo [Validación de US-21](#validacion-us-21). Los umbrales (6 h / 12 h) y la separación de las alertas Fuera de frío y Vencimiento corresponden al requisito; la implementación actual es parcial (un solo cálculo desde el envasado).
+**Control del documento:** capítulo redactado a partir del SRS Técnico v0.3 (RF-FIFO-01, RF-FIFO-02, RN-007, RN-008, DPO-002) y de las pantallas de Panel principal, Alertas FIFO y Vista de Cámara de la versión actual. Las capturas corresponden a un entorno de prueba con datos de ejemplo. La verificación de los pasos contra el código queda **pendiente**; su pauta se registrará en el anexo [Validación de HU-14](#validacion-hu-14). Los umbrales (6 h / 12 h) y la separación de las alertas Fuera de frío y Vencimiento corresponden al requisito; la implementación actual es parcial (un solo cálculo desde el envasado).
 
 ---
 
 <a id="configuracion"></a>
 
-## 7. Configurar el sistema (Data-Driven) — US-15
+## 7. Configuración Data-Driven de parámetros — HU-10
 
-Este capítulo explica cómo revisar y ajustar los **parámetros del negocio** sin modificar el código: los **tipos de cerveza** (con su vida útil y su tiempo máximo fuera de cámara), los **tipos de envase** y los **tipos de alerta**. También incluye una tabla de **permisos por cargo** de solo consulta. Corresponde a **US-15 — Configuración Data-Driven de parámetros (5 SP)** y está dirigido al **Jefe de Planta**.
+Este capítulo explica cómo revisar y ajustar los **parámetros del negocio** sin modificar el código: los **tipos de cerveza** (con su vida útil y su tiempo máximo fuera de cámara), los **tipos de envase** y los **tipos de alerta**. También incluye una tabla de **permisos por cargo** de solo consulta. Corresponde a [HU-10 — Configuración Data-Driven de parámetros (5 SP)](https://trello.com/c/fznQlWpP) y está dirigido al **Jefe de Planta**.
 
 > **Estado de esta versión.** La configuración es la fuente de la verdad del negocio: los tipos de cerveza, envases y alertas se administran desde aquí, no desde el código. La administración de **tipos de cerveza, envase y alertas está disponible**; la tabla de **permisos por cargo es de solo consulta**; y la aplicación inmediata de algunos cambios en todos los cálculos todavía es parcial (al cambiar un valor, verifica su efecto en las pantallas correspondientes). La **temperatura fue retirada del alcance** y no aparece en esta pantalla.
 
@@ -877,7 +980,7 @@ Para reasignar a una persona, usa **Usuarios** (ver el [capítulo de gestión de
 
 ---
 
-**Control del documento:** capítulo redactado a partir del SRS Técnico v0.3 (RF-CFG-01 a RF-CFG-05, DPO-010, DPO-018, DPO-027) y de la pantalla de Configuración de la versión actual, con datos de ejemplo. La verificación de los pasos contra el código queda **pendiente**; su pauta se registrará en el anexo [Validación de US-15](#validacion-us-15). La separación de alertas, la aplicación inmediata de todos los cambios (RF-CFG-05) y la auditoría de configuración corresponden al requisito y hoy son parciales o propuestas.
+**Control del documento:** capítulo redactado a partir del SRS Técnico v0.3 (RF-CFG-01 a RF-CFG-05, DPO-010, DPO-018, DPO-027) y de la pantalla de Configuración de la versión actual, con datos de ejemplo. La verificación de los pasos contra el código queda **pendiente**; su pauta se registrará en el anexo [Validación de HU-10](#validacion-hu-10). La separación de alertas, la aplicación inmediata de todos los cambios (RF-CFG-05) y la auditoría de configuración corresponden al requisito y hoy son parciales o propuestas.
 
 ---
 
@@ -887,13 +990,13 @@ Para reasignar a una persona, usa **Usuarios** (ver el [capítulo de gestión de
 
 Este anexo conserva las comprobaciones realizadas, las diferencias observadas y las pautas pendientes de revisión con un compañero. Está dirigido al equipo que mantiene el manual; no es necesario seguirlo para operar la aplicación.
 
-<a id="validacion-us-01"></a>
+<a id="validacion-hu-01"></a>
 
-### 8.1. Validación de US-01
+### 8.1. Validación de HU-01
 
 **Fecha de comprobación:** 28-09-2026 · **Edición comprobada:** 1.0
 
-**Historia:** [US-01 — Autenticación y control de acceso por roles](https://trello.com/c/iIdhv6rm).
+**Historia:** [HU-01 — Autenticación y control de acceso por roles](https://trello.com/c/iIdhv6rm).
 
 #### Alcance
 
@@ -944,15 +1047,15 @@ Entregar el capítulo a una persona con una cuenta de prueba asignada. Solicitar
 
 **Revisor, fecha y observaciones:** pendientes. Corregir los pasos donde pida ayuda y repetirlos antes de aprobar esta revisión.
 
-<a id="validacion-us-02"></a>
+<a id="validacion-hu-02"></a>
 
-### 8.2. Validación de US-02
+### 8.2. Validación de HU-02
 
-**Historia:** [US-02 — Gestión de usuarios, roles y permisos (3 SP)](https://trello.com/c/6ND3asV2).
+**Historia:** [HU-02 — Gestión de usuarios, roles y permisos (3 SP)](https://trello.com/c/6ND3asV2).
 
 **Fecha:** 29-09-2026 · **Edición del manual:** 1.3.
 
-**Código consultado:** frontend 0.1.0 (`6ca4992`) y backend 1.0.0 (`152596b`). Las verificaciones históricas de US-01, US-04 y US-09 conservan sus fechas y versiones; no se han repetido para esta edición.
+**Código consultado:** frontend 0.1.0 (`6ca4992`) y backend 1.0.0 (`152596b`). Las verificaciones históricas de HU-01, HU-03 y HU-06 conservan sus fechas y versiones; no se han repetido para esta edición.
 
 #### Método y evidencia
 
@@ -986,7 +1089,7 @@ Esta revisión **no certifica el cumplimiento integral del criterio de permisos 
 - La contraseña administrativa admite 8–72 caracteres; Mi perfil utiliza una política distinta. No se unificaron esas reglas como parte de este trabajo.
 - Se oculta el cambio de estado de la propia cuenta y el servidor rechaza su desactivación. Existe una protección transaccional para conservar al menos un jefe activo, contrastada en código con la limitación de prueba indicada arriba.
 - Configuración presenta una tabla fija de permisos de solo consulta. No existe edición individual de permisos desde esa pantalla.
-- Se conserva la limitación de restauración de sesión tras recargar descrita en US-01.
+- Se conserva la limitación de restauración de sesión tras recargar descrita en HU-01.
 
 #### Revisión con un compañero — pendiente
 
@@ -1004,9 +1107,9 @@ En un entorno de prueba con cuentas desechables y al menos un jefe activo, entre
 
 **Revisor, fecha y observaciones:** pendientes. Ajustar los pasos que requieran explicaciones adicionales antes de aprobar la comprensión del manual.
 
-<a id="validacion-us-04"></a>
+<a id="validacion-hu-03"></a>
 
-### 8.3. Validación de US-04
+### 8.3. Validación de HU-03
 
 **Fecha de comprobación:** 28-09-2026 · **Edición comprobada:** 1.0
 
@@ -1055,11 +1158,11 @@ Entregar el manual y una cuenta del entorno de prueba a una persona que no haya 
 
 Criterio de aceptación: la persona completa el recorrido sin instrucciones adicionales y reconoce el lote, cantidad, envase, estado y ubicación correctos. Ajustar los pasos donde pida ayuda y repetir esas partes antes de marcar esta revisión como aprobada.
 
-<a id="validacion-us-09"></a>
+<a id="validacion-hu-06"></a>
 
-### 8.4. Validación de US-09
+### 8.4. Validación de HU-06
 
-**Historia:** [US-09 — Gemelo Digital 2D — Bodega 1](https://trello.com/c/bUMsBE5E).
+**Historia:** [HU-06 — Gemelo Digital 2D — Bodega 1](https://trello.com/c/bUMsBE5E).
 
 **Fecha:** 28-09-2026 · **Edición del manual:** 1.2. Se consultó la API local y una copia temporal del frontend, sin crear, mover, despachar ni modificar pallets. Las capturas excluyen la identidad de la cuenta.
 
@@ -1083,8 +1186,9 @@ Criterio de aceptación: la persona completa el recorrido sin instrucciones adic
 - SWR consulta y revalida los datos; no hay un intervalo de actualización explícito ni suscripción en tiempo real en `usePallets`. No se certifica una latencia de actualización.
 - La vista no presenta un estado de error o carga diferenciado: antes de recibir los datos o ante un fallo puede parecer vacía.
 - Zona Barriles muestra columnas 1–3, que corresponden a las columnas generales 4–6. Zona Extra muestra A2/A3 aunque se corresponde con la fila interna D. El manual utiliza zona y lote para evitar ambigüedades.
-- Las alertas usan la fecha de envasado y límites definidos en el frontend. Permanece la diferencia de fecha/zona horaria registrada en la validación de US-04; no se certifica el cálculo operativo de las alertas.
+- Las alertas usan la fecha de envasado y límites definidos en el frontend. Permanece la diferencia de fecha/zona horaria registrada en la validación de HU-03; no se certifica el cálculo operativo de las alertas.
 - El frontend muestra Reorganizar para Jefe de Planta y previsualiza movimientos. El router de pallets revisado no tiene la ruta PATCH que invoca ese guardado; por ello no se presenta el movimiento persistente como una función validada.
+- La solicitud T-01 se añadió al capítulo 4 como propuesta. La cuarta fila y la sección de latas de la primera columna de Barriles aún requieren definición; no forman parte de la validación del mapa capturado el 28-09-2026.
 
 #### Revisión con un compañero — pendiente
 
@@ -1092,11 +1196,11 @@ Solicitar que, usando solo el capítulo 4, entre a la cámara, distinga pallets 
 
 **Revisor, fecha y observaciones:** pendientes. Ajustar cualquier paso que requiera ayuda antes de aprobar la revisión de comprensión.
 
-<a id="validacion-us-18"></a>
+<a id="validacion-hu-11"></a>
 
-### 8.5. Validación de US-18
+### 8.5. Validación de HU-11
 
-**Historia:** [US-18 — Despacho de pallets (1 y varios) (5 SP)](https://trello.com/c/3jhBa3jN).
+**Historia:** [HU-11 — Despacho de pallets (1 y varios) (5 SP)](https://trello.com/c/3jhBa3jN).
 
 **Fecha:** 29-09-2026 · **Edición del manual:** 1.4.
 
@@ -1168,11 +1272,11 @@ En un entorno de pruebas aislado, preparar pallets de lata y barril, al menos do
 
 **Revisor, fecha y observaciones:** pendientes. Ajustar los pasos que requieran ayuda y repetirlos antes de aprobar la revisión de comprensión.
 
-<a id="validacion-us-21"></a>
+<a id="validacion-hu-14"></a>
 
-### 8.6. Validación de US-21 — pendiente
+### 8.6. Validación de HU-14 — pendiente
 
-**Historia:** US-21 — Alertas FEFO/FIFO y de vencimiento (5 SP).
+**Historia:** HU-14 — Alertas FEFO/FIFO y de vencimiento (5 SP).
 
 **Estado:** capítulo redactado a partir del SRS Técnico v0.3 y de las pantallas de la versión actual (Panel principal, Alertas FIFO y Vista de Cámara), con datos de ejemplo. **Falta la verificación contra el código y la revisión de comprensión con un compañero.**
 
@@ -1194,11 +1298,11 @@ Entregar el capítulo 6 y solicitar: «Consulta el resumen del Panel principal y
 
 **Revisor, fecha y observaciones:** pendientes.
 
-<a id="validacion-us-15"></a>
+<a id="validacion-hu-10"></a>
 
-### 8.7. Validación de US-15 — pendiente
+### 8.7. Validación de HU-10 — pendiente
 
-**Historia:** US-15 — Configuración Data-Driven de parámetros (5 SP).
+**Historia:** HU-10 — Configuración Data-Driven de parámetros (5 SP).
 
 **Estado:** capítulo redactado a partir del SRS Técnico v0.3 y de la pantalla de Configuración de la versión actual, con datos de ejemplo. **Falta la verificación contra el código y la revisión de comprensión con un compañero.**
 
@@ -1219,5 +1323,30 @@ Entregar el capítulo 6 y solicitar: «Consulta el resumen del Panel principal y
 #### Revisión con un compañero — pendiente
 
 Entregar el capítulo 7 y solicitar: «Abre Configuración, agrega un estilo de cerveza ficticio con su vida útil y su máximo fuera de cámara, revisa los tipos de envase y de alerta, y consulta la tabla de permisos por cargo, usando solo el manual».
+
+**Revisor, fecha y observaciones:** pendientes.
+
+<a id="validacion-hu-04"></a>
+
+### 8.8. Revisión de HU-04 — ingreso masivo a Patio
+
+**Historia:** [HU-04 — Ingreso masivo](https://trello.com/c/ZSnLfp7P), ubicada en **In progress** al 20-10-2026. El checklist de desarrollo de la tarjeta figura completado, pero la validación del Product Owner y la prueba formal del flujo siguen pendientes en Trello.
+
+#### Evidencia utilizada para esta edición
+
+| Comprobación | Evidencia y límite |
+|---|---|
+| Formulario de Patio | Se contrastaron en el código las selecciones de estilo y envase, el lote, la cantidad por pallet, las fotos, el número de pallets, la nota opcional y las validaciones visibles. Figuras 3.6 y 3.8. |
+| Guardado | El servicio crea el lote y todos sus pallets dentro de una transacción. Los pallets reciben estado `PATIO`, la misma cantidad y fechas, y distintos IDs. |
+| Visualización | La respuesta añade las nuevas filas al inventario de Patio sin esperar una recarga. La figura 3.7, proporcionada durante el desarrollo, muestra cinco filas de un mismo lote. |
+| Capturas | Son ejemplos de distintas etapas del desarrollo; no constituyen por sí solas una prueba de guardado ejecutada para esta edición. La figura 3.7 tiene un estilo de tabla anterior. |
+| Lote existente | Se pueden añadir pallets a un lote registrado en Patio o Cámara si se mantiene la misma cerveza. Los nuevos IDs, posiciones, notas y filas pertenecen solo al ingreso nuevo; la fecha de envasado del lote se conserva. |
+| Funciones posteriores | El traslado a cámara sigue deshabilitado. La edición de pallets se desarrolla por separado en HU-12. |
+
+#### Comprobaciones pendientes
+
+En un entorno de prueba, registrar un lote nuevo con varios pallets, verificar que el número de filas y los IDs coincidan con lo solicitado, actualizar Patio y comprobar la persistencia. Después, añadir uno o varios pallets al mismo lote en Patio y a otro lote que ya exista en Cámara; verificar que aparezcan solo las filas nuevas y que se conserve la cerveza y la fecha original. Probar una cerveza distinta para confirmar que se rechaza, y una foto inválida para comprobar su mensaje. Usar datos de prueba autorizados.
+
+Solicitar después a una persona ajena a la redacción que complete el recorrido de la sección 3.7 usando solo el manual. Debe distinguir **cantidad por pallet** de **número de pallets**, confirmar el estado **En patio** y saber qué comprobar antes de reintentar ante un error.
 
 **Revisor, fecha y observaciones:** pendientes.
