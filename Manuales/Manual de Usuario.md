@@ -336,6 +336,8 @@ La disponibilidad cambia con el inventario. C3 solo sirve para este ejemplo si e
 
 **Resultado esperado:** quedan seleccionados el estilo y el envase, se muestran el lote y la cantidad correctos, y aparece la sección de ubicación.
 
+**Si el lote ya existe:** puedes usar su mismo ID para ingresar otro pallet. Todos los pallets de ese lote tienen **la misma cerveza**, pero cada pallet puede tener **un envase distinto** (por ejemplo, uno en lata y otro en barril). Selecciona la cerveza del lote existente; el sistema conserva también su fecha de envasado. El pallet nuevo recibe su propio ID y cantidad. Si eliges otra cerveza para ese ID de lote, el ingreso se rechaza.
+
 > Si cambias el estilo después de completar los datos, vuelve a revisar el lote y la cantidad: la aplicación los reemplaza por nuevos valores sugeridos. La etiqueta de cantidad sigue diciendo «cajas» incluso al elegir Barril; consulta la unidad de registro con el responsable antes de ingresar barriles.
 
 ![Figura 3.2a. Lager, lote 26-904 y cantidad 48](imagenes/us-04/02-datos.png)
@@ -388,7 +390,7 @@ El formulario usa automáticamente la fecha del momento del ingreso; no permite 
 | «Confirmar Ingreso» está deshabilitado | Selecciona estilo y envase y comprueba que exista una ubicación disponible. Revisa también el lote y la cantidad antes de enviar. | El botón se habilita cuando están completas las selecciones necesarias. |
 | No puedes bajar de 1 o subir de 60 | Es el límite de «Cantidad (cajas)». Revisa cómo dividir el ingreso con el responsable si tu producción supera ese rango. | La cantidad permanece dentro del rango permitido. |
 | «Cámara llena» | No hay una posición compatible disponible para la selección actual. Consulta al responsable para revisar disponibilidad y movimientos reales. | Continúas cuando exista una ubicación adecuada; no cambies el envase para forzar el ingreso. |
-| Error al guardar | Revisa los datos y comprueba primero si el lote ya aparece en la cámara. Un lote repetido también puede causar un error. | Evitas repetir un ingreso que ya se haya guardado. |
+| Error al guardar | Revisa si el código corresponde a un lote existente y si seleccionaste su misma cerveza. El envase del nuevo pallet puede ser distinto. Comprueba también si el pallet se guardó antes de reintentar. | Evitas ingresar el mismo pallet dos veces. |
 | El envío demora o no sabes si terminó | Espera y verifica el lote antes de volver a confirmar. Si persiste el problema, informa el código de lote y el mensaje que aparece. | El responsable puede revisar el caso sin duplicar el registro. |
 | No aparece «Elegir otra ubicación» | Esa opción está disponible para Jefe de Planta. Consulta a ese perfil si necesitas cambiar la propuesta. | Se revisa la ubicación con el perfil adecuado. |
 | Al recargar desaparece el menú o no abre «Nuevo Ingreso» | Vuelve a iniciar sesión y entra desde el menú a «Vista de Cámara». | Recuperas los controles de la sesión; los ingresos guardados permanecen. |
@@ -415,17 +417,19 @@ La historia [HU-04 — Ingreso masivo](https://trello.com/c/ZSnLfp7P) permite re
 
 Inicia sesión con una cuenta que tenga acceso a **Patio**. Ten preparados el estilo de cerveza, el envase, el ID del lote, la cantidad de cajas o barriles **por pallet** y el número de pallets. Puedes añadir una nota de calidad y seleccionar una imagen de hasta 2 MB como vista previa temporal; la imagen no se guarda. Comprueba físicamente la cantidad antes de guardar: el formulario crea tantos registros de pallet como indique el número de pallets.
 
-El ejemplo usa **Stout**, **Barril**, lote **26-942**, **32 barriles por pallet** y **5 pallets**. Son datos ilustrativos: usa un ID de lote nuevo y los valores de tu producción real.
+El ejemplo usa **Stout**, **Barril**, lote **26-942**, **32 barriles por pallet** y **5 pallets**. Son datos ilustrativos: usa el ID real de tu producción, sea un lote nuevo o uno que ya tenga pallets en Patio o Cámara.
 
 | Dato del formulario | Qué significa en este ingreso |
 |---|---|
 | Estilo | Cerveza común a todos los pallets creados. |
 | Envase | Lata o Barril, común a todos los pallets. |
-| ID de Lote | Código compartido; debe ser único entre los lotes registrados. |
+| ID de Lote | Código compartido; puedes reutilizar uno registrado en Patio o Cámara para añadir más pallets. El lote debe conservar su tipo de cerveza. |
 | Cantidad | Número de cajas o barriles **en cada pallet**, no el total del lote. |
 | Número de pallets | Cantidad de filas y registros de pallet que se crearán. |
 | Foto del pallet | Una imagen opcional de hasta 2 MB, solo para vista previa temporal. No se envía ni se guarda con el ingreso. |
-| Nota de calidad | Observación opcional que se guarda para cada pallet; no aparece como columna en la tabla de Patio. |
+| Nota de calidad | Observación opcional que se guarda para cada pallet; se consulta desde **Detalles** en su fila de Patio. |
+
+**Si reutilizas un lote:** selecciona su misma cerveza. Puedes elegir otro envase y otra cantidad para los pallets nuevos. El sistema conserva la fecha de envasado original del lote y calcula el vencimiento a partir de ella. Los pallets anteriores no se modifican. Si eliges una cerveza diferente para ese ID, se mostrará un error y no se registrará el ingreso.
 
 #### Abrir y completar el formulario
 
@@ -451,18 +455,28 @@ El ejemplo usa **Stout**, **Barril**, lote **26-942**, **32 barriles por pallet*
 4. Comprueba en cada fila **Cerveza, Envase, Cantidad, Estado «En patio», Ingreso, Envasado y Vencimiento**. El estilo, envase, cantidad y fechas del lote coinciden entre las filas; el ID del pallet es diferente. El resumen de arriba suma los pallets y sus cantidades.
 5. Si no ves las filas, borra los filtros o la búsqueda y pulsa **Actualizar inventario**. Antes de volver a confirmar, verifica si los registros ya existen para evitar un intento duplicado.
 
-**Resultado esperado:** al registrar cinco pallets aparecen **cinco filas** inmediatamente en Patio y los registros permanecen disponibles al actualizar la página. El botón de lápiz de la columna **Editar** y el botón de traslado a cámara se muestran en la tabla, pero todavía están deshabilitados; no los uses como parte de este ingreso.
+**Resultado esperado:** al registrar cinco pallets aparecen **cinco filas** inmediatamente en Patio y los registros permanecen disponibles al actualizar la página. El botón de **Detalles** permite revisar cada pallet y su nota. El botón de traslado a cámara sigue deshabilitado en esta versión.
 
 ![Figura 3.7. Cinco pallets del mismo lote en la tabla de Patio](imagenes/hu-04/03-tabla-patio.png)
 
 *Figura 3.7. Ejemplo de cinco filas con IDs de pallet distintos. La captura precede a ajustes visuales de colores y columnas; confirma los datos con la tabla de tu versión.*
+
+#### Consultar el detalle y las notas de un pallet en Patio
+
+1. Busca el **ID del pallet** en la tabla de Patio. Si varios pallets comparten lote, elige la fila del pallet que quieres revisar.
+2. Pulsa el botón con forma de **ojo** en **Detalles**, a la derecha de **Editar** cuando esa columna está visible. Las cuentas sin permiso de edición no ven la columna **Editar**, pero pueden abrir **Detalles**.
+3. Comprueba el ID de pallet y de lote, la cerveza, el envase, la cantidad, el estado, la ubicación y las fechas. En **Comentarios y notas de calidad** aparecen solo las observaciones de ese pallet, con autor y fecha, de la más reciente a la más antigua.
+4. Si no hay observaciones, el panel lo indica. Cierra con **Cerrar**, la **X** o la tecla **Esc**. Consultar el panel no modifica el ingreso.
+
+**Resultado esperado:** las notas del pallet elegido se muestran sin mezclar las de otros pallets del mismo lote. Si el pallet ya no está en Patio, aparece un mensaje y puedes volver a cargar los datos.
 
 #### Si no se puede guardar
 
 | Lo que ves | Qué hacer |
 |---|---|
 | **Confirmar ingresos** deshabilitado | Selecciona estilo y envase; comprueba el ID del lote, un número entero de 1 a 60 por pallet y entre 1 y 999 pallets. |
-| Mensaje de lote ya existente | Usa el ID correcto de un lote nuevo. Antes de reintentar, comprueba en la tabla si el ingreso anterior sí quedó registrado. |
+| El lote ya existe con otra cerveza | Selecciona la cerveza del lote existente. Puedes conservar el mismo ID y cambiar el envase de los pallets nuevos. |
+| No sabes si se guardó | Revisa el número de pallets en Patio y el ID de cada fila antes de volver a confirmar, para no repetir el ingreso. |
 | Error al adjuntar la imagen | Selecciona una sola imagen PNG, JPG, WebP o GIF de como máximo 2 MB. Retira los archivos rechazados y vuelve a seleccionar. |
 | Error al guardar o conexión interrumpida | Conserva los datos del formulario, revisa si las filas ya aparecen en Patio y pulsa **Actualizar inventario**. Si no aparecen, comunica al responsable el código de lote y el mensaje visible. |
 | Patio vacío inesperadamente | Revisa los filtros, actualiza y confirma que la página cargó sin error. Un fallo de consulta no prueba que el inventario esté vacío. |
@@ -1326,11 +1340,12 @@ Entregar el capítulo 7 y solicitar: «Abre Configuración, agrega un estilo de 
 | Guardado | El servicio crea el lote y todos sus pallets dentro de una transacción. Los pallets reciben estado `PATIO`, la misma cantidad y fechas, y distintos IDs. |
 | Visualización | La respuesta añade las nuevas filas al inventario de Patio sin esperar una recarga. La figura 3.7, proporcionada durante el desarrollo, muestra cinco filas de un mismo lote. |
 | Capturas | Son ejemplos de distintas etapas del desarrollo; no constituyen por sí solas una prueba de guardado ejecutada para esta edición. La figura 3.7 tiene un estilo de tabla anterior. |
-| Funciones posteriores | Los botones de edición y traslado a cámara están deshabilitados y quedan fuera del alcance de HU-04. |
+| Lote existente | Se pueden añadir pallets a un lote registrado en Patio o Cámara si se mantiene la misma cerveza. Los nuevos IDs, posiciones, notas y filas pertenecen solo al ingreso nuevo; la fecha de envasado del lote se conserva. |
+| Funciones posteriores | El traslado a cámara sigue deshabilitado. La edición de pallets se desarrolla por separado en HU-12. |
 
 #### Comprobaciones pendientes
 
-En un entorno de prueba, registrar un lote nuevo con varios pallets, verificar que el número de filas y los IDs coincidan con lo solicitado, actualizar Patio y comprobar la persistencia. Repetir con un lote duplicado y con una foto inválida para confirmar los mensajes de error. No reutilizar un código ya existente en el inventario real.
+En un entorno de prueba, registrar un lote nuevo con varios pallets, verificar que el número de filas y los IDs coincidan con lo solicitado, actualizar Patio y comprobar la persistencia. Después, añadir uno o varios pallets al mismo lote en Patio y a otro lote que ya exista en Cámara; verificar que aparezcan solo las filas nuevas y que se conserve la cerveza y la fecha original. Probar una cerveza distinta para confirmar que se rechaza, y una foto inválida para comprobar su mensaje. Usar datos de prueba autorizados.
 
 Solicitar después a una persona ajena a la redacción que complete el recorrido de la sección 3.7 usando solo el manual. Debe distinguir **cantidad por pallet** de **número de pallets**, confirmar el estado **En patio** y saber qué comprobar antes de reintentar ante un error.
 
