@@ -2,9 +2,9 @@
 
 **Cervecería Cuello Negro**
 
-**Edición:** 1.6 · **Fecha:** 20 de octubre de 2026
+**Edición:** 1.9 · **Fecha:** 26 de octubre de 2026
 
-**Aplicación documentada:** HU-11: frontend 0.1.0 (`952dfde`) y backend 1.0.0 (`bf5a1d7`). HU-02: frontend 0.1.0 (`6ca4992`) y backend 1.0.0 (`152596b`). Base de los capítulos anteriores: frontend 0.1.0 (`3d21cc3`) y backend 1.0.0 (`abb434f`). HU-04 describe el flujo de ingreso masivo a Patio disponible al 20-10-2026. Los capítulos de HU-14 (alertas) y HU-10 (configuración) se redactaron a partir del SRS Técnico v0.3 y de las pantallas de la versión documentada; su verificación contra el código queda pendiente en el anexo. Las verificaciones históricas conservan el alcance y la fecha indicados en el anexo.
+**Aplicación documentada:** HU-11: frontend 0.1.0 (`952dfde`) y backend 1.0.0 (`bf5a1d7`). HU-02: frontend 0.1.0 (`6ca4992`) y backend 1.0.0 (`152596b`). Base de los capítulos anteriores: frontend 0.1.0 (`3d21cc3`) y backend 1.0.0 (`abb434f`). HU-12 incorpora edición por pallet y reorganización en la rama local `codex/hu-12-editar-reorganizar` al 26-10-2026. HU-04 describe el flujo de ingreso masivo a Patio disponible al 20-10-2026. Los capítulos de HU-14 (alertas) y HU-10 (configuración) se redactaron a partir del SRS Técnico v0.3 y de las pantallas de la versión documentada; su verificación contra el código queda pendiente en el anexo. Las verificaciones históricas conservan el alcance y la fecha indicados en el anexo.
 
 Este manual reúne las instrucciones de uso de la aplicación. Comienza por el acceso al sistema y continúa con la gestión de usuarios, roles y permisos, los ingresos individuales y masivos, la consulta del mapa de Bodega 1, el despacho de uno o varios pallets, la consulta de alertas de prioridad de salida y la configuración de parámetros. Las capturas usan cuentas y datos de ejemplo; no utilices esos datos para registrar producción real. Las secciones históricas conservan las limitaciones y fechas de sus comprobaciones.
 
@@ -16,6 +16,7 @@ Este manual reúne las instrucciones de uso de la aplicación. Comienza por el a
    - [Ingreso masivo a Patio — HU-04](#ingreso-masivo)
 4. [Gemelo Digital 2D — Bodega 1 — HU-06](#bodega-1)
    - [Cambio solicitado T-01: nueva distribución](#cambio-t-01)
+   - [Editar y reorganizar pallets — HU-12](#editar-reorganizar)
 5. [Despacho de pallets (1 y varios) — HU-11](#despachos)
 6. [Alertas FEFO/FIFO y de vencimiento — HU-14](#alertas)
 7. [Configuración Data-Driven de parámetros — HU-10](#configuracion)
@@ -451,7 +452,7 @@ El ejemplo usa **Stout**, **Barril**, lote **26-942**, **32 barriles por pallet*
 4. Comprueba en cada fila **Cerveza, Envase, Cantidad, Estado «En patio», Ingreso, Envasado y Vencimiento**. El estilo, envase, cantidad y fechas del lote coinciden entre las filas; el ID del pallet es diferente. El resumen de arriba suma los pallets y sus cantidades.
 5. Si no ves las filas, borra los filtros o la búsqueda y pulsa **Actualizar inventario**. Antes de volver a confirmar, verifica si los registros ya existen para evitar un intento duplicado.
 
-**Resultado esperado:** al registrar cinco pallets aparecen **cinco filas** inmediatamente en Patio y los registros permanecen disponibles al actualizar la página. El botón de lápiz de la columna **Editar** y el botón de traslado a cámara se muestran en la tabla, pero todavía están deshabilitados; no los uses como parte de este ingreso.
+**Resultado esperado:** al registrar cinco pallets aparecen **cinco filas** inmediatamente en Patio y los registros permanecen disponibles al actualizar la página. El lápiz de **Editar** permite corregir el pallet según [HU-12](#editar-reorganizar). El botón de traslado a cámara continúa deshabilitado.
 
 ![Figura 3.7. Cinco pallets del mismo lote en la tabla de Patio](imagenes/hu-04/03-tabla-patio.png)
 
@@ -491,7 +492,7 @@ El gemelo digital es el mapa interactivo de Bodega 1 de [HU-06 — Gemelo Digita
 
 La vista identifica automáticamente la cámara principal. No necesitas escribir el número de bodega ni cambiar la dirección después de una carga de datos.
 
-El recorrido se comprobó con **Jefe de Planta** y **Calidad**. En esta versión, Calidad utiliza el perfil de interfaz **Operario**. Ambos pueden consultar la grilla y abrir detalles; el botón **Reorganizar** aparece para Jefe de Planta.
+El recorrido se comprobó con **Jefe de Planta** y **Calidad**. En esta versión, Calidad utiliza el perfil de interfaz **Operario**. Ambos pueden consultar la grilla y abrir detalles; con HU-12, **Reorganizar** y **Editar pallet** están disponibles para Jefe de Planta y Calidad.
 
 **Resultado esperado:** ves el mapa con Zona Latas, Zona Extra y Zona Barriles, como en la figura 4.1.
 
@@ -542,7 +543,7 @@ En una torre, cada nivel visible tiene su propio lote y puede tener una variedad
 
 En el ejemplo se toca **N2** de la segunda columna de Zona Barriles, fila A: se abre el lote **26-003**, de estilo **IPA**, con **48 cajas**, envase **Barril** y estado **En Cámara**.
 
-**Resultado esperado:** el código del panel coincide con el pallet que tocaste. Consultar y cerrar el detalle no cambia su ubicación ni su estado.
+**Resultado esperado:** el panel muestra por separado **ID Pallet** e **ID Lote**. Comprueba el ID Pallet antes de editar cuando varios pallets comparten lote. Consultar y cerrar el detalle no cambia su ubicación ni su estado.
 
 ![Figura 4.2. Detalle del lote 26-003 seleccionado en N2](imagenes/us-09/02-detalle.png)
 
@@ -556,11 +557,11 @@ Con una cuenta de Calidad, abre **Vista de Cámara** y toca el pallet del mismo 
 
 Aunque la pantalla dice «Vista en tiempo real», no uses esa frase como garantía de actualización instantánea. Si acabas de registrar una operación y no ves el resultado esperado, vuelve a consultar la vista. Si recargas la página y desaparecen el menú o los paneles, vuelve a iniciar sesión como se explica en [problemas de acceso](#acceso).
 
-**Resultado esperado:** Calidad puede leer la ocupación y los detalles sin entrar en modo de reorganización.
+**Resultado esperado:** Calidad puede leer la ocupación y los detalles. Con HU-12 también puede editar y reorganizar; consulta la sección 4.8.
 
 ![Figura 4.3. Vista de Cámara desde una cuenta de Calidad](imagenes/us-09/03-calidad.png)
 
-*Figura 4.3. Mapa disponible para Calidad; no aparece el botón Reorganizar.*
+*Figura 4.3. Captura histórica anterior a HU-12: en esa versión no aparecía Reorganizar para Calidad.*
 
 ### 4.6. Si algo no coincide
 
@@ -574,7 +575,7 @@ Aunque la pantalla dice «Vista en tiempo real», no uses esa frase como garant�
 | No reconoces un Petainer | No te guíes solo por la imagen: la versión actual no distingue su dibujo del de un barril. Consulta el texto de Envase y confirma con el responsable. |
 | La fecha o la alerta parece incorrecta | Informa al responsable y contrasta la fecha del lote antes de tomar decisiones. No modifiques el inventario solo para hacer coincidir el indicador. |
 
-**Reorganización:** este capítulo cubre la consulta del mapa. El guardado de movimientos no se ha validado en esta versión; una previsualización no confirma que se haya guardado una nueva ubicación.
+**Reorganización:** la sección 4.8 describe el guardado y descarte implementados en HU-12. Una previsualización solo pasa a estar guardada después de aceptar la confirmación y recibir el resultado correcto.
 
 <a id="cambio-t-01"></a>
 
@@ -589,6 +590,82 @@ La tarjeta [T-01 de «Sugerencias Listas»](https://trello.com/c/61GGClsn) recog
 | Otras columnas de Barriles | Mantienen la distribución descrita en este capítulo. | No se pidió añadirles una cuarta fila ni una sección para latas. |
 
 **Pendiente de definición:** la tarjeta no fija cuál será la cuarta posición (se plantea **D4** como posibilidad), si la sección de latas ocupará solo esa posición o un sector mayor, ni sus límites de apilado. Hasta que esas reglas se acuerden y el sistema muestre la nueva distribución, sigue utilizando las posiciones **visibles y habilitadas** de tu versión; no registres un pallet en una posición nueva basándote solo en esta propuesta. La figura 4.1 representa el mapa anterior al cambio.
+
+---
+
+<a id="editar-reorganizar"></a>
+
+### 4.8. Editar y reorganizar pallets — HU-12
+
+#### Antes de comenzar
+
+Inicia sesión como **Jefe de planta** o **Calidad**. El pallet debe estar disponible
+en Cámara de frío, Patio o Bodega 2. Comprueba siempre su **ID de pallet**: distintos
+pallets pueden compartir el mismo ID de lote.
+
+#### Abrir y completar la edición
+
+1. En Cámara, pulsa el pallet para abrir **Detalles del Lote** y selecciona **Editar pallet**.
+2. En Patio o Bodega 2, pulsa el **lápiz** de la fila correspondiente.
+3. Comprueba el código de lote que aparece en **Editar pallet (ID del lote)** y el **ID Pallet** del detalle o la fila.
+4. Selecciona **Solo pallet #…** para corregir uno o **Todo el lote** para aplicar los mismos valores a todos los pallets disponibles del lote. La segunda opción indica cuántos pallets afectará.
+5. Corrige los campos necesarios:
+
+| Campo | Qué puedes cambiar |
+|---|---|
+| Cerveza | En **Todo el lote**, selecciona un tipo activo para todos sus pallets. No se cambia desde **Solo pallet**. |
+| Envase | Selecciona un tipo activo y compatible con la posición que ocupa. |
+| Cantidad | Un número entero entre 1 y 60 cajas o barriles. |
+| Ingreso | Fecha no futura ni anterior al envasado del lote. |
+| Vencimiento | Fecha igual o posterior al envasado del lote. |
+| Nota de calidad | Observación opcional, de hasta 2000 caracteres. En **Todo el lote**, se agrega a cada pallet. |
+
+**Alcance:** un lote tiene una sola cerveza. **Solo pallet** conserva esa cerveza
+y cambia únicamente los datos propios del pallet seleccionado. **Todo el lote**
+establece los valores del formulario en todos sus pallets, incluso si antes
+tenían cantidades, envases o fechas diferentes. Esta opción solo está disponible
+cuando todos los pallets del lote están en Cámara, Patio o Bodega 2. La fecha de
+envasado sigue siendo compartida y no se edita desde aquí. El ID del lote tampoco
+se modifica ni aparece como campo del formulario. El estado y la ubicación se conservan; los
+movimientos dentro de cámara se realizan con **Reorganizar**. Las imágenes siguen
+sin guardarse.
+
+#### Confirmar o cancelar
+
+1. Pulsa **Guardar cambios**. Se cierra el formulario y se abre una ventana de confirmación independiente.
+2. Revisa si la confirmación indica **pallet #…** o **todos los pallets del lote**, junto con los valores que se aplicarán.
+3. Pulsa **Aceptar** para guardar o **Cancelar** para volver al formulario sin perder lo escrito.
+4. Espera el mensaje de guardado y revisa la tabla o el detalle actualizado. Cerrar el formulario sin aceptar no aplica cambios.
+
+#### Reorganizar la cámara
+
+1. En **Vista de Cámara**, pulsa **Reorganizar**.
+2. Arrastra un pallet a un destino habilitado, o pulsa primero el pallet y después el destino.
+3. Revisa la previsualización. Las latas ocupan nivel 1 sin apilar; los barriles respetan la capacidad y las zonas habilitadas.
+4. Pulsa el botón verde **Guardar cambios**, revisa los movimientos y pulsa **Aceptar**.
+5. Si intentas **Salir de Reorganizar** o cambiar de sección mediante el menú con movimientos pendientes, elige:
+   - **Cancelar:** continuar reorganizando sin guardar ni descartar.
+   - **Descartar cambios:** eliminar la previsualización y continuar la salida solicitada.
+   - **Aceptar:** guardar los movimientos y continuar la salida solicitada.
+
+**Resultado esperado:** el sistema conserva toda la reorganización confirmada.
+Si un movimiento falla o alguien cambió la cámara mientras la reorganizabas, no
+se confirma un guardado parcial.
+
+#### Resolver problemas
+
+| Situación | Qué hacer |
+|---|---|
+| El pallet cambió mientras lo editabas | Cierra y abre nuevamente la edición; revisa los datos actuales antes de repetir la corrección. |
+| El envase no corresponde a la posición | Reorganiza primero a una zona compatible; no fuerces un envase en una zona exclusiva de otro tipo. |
+| El apilamiento no permite el cambio | Respeta la capacidad y evita mezclar latas con pallets apilados. |
+| El formulario muestra un error | Corrige el campo indicado; los datos introducidos permanecen disponibles. |
+| No aparece Editar o Reorganizar | Comprueba que tu cuenta activa corresponda a Jefe de planta o Calidad. |
+
+**Comprobación (26-10-2026):** pruebas MySQL de edición individual y masiva,
+aislamiento de los cambios individuales, corrección de la cerveza en todo el lote,
+rechazo de revisiones desactualizadas y reglas de cámara; comprobación de tipos del frontend. Las
+pruebas de guardado y reorganización revierten todos sus datos temporales.
 
 ---
 
