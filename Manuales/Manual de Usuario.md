@@ -337,6 +337,8 @@ La disponibilidad cambia con el inventario. C3 solo sirve para este ejemplo si e
 
 **Resultado esperado:** quedan seleccionados el estilo y el envase, se muestran el lote y la cantidad correctos, y aparece la sección de ubicación.
 
+**Si el lote ya existe:** puedes usar su mismo ID para ingresar otro pallet. Todos los pallets de ese lote tienen **la misma cerveza**, pero cada pallet puede tener **un envase distinto** (por ejemplo, uno en lata y otro en barril). Selecciona la cerveza del lote existente; el sistema conserva también su fecha de envasado. El pallet nuevo recibe su propio ID y cantidad. Si eliges otra cerveza para ese ID de lote, el ingreso se rechaza.
+
 > Si cambias el estilo después de completar los datos, vuelve a revisar el lote y la cantidad: la aplicación los reemplaza por nuevos valores sugeridos. La etiqueta de cantidad sigue diciendo «cajas» incluso al elegir Barril; consulta la unidad de registro con el responsable antes de ingresar barriles.
 
 ![Figura 3.2a. Lager, lote 26-904 y cantidad 48](imagenes/us-04/02-datos.png)
@@ -371,7 +373,7 @@ Si todavía estás seleccionando, **Cancelar selección** sale de ese modo. Si y
 1. Revisa una última vez estilo, lote, cantidad, envase y ubicación.
 2. Pulsa **Confirmar Ingreso** una sola vez. Mientras se procesa, el botón muestra **Guardando...**.
 3. Cuando el formulario se cierre, busca el código del lote en la cámara. En el ejemplo, **26-904** aparece en la zona de latas, C3.
-4. Toca el pallet para abrir **Detalles del Lote**. Comprueba **Lager**, **48 cajas**, **Lata** y el estado **En Cámara**.
+4. Toca el pallet para abrir **Detalles del pallet**. Comprueba **Lager**, **48 cajas**, **Lata** y el estado **En Cámara**.
 5. Para verificar que quedó guardado, recarga la página y busca nuevamente el lote. En esta versión puede desaparecer el menú o dejar de abrirse el detalle tras recargar: vuelve a la pantalla de inicio de sesión, ingresa de nuevo y entra a «Vista de Cámara». **No registres el pallet otra vez.**
 
 **Resultado esperado:** el pallet continúa visible después de recargar. El ejemplo 26-904 se guardó y permaneció visible durante la prueba.
@@ -389,7 +391,7 @@ El formulario usa automáticamente la fecha del momento del ingreso; no permite 
 | «Confirmar Ingreso» está deshabilitado | Selecciona estilo y envase y comprueba que exista una ubicación disponible. Revisa también el lote y la cantidad antes de enviar. | El botón se habilita cuando están completas las selecciones necesarias. |
 | No puedes bajar de 1 o subir de 60 | Es el límite de «Cantidad (cajas)». Revisa cómo dividir el ingreso con el responsable si tu producción supera ese rango. | La cantidad permanece dentro del rango permitido. |
 | «Cámara llena» | No hay una posición compatible disponible para la selección actual. Consulta al responsable para revisar disponibilidad y movimientos reales. | Continúas cuando exista una ubicación adecuada; no cambies el envase para forzar el ingreso. |
-| Error al guardar | Revisa los datos y comprueba primero si el lote ya aparece en la cámara. Un lote repetido también puede causar un error. | Evitas repetir un ingreso que ya se haya guardado. |
+| Error al guardar | Revisa si el código corresponde a un lote existente y si seleccionaste su misma cerveza. El envase del nuevo pallet puede ser distinto. Comprueba también si el pallet se guardó antes de reintentar. | Evitas ingresar el mismo pallet dos veces. |
 | El envío demora o no sabes si terminó | Espera y verifica el lote antes de volver a confirmar. Si persiste el problema, informa el código de lote y el mensaje que aparece. | El responsable puede revisar el caso sin duplicar el registro. |
 | No aparece «Elegir otra ubicación» | Esa opción está disponible para Jefe de Planta. Consulta a ese perfil si necesitas cambiar la propuesta. | Se revisa la ubicación con el perfil adecuado. |
 | Al recargar desaparece el menú o no abre «Nuevo Ingreso» | Vuelve a iniciar sesión y entra desde el menú a «Vista de Cámara». | Recuperas los controles de la sesión; los ingresos guardados permanecen. |
@@ -449,7 +451,7 @@ El ejemplo usa **Stout**, **Barril**, lote **26-942**, **32 barriles por pallet*
 1. Revisa el ID del lote, el estilo, el envase, la cantidad **por pallet** y el número de pallets. En el ejemplo, **5 × 32** significa cinco pallets de 32 barriles cada uno, no 32 barriles entre todos.
 2. Pulsa **Confirmar ingresos** una sola vez y espera **Guardando…**. El formulario se cierra al terminar y aparece una notificación con la cantidad registrada. Si decides salir antes de enviar, pulsa **Cancelar** o la **X**: no se crea ningún pallet.
 3. En la tabla de **Patio**, busca el ID del lote. Debe aparecer una fila por cada pallet creado. En el ejemplo se ven cinco filas con el lote **26-942** y distintos números de pallet.
-4. Comprueba en cada fila **Cerveza, Envase, Cantidad, Estado «En patio», Ingreso, Envasado y Vencimiento**. El estilo, envase, cantidad y fechas del lote coinciden entre las filas; el ID del pallet es diferente. El resumen de arriba suma los pallets y sus cantidades.
+4. Comprueba en cada fila **Cerveza, Envase, Cantidad, Estado «En patio», Envasado y Vencimiento**. El estilo, envase, cantidad y fechas del lote coinciden entre las filas; el ID del pallet es diferente. El resumen de arriba suma los pallets y sus cantidades.
 5. Si no ves las filas, borra los filtros o la búsqueda y pulsa **Actualizar inventario**. Antes de volver a confirmar, verifica si los registros ya existen para evitar un intento duplicado.
 
 **Resultado esperado:** al registrar cinco pallets aparecen **cinco filas** inmediatamente en Patio y los registros permanecen disponibles al actualizar la página. El lápiz de **Editar** permite corregir el pallet según [HU-12](#editar-reorganizar). El botón de traslado a cámara continúa deshabilitado.
@@ -537,7 +539,7 @@ En una torre, cada nivel visible tiene su propio lote y puede tener una variedad
 ### 4.4. Consultar el detalle de un pallet
 
 1. En modo de consulta normal, toca un pallet ocupado. Si hay varios apilados, toca directamente el nivel deseado.
-2. Se abre el panel **Detalles del Lote**.
+2. Se abre el panel **Detalles del pallet**.
 3. Revisa **ID Lote**, **Estilo**, **Cantidad**, **Estado**, **Envase** y **Fecha de Envasado**. En la parte superior aparece el indicador de alerta y tiempo restante.
 4. Cierra el panel con la **X** de su esquina superior para volver al mapa.
 
@@ -605,7 +607,7 @@ pallets pueden compartir el mismo ID de lote.
 
 #### Abrir y completar la edición
 
-1. En Cámara, pulsa el pallet para abrir **Detalles del Lote** y selecciona **Editar pallet**.
+1. En Cámara, pulsa el pallet para abrir **Detalles del pallet** y selecciona **Editar pallet**.
 2. En Patio o Bodega 2, pulsa el **lápiz** de la fila correspondiente.
 3. Comprueba el código de lote que aparece en **Editar pallet (ID del lote)** y el **ID Pallet** del detalle o la fila.
 4. Selecciona **Solo pallet #…** para corregir uno o **Todo el lote** para aplicar los mismos valores a todos los pallets disponibles del lote. La segunda opción indica cuántos pallets afectará.
@@ -616,16 +618,16 @@ pallets pueden compartir el mismo ID de lote.
 | Cerveza | En **Todo el lote**, selecciona un tipo activo para todos sus pallets. No se cambia desde **Solo pallet**. |
 | Envase | Selecciona un tipo activo y compatible con la posición que ocupa. |
 | Cantidad | Un número entero entre 1 y 60 cajas o barriles. |
-| Ingreso | Fecha no futura ni anterior al envasado del lote. |
-| Vencimiento | Fecha igual o posterior al envasado del lote. |
+| Fecha de envase | Se puede corregir por pallet, o aplicar una misma fecha a todo el lote; no se permiten fechas futuras. El vencimiento se ajusta por la misma cantidad de días. |
+| Vencimiento | No aparece como campo de edición. Al corregir la cerveza del lote, se recalcula según la fecha de envase de cada pallet y la vida útil de la cerveza seleccionada. |
 | Nota de calidad | Observación opcional, de hasta 2000 caracteres. En **Todo el lote**, se agrega a cada pallet. |
 
 **Alcance:** un lote tiene una sola cerveza. **Solo pallet** conserva esa cerveza
 y cambia únicamente los datos propios del pallet seleccionado. **Todo el lote**
 establece los valores del formulario en todos sus pallets, incluso si antes
 tenían cantidades, envases o fechas diferentes. Esta opción solo está disponible
-cuando todos los pallets del lote están en Cámara, Patio o Bodega 2. La fecha de
-envasado sigue siendo compartida y no se edita desde aquí. El ID del lote tampoco
+cuando todos los pallets del lote están en Cámara, Patio o Bodega 2. Los pallets
+del mismo lote pueden tener fechas de envase distintas. El ID del lote
 se modifica ni aparece como campo del formulario. El estado y la ubicación se conservan; los
 movimientos dentro de cámara se realizan con **Reorganizar**. Las imágenes siguen
 sin guardarse.
@@ -636,6 +638,18 @@ sin guardarse.
 2. Revisa si la confirmación indica **pallet #…** o **todos los pallets del lote**, junto con los valores que se aplicarán.
 3. Pulsa **Aceptar** para guardar o **Cancelar** para volver al formulario sin perder lo escrito.
 4. Espera el mensaje de guardado y revisa la tabla o el detalle actualizado. Cerrar el formulario sin aceptar no aplica cambios.
+
+#### Devolver un pallet a Patio
+
+En la cámara, abre el detalle del pallet, pulsa **Volver a Patio** y revisa el ID y el lote. Selecciona **Aceptar** para confirmar o **Cancelar** para mantenerlo en cámara. El traslado conserva sus notas y registra el movimiento; si estaba en una torre, los niveles restantes se ordenan.
+
+#### Consultar detalles y agregar una nota en Patio o Bodega 2
+
+En la tabla de la ubicación, pulsa el icono de ojo de la fila. El panel muestra el pallet, sus fechas de envasado y vencimiento, y el indicador Óptimo, Preventivo o Crítico calculado con los mismos criterios que Cámara. Para registrar una observación, pulsa **Agregar nota de calidad**, escribe el texto y selecciona **Guardar nueva nota**. La nota aparece en el historial del pallet. Cierra el detalle con la **X** o la tecla **Esc**.
+
+#### Eliminar un pallet en Patio
+
+En Patio, busca la fila y pulsa el icono de papelera de **Eliminar**. Revisa el ID y el lote y confirma con **Aceptar**, o pulsa **Cancelar**. La eliminación es permanente y conserva el lote y los demás pallets. Si el pallet tiene movimientos, la eliminación se bloquea para conservar su historial. Sus notas se copian a la auditoría, y sus alertas se conservan desvinculadas del pallet; la auditoría conserva la asociación original.
 
 #### Reorganizar la cámara
 
@@ -898,7 +912,7 @@ Cuando el límite del estilo ya se cumplió, el lote aparece en **Crítico** con
 ### 6.5. Filtrar y actuar sobre un lote
 
 1. Para concentrarte en lo urgente, pulsa la pestaña **Crítico**. La lista muestra solo los lotes de ese nivel; el número de la pestaña indica cuántos coinciden.
-2. Para ubicar físicamente un lote, pulsa **Ver en Cámara**: se abre la **Vista de Cámara** con el panel **Detalles del Lote**, donde ves la criticidad, las horas restantes, el ID de lote, el estilo, la cantidad, el envase, la fecha de envasado y el historial de notas. En una torre, verifica también el nivel.
+2. Para ubicar físicamente un lote, pulsa **Ver en Cámara**: se abre la **Vista de Cámara** con el panel **Detalles del pallet**, donde ves la criticidad, los días restantes, el ID de lote, el estilo, la cantidad, el envase, la fecha de envasado y el historial de notas. En una torre, verifica también el nivel.
 3. Para registrar su salida, pulsa **Despachar** (o **Registrar Despacho** desde el detalle) y sigue el [capítulo de despacho](#despachos). Al despachar, el sistema avisa si quedan lotes más antiguos del mismo estilo en cámara.
 
 **Resultado esperado:** acotas la lista al nivel que necesitas y pasas a ubicar o despachar el lote correcto.
